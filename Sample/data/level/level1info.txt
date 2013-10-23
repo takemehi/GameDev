@@ -1,0 +1,9 @@
+96 #x StartPos
+96 #y StartPos
+1850 #x endPos
+64 #y endPos
+544,96 #enemy 1 pos
+960,64 #enemy 2 pos
+1088,224 #enemy 3 pos
+1216,64 #enemy 4 pos
+1440,64 #enemy 5 pos
