@@ -5,12 +5,17 @@
 package de.htw.saarland.gamedev.nap.launcher.handler;
 
 import com.smartfoxserver.v2.exceptions.SFSException;
+
 import de.htw.saarland.gamedev.nap.launcher.FrameLauncher;
+import sfs2x.client.SmartFox;
 import sfs2x.client.core.BaseEvent;
 import sfs2x.client.core.IEventListener;
 import sfs2x.client.core.SFSEvent;
 import sfs2x.client.entities.Room;
 import sfs2x.client.entities.User;
+import sfs2x.client.requests.JoinRoomRequest;
+import sfs2x.client.requests.LoginRequest;
+import sfs2x.client.requests.PublicMessageRequest;
 
 /**
  *
@@ -19,9 +24,11 @@ import sfs2x.client.entities.User;
 public class PacketHandler implements IEventListener {
 
     private FrameLauncher frameLauncher;
+    private SmartFox sfClient;
     
-    public PacketHandler(FrameLauncher frame) {
+    public PacketHandler(FrameLauncher frame, SmartFox sfClient) {
         this.frameLauncher = frame;
+        this.sfClient = sfClient;
     }
     
     public void dispatch(BaseEvent be) throws SFSException {
@@ -68,6 +75,7 @@ public class PacketHandler implements IEventListener {
     private void connected(BaseEvent be) {
         if ((Boolean)be.getArguments().get("success")) {
             frameLauncher.messageReceived("System", "Connection established");
+            sfClient.send(new LoginRequest("Pascal", null, "europe"));
         }
         else {
             frameLauncher.messageReceived("System", "Connection failed");
@@ -82,6 +90,8 @@ public class PacketHandler implements IEventListener {
         User user = (User)be.getArguments().get("user");
         
         frameLauncher.messageReceived("System", "Login successfull. Your name is: " + user.getName());
+        frameLauncher.zoneJoined();
+        sfClient.send(new JoinRoomRequest("Lobby"));
     }
 
     private void loginError(BaseEvent be) {

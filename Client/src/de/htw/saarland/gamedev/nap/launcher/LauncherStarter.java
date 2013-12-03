@@ -23,7 +23,7 @@ public class LauncherStarter {
         FrameLauncher launcher = new FrameLauncher(sfClient);
         launcher.setVisible(true);
         
-        PacketHandler handler = new PacketHandler(launcher);
+        PacketHandler handler = new PacketHandler(launcher, sfClient);
         
         sfClient.addEventListener(SFSEvent.CONNECTION, handler);
         sfClient.addEventListener(SFSEvent.CONNECTION_LOST, handler);
@@ -37,6 +37,8 @@ public class LauncherStarter {
         sfClient.addEventListener(SFSEvent.ROOM_CREATION_ERROR, handler);
         sfClient.addEventListener(SFSEvent.USER_ENTER_ROOM, handler);
         sfClient.addEventListener(SFSEvent.USER_EXIT_ROOM, handler);
+        
+        sfClient.connect("localhost", 9933); // TODO read host, port from file
     }
         /**
      * @param args the command line arguments
