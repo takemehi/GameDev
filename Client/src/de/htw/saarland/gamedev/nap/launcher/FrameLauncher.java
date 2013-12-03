@@ -2,6 +2,14 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+package de.htw.saarland.gamedev.nap.launcher;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import javax.swing.SwingUtilities;
+import sfs2x.client.SmartFox;
+import sfs2x.client.entities.Room;
+import sfs2x.client.entities.User;
 
 /**
  *
@@ -9,11 +17,41 @@
  */
 public class FrameLauncher extends javax.swing.JFrame {
 
+    private SmartFox sfClient;
+    
     /**
      * Creates new form FrameLauncher
      */
-    public FrameLauncher() {
+    public FrameLauncher(SmartFox sfClient) {
+        this.sfClient = sfClient;
+        
         initComponents();
+    }
+    
+    public void messageReceived(final String from, final String text) {
+        final SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
+        
+        SwingUtilities.invokeLater(new Runnable() {
+
+            public void run() {
+                textAreaChatLog.setText(textAreaChatLog.getText() + 
+                        "[" + formatter.format(new Date(System.currentTimeMillis())) + "] " +
+                        from + ": " + text + "\n");
+            }
+        });
+    }
+    
+    public void roomJoined(Room room) {
+        // TODO implement
+    }
+    
+    
+    public void userEnteredRoom(User user, Room room) {
+        // TODO
+    }
+    
+    public void userLeftRoom(User user, Room room) {
+        // TODO
     }
 
     /**
@@ -31,16 +69,16 @@ public class FrameLauncher extends javax.swing.JFrame {
         MatchSelectorPanel = new javax.swing.JPanel();
         MatchSelectorButtonPanel = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList();
+        listRooms = new javax.swing.JList();
         ChatAndSettingsPanel = new javax.swing.JPanel();
         SettingsButtonPanel = new javax.swing.JPanel();
         ChatPanel = new javax.swing.JPanel();
         jTextField1 = new javax.swing.JTextField();
         jPanel9 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        textAreaChatLog = new javax.swing.JTextArea();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jList2 = new javax.swing.JList();
+        listUsers = new javax.swing.JList();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMaximumSize(new java.awt.Dimension(1280, 720));
@@ -94,12 +132,12 @@ public class FrameLauncher extends javax.swing.JFrame {
         jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
-        jList1.setModel(new javax.swing.AbstractListModel() {
+        listRooms.setModel(new javax.swing.AbstractListModel() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
-        jScrollPane1.setViewportView(jList1);
+        jScrollPane1.setViewportView(listRooms);
 
         MatchSelectorPanel.add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
@@ -127,11 +165,11 @@ public class FrameLauncher extends javax.swing.JFrame {
         jScrollPane2.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         jScrollPane2.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
-        jTextArea1.setEditable(false);
-        jTextArea1.setColumns(20);
-        jTextArea1.setLineWrap(true);
-        jTextArea1.setRows(5);
-        jScrollPane2.setViewportView(jTextArea1);
+        textAreaChatLog.setEditable(false);
+        textAreaChatLog.setColumns(20);
+        textAreaChatLog.setLineWrap(true);
+        textAreaChatLog.setRows(5);
+        jScrollPane2.setViewportView(textAreaChatLog);
 
         jPanel9.add(jScrollPane2, java.awt.BorderLayout.CENTER);
 
@@ -140,12 +178,12 @@ public class FrameLauncher extends javax.swing.JFrame {
         jScrollPane3.setMinimumSize(new java.awt.Dimension(150, 24));
         jScrollPane3.setPreferredSize(new java.awt.Dimension(150, 4));
 
-        jList2.setModel(new javax.swing.AbstractListModel() {
+        listUsers.setModel(new javax.swing.AbstractListModel() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
-        jScrollPane3.setViewportView(jList2);
+        jScrollPane3.setViewportView(listUsers);
 
         jPanel9.add(jScrollPane3, java.awt.BorderLayout.EAST);
 
@@ -158,40 +196,6 @@ public class FrameLauncher extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FrameLauncher.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FrameLauncher.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FrameLauncher.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(FrameLauncher.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new FrameLauncher().setVisible(true);
-            }
-        });
-    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel ChatAndSettingsPanel;
     private javax.swing.JPanel ChatPanel;
@@ -201,13 +205,13 @@ public class FrameLauncher extends javax.swing.JFrame {
     private javax.swing.JPanel MatchSelectorButtonPanel;
     private javax.swing.JPanel MatchSelectorPanel;
     private javax.swing.JPanel SettingsButtonPanel;
-    private javax.swing.JList jList1;
-    private javax.swing.JList jList2;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextField jTextField1;
+    private javax.swing.JList listRooms;
+    private javax.swing.JList listUsers;
+    private javax.swing.JTextArea textAreaChatLog;
     // End of variables declaration//GEN-END:variables
 }
