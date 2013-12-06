@@ -16,7 +16,9 @@ import sfs2x.client.core.SFSEvent;
 import sfs2x.client.requests.LoginRequest;
 
 /**
- *
+ * A Swing window to set connection properties and connect to a server
+ * 
+ * 
  * @author Pascal
  */
 public class FrameConnect extends javax.swing.JFrame implements IEventListener {
@@ -26,6 +28,10 @@ public class FrameConnect extends javax.swing.JFrame implements IEventListener {
     
     /**
      * Creates new form FrameConnect
+     * 
+     * @param sfClient The SmartFox Client object used to connect to the smartfox server
+     * @param listener A listener that is called as soon as the connection is established
+     *          the connection frame can be closed
      */
     public FrameConnect(SmartFox sfClient, ILauncherStart listener) {
         sfClient.addEventListener(SFSEvent.CONNECTION, this);
@@ -149,7 +155,7 @@ public class FrameConnect extends javax.swing.JFrame implements IEventListener {
                     sfClient.send(new LoginRequest(textFieldUsername.getText(), null, NetworkConstants.ZONE_NAME));
                 }
                 else {
-                    JOptionPane.showMessageDialog(null, "Unable to connect! Check your network connection.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Unable to connect! Check your network connection.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
                 break;
             case SFSEvent.LOGIN:
@@ -161,7 +167,7 @@ public class FrameConnect extends javax.swing.JFrame implements IEventListener {
                 //cannot login :( . Show why and disconnect
                 sfClient.disconnect();
                 
-                JOptionPane.showMessageDialog(null, "Login error!\n" + be.getArguments().get(NetworkConstants.ERROR_MESSAGE_KEY), "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Login error!\n" + be.getArguments().get(NetworkConstants.ERROR_MESSAGE_KEY), "Error", JOptionPane.ERROR_MESSAGE);
                 break;
             default:
                 System.out.println("Server Packet not handled: " + be.getType());

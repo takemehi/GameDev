@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import sfs2x.client.SmartFox;
@@ -22,8 +23,9 @@ import sfs2x.client.entities.User;
 import sfs2x.client.requests.JoinRoomRequest;
 
 /**
- *
- * @author Bea
+ * The Launcher Frame. Receives also network events for launcher based tasks
+ * 
+ * @author Pascal
  */
 public class FrameLauncher extends javax.swing.JFrame implements IEventListener {
     
@@ -58,110 +60,51 @@ public class FrameLauncher extends javax.swing.JFrame implements IEventListener 
         sfClient.send(new JoinRoomRequest(NetworkConstants.LOBBY_ROOM_NAME));
     }
     
-    public void pingReceived(final String ping) {
-        SwingUtilities.invokeLater(new Runnable() {
-
-            public void run() {
-                lblPing.setText(ping + " ms");
-            }
-        });
-    }
-    
-    public void messageReceived(final String from, final String text) {
+    public void messageReceived(String from, String text) {
         final SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
         
-        SwingUtilities.invokeLater(new Runnable() {
-
-            public void run() {
-                textAreaChatLog.setText(textAreaChatLog.getText() + 
-                        "[" + formatter.format(new Date(System.currentTimeMillis())) + "] " +
-                        from + ": " + text + "\n");
-            }
-        });
+        textAreaChatLog.setText(textAreaChatLog.getText() + 
+                "[" + formatter.format(new Date(System.currentTimeMillis())) + "] " +
+                from + ": " + text + "\n");
     }
     
-    public void zoneJoined() {
-    	final List<Room> rooms = sfClient.getRoomList();
-    	
-    	SwingUtilities.invokeLater(new Runnable() {
-			
-			@Override
-			public void run() {
-				availableRooms.clear();
-				
-				for (int i = 0; i < rooms.size(); i++) {
-		    		availableRooms.add(i, rooms.get(i).getName());
-		    	}
-			}
-		});
-    }
-    
-    public void roomAdd(final Room room) {
-    	SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				availableRooms.add(availableRooms.size(), room.getName());
-			}
-		});
-    }
-    
-    public void roomJoined(Room room) {
-    	final List<User> users = room.getUserList();
-    	
-    	SwingUtilities.invokeLater(new Runnable() {
-			
-			@Override
-			public void run() {
-				usersInRoom.clear();
-				
-				for (int i = 0; i < users.size(); i++) {
-		    		usersInRoom.add(i, users.get(i).getName());
-		    	}
-			}
-		});
-    }
-    
-    
-    public void userEnteredRoom(final User user, Room room) {
-    	SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				usersInRoom.add(usersInRoom.size(), user.getName());
-			}
-		});
-    }
-    
-    public void userLeftRoom(final User user, Room room) {
-    	SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				usersInRoom.removeElement(user.getName());
-			}
-		});
-    }    
     @Override
     public void dispatch(BaseEvent be) throws SFSException {
         switch(be.getType()) {
             case SFSEvent.CONNECTION_LOST:
-                // TODO show error message, close launcher (complete program)
+                JOptionPane.showMessageDialog(this,
+                        "Connection to server lost!\n" + be.getArguments().get(NetworkConstants.ERROR_MESSAGE_KEY),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                
+                System.exit(-1);
                 break;
             case SFSEvent.ROOM_JOIN:
                 // TODO show room info (game info if room isGame), update room user list
                 break;
             case SFSEvent.ROOM_JOIN_ERROR:
-                // TODO show error
+                JOptionPane.showMessageDialog(this,
+                        "Error joining a room!\n" + be.getArguments().get(NetworkConstants.ERROR_MESSAGE_KEY),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
                 break;
             case SFSEvent.SOCKET_ERROR:
-                // TODO show error, find out if this error is fatal and react appropriate
+                JOptionPane.showMessageDialog(this,
+                        "There was a problem with your connection!\n" + be.getArguments().get(NetworkConstants.ERROR_MESSAGE_KEY),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
                 break;
             case SFSEvent.PUBLIC_MESSAGE:
-                // TODO chat message, add to chat log
+                publicMessageReceived(be);
                 break;
             case SFSEvent.ROOM_ADD:
                 // TODO room added, add to room list
                 break;
             case SFSEvent.ROOM_CREATION_ERROR:
-                // TODO error creating room show error message
+                JOptionPane.showMessageDialog(this,
+                        "Error creating room!\n" + be.getArguments().get(NetworkConstants.ERROR_MESSAGE_KEY),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
                 break;
             case SFSEvent.USER_ENTER_ROOM:
                 // TODO user entered room add to users in room and add to team if room isGame
@@ -170,13 +113,33 @@ public class FrameLauncher extends javax.swing.JFrame implements IEventListener 
                 // TODO remove user from userlist of room and from the team if room isGame
                 break;
             case SFSEvent.PING_PONG:
-                // TODO ping received show ping on GUI
-                System.out.println(be.getArguments().get(NetworkConstants.LAG_VALUE_KEY));
+                pingReceived((int)be.getArguments().get(NetworkConstants.LAG_VALUE_KEY));
                 break;
             default:
                 System.out.println("Server Packet not handled: " + be.getType());
                 break;
         }
+    }
+    
+    private void pingReceived(final int lagValue) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                lblPing.setText(Integer.toString(lagValue) + " ms");
+            }
+        });
+    }
+    
+    private void publicMessageReceived(BaseEvent be) {
+        final String username = ((User)be.getArguments().get(NetworkConstants.SENDER_KEY)).getName();
+        final String message = (String)be.getArguments().get(NetworkConstants.MESSAGE_KEY);
+
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                messageReceived(username, message);
+            }
+        });
     }
 
     /**
@@ -192,10 +155,8 @@ public class FrameLauncher extends javax.swing.JFrame implements IEventListener 
         MainPanel = new javax.swing.JPanel();
         InfoPanel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         lblPing = new javax.swing.JLabel();
-        lblStatus = new javax.swing.JLabel();
         ContentPanel = new javax.swing.JPanel();
         MatchSelectorPanel = new javax.swing.JPanel();
         MatchSelectorButtonPanel = new javax.swing.JPanel();
@@ -211,10 +172,16 @@ public class FrameLauncher extends javax.swing.JFrame implements IEventListener 
         jScrollPane3 = new javax.swing.JScrollPane();
         listUsers = new javax.swing.JList();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        setTitle("Nap Launcher");
         setMaximumSize(new java.awt.Dimension(1280, 720));
         setMinimumSize(new java.awt.Dimension(800, 600));
         setPreferredSize(new java.awt.Dimension(800, 600));
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         MainPanel.setLayout(new java.awt.BorderLayout());
 
@@ -229,13 +196,6 @@ public class FrameLauncher extends javax.swing.JFrame implements IEventListener 
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 8);
         InfoPanel.add(jLabel1, gridBagConstraints);
-
-        jLabel2.setText("Status:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 4;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 8);
-        InfoPanel.add(jLabel2, gridBagConstraints);
 
         jPanel1.setPreferredSize(new java.awt.Dimension(0, 0));
 
@@ -264,12 +224,6 @@ public class FrameLauncher extends javax.swing.JFrame implements IEventListener 
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 0;
         InfoPanel.add(lblPing, gridBagConstraints);
-
-        lblStatus.setText("Disconnected");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 5;
-        gridBagConstraints.gridy = 0;
-        InfoPanel.add(lblStatus, gridBagConstraints);
 
         MainPanel.add(InfoPanel, java.awt.BorderLayout.NORTH);
 
@@ -357,6 +311,15 @@ public class FrameLauncher extends javax.swing.JFrame implements IEventListener 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        try {
+            sfClient.disconnect();
+        }
+        finally {
+            System.exit(0);
+        }
+    }//GEN-LAST:event_formWindowClosing
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel ChatAndSettingsPanel;
     private javax.swing.JPanel ChatPanel;
@@ -367,14 +330,12 @@ public class FrameLauncher extends javax.swing.JFrame implements IEventListener 
     private javax.swing.JPanel MatchSelectorPanel;
     private javax.swing.JPanel SettingsButtonPanel;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JLabel lblPing;
-    private javax.swing.JLabel lblStatus;
     private javax.swing.JList listRooms;
     private javax.swing.JList listUsers;
     private javax.swing.JTextArea textAreaChatLog;

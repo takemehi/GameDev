@@ -12,7 +12,8 @@ import javax.swing.UIManager;
 import sfs2x.client.SmartFox;
 
 /**
- *
+ * This class is responsible for switching between the Launcher and the "real" game
+ * 
  * @author Pascal
  */
 public class GameStarter implements IGameStart, ILauncherStart {
