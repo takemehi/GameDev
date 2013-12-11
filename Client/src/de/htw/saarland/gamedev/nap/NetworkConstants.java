@@ -19,6 +19,7 @@ public class NetworkConstants {
     public static final String LAG_VALUE_KEY = "lagValue";
     public static final String SENDER_KEY = "sender";
     public static final String MESSAGE_KEY = "message";
+    public static final String ROOM_KEY = "room";
     
     public static final String ZONE_NAME = "europe";
     public static final String LOBBY_ROOM_NAME = "Lobby";
