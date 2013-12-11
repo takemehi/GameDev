@@ -72,7 +72,7 @@ public class FrameLauncher extends javax.swing.JFrame implements IEventListener,
         sfClient.enableLagMonitor(true);
         sfClient.send(new JoinRoomRequest(NetworkConstants.LOBBY_ROOM_NAME));
         
-        //TODO set current room list
+        updateAvailableRooms(sfClient.getRoomList());
     }
     
     private void sendMessage() {
@@ -166,6 +166,7 @@ public class FrameLauncher extends javax.swing.JFrame implements IEventListener,
                 Room roomJoin = (Room) be.getArguments().get(NetworkConstants.ROOM_KEY);
                 
                 joinedRoom = roomJoin;
+                System.out.println(roomJoin);
                 
                 if (roomJoin.isGame()) {
                     //set game settings
@@ -190,11 +191,6 @@ public class FrameLauncher extends javax.swing.JFrame implements IEventListener,
                 break;
             case SFSEvent.ROOM_ADD:
                 Room roomAdd = (Room) be.getArguments().get(NetworkConstants.ROOM_KEY);
-                
-                if (sfClient.getMySelf().isPlayerInRoom(roomAdd)) {
-                    //room was added and im already in, so assume i'm the creator and discard the create game panel
-                    removeCreateGamePanel();
-                }
                 
                 updateAvailableRooms(roomAdd.getRoomManager().getRoomList());
                 break;
