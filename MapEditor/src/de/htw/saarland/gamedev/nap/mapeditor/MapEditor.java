@@ -8,11 +8,16 @@ package de.htw.saarland.gamedev.nap.mapeditor;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
 
@@ -22,12 +27,26 @@ import javax.swing.border.LineBorder;
  */
 public class MapEditor extends javax.swing.JFrame {
 
+    private static final String BASE_PATH = "/resources/";
+    
+    //load all files from a directory in future (or from a tileset)
+    private static final String[] TILE_NAMES = {
+        "dark-00.png", "dark-0.png", "dark-1.png",
+        "dark-2.png", "dark-3.png", "dark-4.png",
+        "dark-5.png", "dark-6.png", "dark-7.png",
+        "dark-8.png", "dark-9.png"
+    };
+    
     private JLabel[][] mapTiles;
+    private Image img;
+    private Icon selectedTile;
     
     /**
      * Creates new form MapEditor
      */
     public MapEditor() {
+        img = getToolkit().getImage(getClass().getResource(BASE_PATH + "background.png"));
+        
         initComponents();
         
         buildPalette(2);
@@ -35,8 +54,7 @@ public class MapEditor extends javax.swing.JFrame {
     }
     
     private void buildPalette(int columns) {
-        // TODO fill with correct palette
-        int tileCount = 10;
+        int tileCount = TILE_NAMES.length;
         
         panelPalette.removeAll();
         
@@ -45,17 +63,23 @@ public class MapEditor extends javax.swing.JFrame {
         layout.setRows((int)Math.ceil((double)tileCount / (double)columns));
         
         for (int i = 0; i < tileCount; i++) {
-            final JLabel tmp = new JLabel(Integer.toString(i));
+            Icon icon = new ImageIcon(getClass().getResource(BASE_PATH + TILE_NAMES[i]));
+            
+            final JLabel tmp = new JLabel(icon);
             tmp.setPreferredSize(new Dimension(96, 96));
-
+            
             tmp.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseEntered(MouseEvent e) {
-                    tmp.setBorder(new LineBorder(Color.BLACK, 1));
+                    tmp.setBorder(new LineBorder(Color.CYAN, 3));
                 }
                 @Override
                 public void mouseExited(MouseEvent e) {
                     tmp.setBorder(null);
+                }
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    selectedTile = tmp.getIcon();
                 }
             });
 
@@ -66,6 +90,8 @@ public class MapEditor extends javax.swing.JFrame {
     }
     
     private void buildMap(int width, int height) {
+        img = img.getScaledInstance(width * 96, height * 96, Image.SCALE_FAST);
+        
         mapTiles = new JLabel[height][width];
         
         panelMap.removeAll();
@@ -89,6 +115,10 @@ public class MapEditor extends javax.swing.JFrame {
                     public void mouseExited(MouseEvent e) {
                         tmp.setBorder(null);
                     }
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        tmp.setIcon(selectedTile);
+                    }
                 });
                 
                 panelMap.add(mapTiles[i][j]);
@@ -108,7 +138,13 @@ public class MapEditor extends javax.swing.JFrame {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        panelMap = new javax.swing.JPanel();
+        panelMap = new JPanel() {
+            @Override
+            public void paintComponent(Graphics g) {
+                g.drawImage(img, 0, 0, null);
+                //super.paint(g);
+            }
+        };
         jScrollPane2 = new javax.swing.JScrollPane();
         panelPalette = new javax.swing.JPanel();
         jMenuBar1 = new javax.swing.JMenuBar();
@@ -117,17 +153,16 @@ public class MapEditor extends javax.swing.JFrame {
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
         MenuItemSave = new javax.swing.JMenuItem();
         menuItemLoad = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(1000, 600));
 
-        panelMap.setLayout(new java.awt.GridLayout());
+        panelMap.setLayout(new java.awt.GridLayout(1, 0));
         jScrollPane1.setViewportView(panelMap);
 
         getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
-        panelPalette.setLayout(new java.awt.GridLayout());
+        panelPalette.setLayout(new java.awt.GridLayout(1, 0, 5, 5));
         jScrollPane2.setViewportView(panelPalette);
 
         getContentPane().add(jScrollPane2, java.awt.BorderLayout.EAST);
@@ -150,9 +185,6 @@ public class MapEditor extends javax.swing.JFrame {
         jMenu1.add(menuItemLoad);
 
         jMenuBar1.add(jMenu1);
-
-        jMenu2.setText("Edit");
-        jMenuBar1.add(jMenu2);
 
         setJMenuBar(jMenuBar1);
 
@@ -207,7 +239,6 @@ public class MapEditor extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem MenuItemSave;
     private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
