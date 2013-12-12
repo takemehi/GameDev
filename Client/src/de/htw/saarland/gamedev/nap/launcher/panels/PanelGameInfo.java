@@ -4,17 +4,36 @@
  */
 package de.htw.saarland.gamedev.nap.launcher.panels;
 
+import javax.swing.DefaultListModel;
+import sfs2x.client.SmartFox;
+import sfs2x.client.entities.Room;
+
 /**
  *
  * @author Pascal
  */
 public class PanelGameInfo extends javax.swing.JPanel {
 
+    private SmartFox sfClient;
+    private Room room;
+    
+    private DefaultListModel<String> leftTeam;
+    private DefaultListModel<String> rightTeam;
+    
     /**
      * Creates new form PanelGameInfo
      */
-    public PanelGameInfo() {
+    public PanelGameInfo(SmartFox sfClient, Room room) {
+        this.sfClient = sfClient;
+        this.room = room;
+        
+        leftTeam = new DefaultListModel<>();
+        rightTeam = new DefaultListModel<>();
+        
         initComponents();
+        
+        lblGameName.setText(room.getName());
+        // TODO set map name
     }
 
     /**
@@ -25,56 +44,93 @@ public class PanelGameInfo extends javax.swing.JPanel {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        lblGameName = new javax.swing.JLabel();
+        lblMapName = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jList1 = new javax.swing.JList();
         jScrollPane2 = new javax.swing.JScrollPane();
         jList2 = new javax.swing.JList();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        buttonChangeTeam = new javax.swing.JButton();
+        comboBoxCharacter = new javax.swing.JComboBox();
+        toggleButtonReady = new javax.swing.JToggleButton();
 
         setLayout(new java.awt.GridBagLayout());
 
-        jLabel1.setText("jLabel1");
-        add(jLabel1, new java.awt.GridBagConstraints());
+        lblGameName.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        lblGameName.setText("Game name");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 3, 5);
+        add(lblGameName, gridBagConstraints);
 
-        jLabel2.setText("jLabel2");
-        add(jLabel2, new java.awt.GridBagConstraints());
+        lblMapName.setText("Map");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 5, 5);
+        add(lblMapName, gridBagConstraints);
 
-        jList1.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
+        jList1.setModel(leftTeam);
         jScrollPane1.setViewportView(jList1);
 
-        add(jScrollPane1, new java.awt.GridBagConstraints());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridheight = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(3, 5, 5, 0);
+        add(jScrollPane1, gridBagConstraints);
 
-        jList2.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
+        jList2.setModel(rightTeam);
         jScrollPane2.setViewportView(jList2);
 
-        add(jScrollPane2, new java.awt.GridBagConstraints());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridheight = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 5, 5);
+        add(jScrollPane2, gridBagConstraints);
 
-        jButton1.setText("jButton1");
-        add(jButton1, new java.awt.GridBagConstraints());
+        buttonChangeTeam.setText(">>|<<");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.insets = new java.awt.Insets(0, 1, 0, 1);
+        add(buttonChangeTeam, gridBagConstraints);
 
-        jButton2.setText("jButton2");
-        add(jButton2, new java.awt.GridBagConstraints());
+        comboBoxCharacter.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "TODO", "load", "characters", "from", "file" }));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
+        add(comboBoxCharacter, gridBagConstraints);
+
+        toggleButtonReady.setText("Ready");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
+        add(toggleButtonReady, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
+    private javax.swing.JButton buttonChangeTeam;
+    private javax.swing.JComboBox comboBoxCharacter;
     private javax.swing.JList jList1;
     private javax.swing.JList jList2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JLabel lblGameName;
+    private javax.swing.JLabel lblMapName;
+    private javax.swing.JToggleButton toggleButtonReady;
     // End of variables declaration//GEN-END:variables
 }
