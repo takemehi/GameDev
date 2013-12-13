@@ -13,8 +13,14 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -37,9 +43,10 @@ public class MapEditor extends javax.swing.JFrame {
         "dark-8.png", "dark-9.png"
     };
     
-    private JLabel[][] mapTiles;
+    private int[][] mapTiles;
     private Image img;
     private Icon selectedTile;
+    private int selectedTileNr;
     
     /**
      * Creates new form MapEditor
@@ -64,6 +71,7 @@ public class MapEditor extends javax.swing.JFrame {
         
         for (int i = 0; i < tileCount; i++) {
             Icon icon = new ImageIcon(getClass().getResource(BASE_PATH + TILE_NAMES[i]));
+            final int nr = i;
             
             final JLabel tmp = new JLabel(icon);
             tmp.setPreferredSize(new Dimension(96, 96));
@@ -80,6 +88,7 @@ public class MapEditor extends javax.swing.JFrame {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     selectedTile = tmp.getIcon();
+                    selectedTileNr = nr;
                 }
             });
 
@@ -92,7 +101,7 @@ public class MapEditor extends javax.swing.JFrame {
     private void buildMap(int width, int height) {
         img = img.getScaledInstance(width * 96, height * 96, Image.SCALE_FAST);
         
-        mapTiles = new JLabel[height][width];
+        mapTiles = new int[height][width];
         
         panelMap.removeAll();
         
@@ -103,10 +112,11 @@ public class MapEditor extends javax.swing.JFrame {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 final JLabel tmp = new JLabel(i + "," + j);
+                final int x = i, y = j;
                 tmp.setPreferredSize(new Dimension(96, 96));
-                mapTiles[i][j] = tmp;
+                mapTiles[i][j] = -1;
                 
-                mapTiles[i][j].addMouseListener(new MouseAdapter() {
+                tmp.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseEntered(MouseEvent e) {
                         tmp.setBorder(new LineBorder(Color.BLACK, 1));
@@ -117,11 +127,18 @@ public class MapEditor extends javax.swing.JFrame {
                     }
                     @Override
                     public void mouseClicked(MouseEvent e) {
-                        tmp.setIcon(selectedTile);
+                        if (e.getButton() == MouseEvent.BUTTON1) {
+                            tmp.setIcon(selectedTile);
+                            mapTiles[x][y] = selectedTileNr;
+                        }
+                        else {
+                            tmp.setIcon(null);
+                            mapTiles[x][y] = -1;
+                        }
                     }
                 });
                 
-                panelMap.add(mapTiles[i][j]);
+                panelMap.add(tmp);
             }
         }
         
@@ -151,7 +168,7 @@ public class MapEditor extends javax.swing.JFrame {
         jMenu1 = new javax.swing.JMenu();
         menuItemSetSize = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
-        MenuItemSave = new javax.swing.JMenuItem();
+        menuItemSave = new javax.swing.JMenuItem();
         menuItemLoad = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -178,8 +195,13 @@ public class MapEditor extends javax.swing.JFrame {
         jMenu1.add(menuItemSetSize);
         jMenu1.add(jSeparator1);
 
-        MenuItemSave.setText("Save");
-        jMenu1.add(MenuItemSave);
+        menuItemSave.setText("Save");
+        menuItemSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemSaveActionPerformed(evt);
+            }
+        });
+        jMenu1.add(menuItemSave);
 
         menuItemLoad.setText("Load");
         jMenu1.add(menuItemLoad);
@@ -205,6 +227,43 @@ public class MapEditor extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Width or height was invalid", "Error", JOptionPane.WARNING_MESSAGE);
         }
     }//GEN-LAST:event_menuItemSetSizeActionPerformed
+
+    private void menuItemSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemSaveActionPerformed
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setMultiSelectionEnabled(false);
+        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            File f = fileChooser.getSelectedFile();
+            
+            if (f.exists() &&
+                    JOptionPane.showConfirmDialog(this, "File exists, overwrite?", "File exists", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION) {
+                return;
+            }
+            
+            BufferedWriter bw = null;
+            
+            try {
+                try {
+                    bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f)));
+
+                    for (int i = 0; i < mapTiles.length; i++) {
+                        for (int j = 0; j < mapTiles[i].length; j++) {
+                            bw.write("(" + Integer.toString(mapTiles[i][j]) + ")");
+                        }
+                        bw.write("\r\n");
+                    }
+                }   
+                finally {
+                    if (bw != null) {
+                        bw.flush();
+                        bw.close();
+                    }
+                }
+            }
+            catch (IOException e) {
+                JOptionPane.showMessageDialog(this, "Error saving file :(", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_menuItemSaveActionPerformed
 
     /**
      * @param args the command line arguments
@@ -237,13 +296,13 @@ public class MapEditor extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenuItem MenuItemSave;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JMenuItem menuItemLoad;
+    private javax.swing.JMenuItem menuItemSave;
     private javax.swing.JMenuItem menuItemSetSize;
     private javax.swing.JPanel panelMap;
     private javax.swing.JPanel panelPalette;
