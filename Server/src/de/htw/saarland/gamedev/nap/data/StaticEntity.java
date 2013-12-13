@@ -6,41 +6,31 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Shape;
 
 /**
- * Moveable entities represent things like players or npcs.
+ * Static Entities represent things like walls or the ground
  * 
  * @author Stefan
  *
  */
-public class MoveableEntity extends Entity{
+public class StaticEntity extends Entity {
 
+	
 	//base values
 	private Shape shape;
-	private float weight;
 	private float density;
-	private float friction;
-	private float restitution;
 	private Vector2 position;
 	
-	//momentary values
-	private Vector2 acceleration;
-	private Vector2 velocity;
-	
 	//output values
-	private FixtureDef fixtureDef;
 	private BodyDef bodyDef;
+	private FixtureDef fixtureDef;
 	
 	//////////////////////
 	//	constructors	//
 	//////////////////////
 	
-	public MoveableEntity(Shape shape, float weight, float density,
-			float friction, float restitution, Vector2 position) {
+	public StaticEntity(Shape shape, float density, Vector2 position) {
 		super();
 		this.shape = shape;
-		this.weight = weight;
 		this.density = density;
-		this.friction = friction;
-		this.restitution = restitution;
 		this.position = position;
 		
 		initBodyDef();
@@ -55,15 +45,13 @@ public class MoveableEntity extends Entity{
 
 	private void initBodyDef(){
 		bodyDef=new BodyDef();
-		bodyDef.type=BodyDef.BodyType.DynamicBody;
+		bodyDef.type=BodyDef.BodyType.StaticBody;
 		bodyDef.position.set(position);
 	}
 	
 	private void initFixtureDef(){
-		fixtureDef = new FixtureDef();
+		fixtureDef=new FixtureDef();
 		fixtureDef.density=density;
-		fixtureDef.friction=friction;
-		fixtureDef.restitution=restitution;
 		fixtureDef.shape=shape;
 	}
 	
@@ -76,16 +64,17 @@ public class MoveableEntity extends Entity{
 	}
 	
 	//	getter / setter	
-	
-	public FixtureDef getFixtureDef() {
-		return fixtureDef;
-	}
 
 	public BodyDef getBodyDef() {
 		return bodyDef;
 	}
+
+	public FixtureDef getFixtureDef() {
+		return fixtureDef;
+	}
 	
-	public Shape getShape(){
+	public Shape getShape() {
 		return shape;
 	}
+
 }

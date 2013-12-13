@@ -5,5 +5,8 @@
 	<classpathentry kind="lib" path="lib/sfs2x-core.jar"/>
 	<classpathentry kind="lib" path="lib/sfs2x.jar"/>
 	<classpathentry kind="lib" path="lib/gdx.jar" sourcepath="lib/gdx-sources.jar"/>
+	<classpathentry kind="lib" path="lib/gdx-backend-lwjgl-natives.jar"/>
+	<classpathentry kind="lib" path="lib/gdx-backend-lwjgl.jar"/>
+	<classpathentry kind="lib" path="lib/gdx-natives.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
