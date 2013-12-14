@@ -20,6 +20,7 @@ import com.smartfoxserver.v2.entities.data.SFSObject;
 
 import de.htw.saarland.gamedev.nap.data.CharacterClass;
 import de.htw.saarland.gamedev.nap.data.MoveableEntity;
+import de.htw.saarland.gamedev.nap.data.NPC;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
 import de.htw.saarland.gamedev.nap.data.Player;
 import de.htw.saarland.gamedev.nap.data.StaticEntity;
@@ -28,10 +29,14 @@ import de.htw.saarland.gamedev.nap.data.StaticEntity;
 public class GameServer implements ApplicationListener, InputProcessor {
 	
 	//exceptions
+	private final static String EXCEPTION_NO_PACKET = "Packet object is missing!";
+	private final static String EXCEPTION_NO_PLAYER = "Player object is missing!";
 	private final static String EXCEPTION_NO_MAP = "Map object is missing!";
 	private final static String EXCEPTION_NO_TEAM1 = "Team1 object is missing!";
 	private final static String EXCEPTION_NO_TEAM2 = "Team2 object is missing!";
 	private final static String EXCEPTION_ILLEGAL_TEAMSIZE = "Teamsize can't be less than 1!";
+	private final static String EXCEPTION_TEAM_INVALID = "Team is not existing!";
+	private final static String EXCEPTION_TEAM_FULL = "Team is already full!";
 	//packets processed per tick
 	private final static int PACKETS_PER_TICK = 50;
 	//world renderer constants
@@ -46,6 +51,8 @@ public class GameServer implements ApplicationListener, InputProcessor {
 	private int teamSize;
 	private ArrayList<Player> team1;
 	private ArrayList<Player> team2;
+	//TODO maybe change the type from npc to extended class
+	private ArrayList<NPC> npcs;
 	
 	//internal variables
 	private ConcurrentLinkedQueue<SFSObject> packetQueue;	
@@ -55,6 +62,8 @@ public class GameServer implements ApplicationListener, InputProcessor {
 	private Body box;
 	private OrthographicCamera camera;
 	private Box2DDebugRenderer renderer;
+	private Vector2 velocity = new Vector2(0,0);
+	
 	
 	//////////////////////
 	//	constructors	//
@@ -65,6 +74,7 @@ public class GameServer implements ApplicationListener, InputProcessor {
 		if(teamSize<1) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_TEAMSIZE);
 		if(team1 == null) throw new NullPointerException(EXCEPTION_NO_TEAM1);
 		if(team2 == null) throw new NullPointerException(EXCEPTION_NO_TEAM2);
+		
 		this.map=map;
 		this.teamSize=teamSize;
 		this.team1=team1;
@@ -83,6 +93,20 @@ public class GameServer implements ApplicationListener, InputProcessor {
 	
 	@Override
 	public void create() {
+		//initialize map
+		
+		//initialize static objects
+		
+		//initialize npcs
+		
+		//initialize the body objects of the players
+		for(Player p: team1){
+			initPlayer(p);
+		}
+		
+		for(Player p: team2){
+			initPlayer(p);
+		}
 		
 		//Test stuff
 		world = new World(GRAVITY, true);
@@ -100,7 +124,7 @@ public class GameServer implements ApplicationListener, InputProcessor {
 		
 		PolygonShape playerShape = new PolygonShape();
 		playerShape.setAsBox(1, 2);
-		PlayableCharacter player = new PlayableCharacter(playerShape, 0.1f, 0.1f, 0.75f, 0f, new Vector2(-3, 1), new CharacterClass());
+		PlayableCharacter player = new PlayableCharacter(playerShape, 0.1f, 0.1f, 1f, 0f, new Vector2(-3, 1), new CharacterClass());
 		
 		world.createBody(ground.getBodyDef()).createFixture(ground.getFixtureDef());
 		world.createBody(ent.getBodyDef()).createFixture(ent.getFixtureDef());
@@ -145,9 +169,9 @@ public class GameServer implements ApplicationListener, InputProcessor {
 		//send dat shit
 		
 		//Test stuff
+		box.applyForceToCenter(velocity, true);
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		
 		renderer.render(world, camera.combined);
 		world.step(TIME_STEP, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
 	}
@@ -174,16 +198,16 @@ public class GameServer implements ApplicationListener, InputProcessor {
 	public boolean keyDown(int keycode) {
 		switch (keycode){
 		case (Keys.W):
-			box.applyForceToCenter(new Vector2(0, 100), true);
+			velocity.y=10;
 			return true;
 		case (Keys.S):
-			box.applyForceToCenter(new Vector2(0, -100), true);
+			velocity.y=-10;
 			return true;
 		case (Keys.A):
-			box.applyForceToCenter(new Vector2(-100, 0), true);
+			velocity.x=-10;
 			return true;
 		case (Keys.D):
-			box.applyForceToCenter(new Vector2(100, 0), true);
+			velocity.x=10;
 			return true;
 		}
 		return false;
@@ -193,16 +217,16 @@ public class GameServer implements ApplicationListener, InputProcessor {
 	public boolean keyUp(int keycode) {
 		switch (keycode){
 		case (Keys.W):
-			box.applyForceToCenter(new Vector2(0, 0), true);
+			velocity.y=0;
 			return true;
 		case (Keys.S):
-			box.applyForceToCenter(new Vector2(0, 0), true);
+			velocity.y=0;
 			return true;
 		case (Keys.A):
-			box.applyForceToCenter(new Vector2(0, 0), true);
+			velocity.x=0;
 			return true;
 		case (Keys.D):
-			box.applyForceToCenter(new Vector2(0, 0), true);
+			velocity.x=0;
 			return true;
 		}
 		return false;
@@ -245,7 +269,27 @@ public class GameServer implements ApplicationListener, InputProcessor {
 	}
 	
 	//////////////////////
-	//	own methods		//
+	//	intern methods	//
+	//////////////////////
+	
+	private void initMap(){
+		//TODO implement this method
+	}
+	
+	private void initNpc(NPC npc){
+		//TODO set the correct starting position depending on the map
+		npc.setBody(world.createBody(npc.getBodyDef()));
+		npc.getBody().createFixture(npc.getFixtureDef());
+	}
+	
+	private void initPlayer(Player player){
+		//TODO set the correct starting position depending on the map
+		player.setBody(world.createBody(player.getPlChar().getBodyDef()));
+		player.getBody().createFixture(player.getPlChar().getFixtureDef());
+	}
+	
+	//////////////////////
+	//	public methods	//
 	//////////////////////
 
 	/**
@@ -254,8 +298,28 @@ public class GameServer implements ApplicationListener, InputProcessor {
 	 * @param packet Packet with recent player action informations
 	 */
 	public void addPacket(SFSObject packet){
-		if(packet == null) throw new NullPointerException();
+		if(packet == null) throw new NullPointerException(EXCEPTION_NO_PACKET);
 		packetQueue.add(packet);
+	}
+	
+	public void joinGame(Player player, int whichTeam){
+		if(player == null) throw new NullPointerException(EXCEPTION_NO_PLAYER);
+		if(whichTeam<0 || whichTeam>1) throw new IllegalArgumentException(EXCEPTION_TEAM_INVALID);
+		
+		if(whichTeam==0){
+			if(team1.size()>=teamSize) throw new IllegalStateException(EXCEPTION_TEAM_FULL);
+			else {
+				team1.add(player);
+				initPlayer(player);
+			}
+			
+		}else{
+			if(team2.size()>=teamSize) throw new IllegalStateException(EXCEPTION_TEAM_FULL);
+			else {
+				team2.add(player);
+				initPlayer(player);
+			}
+		}
 	}
 
 	

@@ -1,12 +1,16 @@
 package de.htw.saarland.gamedev.nap.game;
 
-import com.badlogic.gdx.Game;
+import java.util.ArrayList;
+
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
+
+import de.htw.saarland.gamedev.nap.data.Player;
 
 
 public class TmpStarter {
 
 	public static void main (String[] args) {
-		new LwjglApplication(new GameServer("", 10), "Game", 480, 320, false);
+		ArrayList<Player> team= new ArrayList<Player>();
+		new LwjglApplication(new GameServer("", 10, team, team), "Game", 480, 320, false);
 	}
 }

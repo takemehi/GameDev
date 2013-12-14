@@ -53,6 +53,7 @@ public class StaticEntity extends Entity {
 		fixtureDef=new FixtureDef();
 		fixtureDef.density=density;
 		fixtureDef.shape=shape;
+		fixtureDef.friction=1;
 	}
 	
 	//////////////////////
