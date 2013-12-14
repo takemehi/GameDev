@@ -28,12 +28,14 @@ public class LauncherClientSender {
 		
 		for (LauncherPlayer lp: redTeam) {
 			sfsRedTeam.addUtfString(lp.getSfsUser().getName());
+			allUsers.add(lp.getSfsUser());
 		}
 		
 		SFSArray sfsBlueTeam = new SFSArray();
 		
 		for (LauncherPlayer lp: blueTeam) {
 			sfsBlueTeam.addUtfString(lp.getSfsUser().getName());
+			allUsers.add(lp.getSfsUser());
 		}
 		
 		params.putSFSArray(LauncherOpcodes.RED_TEAM_STRUCTURE_ARRAY_PARAMETER, sfsRedTeam);

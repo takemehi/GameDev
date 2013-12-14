@@ -8,21 +8,14 @@ import com.smartfoxserver.v2.extensions.BaseServerEventHandler;
 
 import de.htw.saarland.gamedev.nap.server.extension.ServerExtension;
 import de.htw.saarland.gamedev.nap.server.extension.launcher.Launcher;
-import de.htw.saarland.gamedev.nap.server.extension.launcher.exception.TeamFullException;
 
-public class RoomJoinServerHandler extends BaseServerEventHandler {
+public class UserDisconnectHandler extends BaseServerEventHandler {
 
 	@Override
 	public void handleServerEvent(ISFSEvent ev) throws SFSException {
-		trace("Room Join Event Called!");
 		Launcher launcher = ((ServerExtension)getParentExtension()).getLauncher();
 		
-		try {
-			launcher.addPlayer(launcher.getRedTeamSize() < 5, (User)ev.getParameter(SFSEventParam.USER), 0);
-		}
-		catch (TeamFullException e) {
-			throw new SFSException(e);
-		}
+		launcher.removePlayer((User)ev.getParameter(SFSEventParam.USER));
 	}
 
 }

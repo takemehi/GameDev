@@ -45,8 +45,8 @@ public class LauncherOpcodes {
 	 */
 	public static final String CHARACTER_ID_PARAMETER = "characterid";
 	
+	public static final String RED_TEAM_STRUCTURE_ARRAY_PARAMETER = "redteamstruct";
 	public static final String BLUE_TEAM_STRUCTURE_ARRAY_PARAMETER = "blueteamstruct";
-	public static final String RED_TEAM_STRUCTURE_ARRAY_PARAMETER = "blueteamstruct";
 	
 	public static final String ERROR_MESSAGE_PARAMETER = "errormessage";
 }

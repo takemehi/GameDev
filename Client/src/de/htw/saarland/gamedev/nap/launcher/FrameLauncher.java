@@ -4,11 +4,18 @@
  */
 package de.htw.saarland.gamedev.nap.launcher;
 
+import com.smartfoxserver.v2.entities.data.SFSArray;
+import com.smartfoxserver.v2.entities.data.SFSObject;
 import com.smartfoxserver.v2.exceptions.SFSException;
+
 import de.htw.saarland.gamedev.nap.NetworkConstants;
 import de.htw.saarland.gamedev.nap.launcher.panels.PanelCreateGame;
+import de.htw.saarland.gamedev.nap.launcher.panels.PanelGameInfo;
+import de.htw.saarland.gamedev.nap.server.extension.launcher.LauncherOpcodes;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -26,6 +33,7 @@ import sfs2x.client.entities.User;
 import sfs2x.client.entities.managers.IRoomManager;
 import sfs2x.client.requests.JoinRoomRequest;
 import sfs2x.client.requests.PublicMessageRequest;
+import sfs2x.client.requests.RoomExtension;
 import sfs2x.client.requests.game.CreateSFSGameRequest;
 import sfs2x.client.requests.game.SFSGameSettings;
 
@@ -42,11 +50,14 @@ public class FrameLauncher extends javax.swing.JFrame implements IEventListener,
     private DefaultListModel<String> availableUsers;
     private DefaultListModel<String> availableRooms;
     
+    private PanelGameInfo gameInfo;
+    
     /**
      * Creates new form FrameLauncher
      */
     public FrameLauncher(SmartFox sfClient) {
-        this.sfClient = sfClient;        
+        this.sfClient = sfClient;
+        this.gameInfo = null;
         
         sfClient.addEventListener(SFSEvent.CONNECTION_LOST, this);
         sfClient.addEventListener(SFSEvent.ROOM_JOIN, this);
@@ -59,6 +70,7 @@ public class FrameLauncher extends javax.swing.JFrame implements IEventListener,
         sfClient.addEventListener(SFSEvent.USER_ENTER_ROOM, this);
         sfClient.addEventListener(SFSEvent.USER_EXIT_ROOM, this);
         sfClient.addEventListener(SFSEvent.PING_PONG, this);
+        sfClient.addEventListener(SFSEvent.EXTENSION_RESPONSE, this);
         
         availableUsers = new DefaultListModel<>();
         availableRooms = new DefaultListModel<>();
@@ -91,8 +103,7 @@ public class FrameLauncher extends javax.swing.JFrame implements IEventListener,
         settings.setMinPlayersToStartGame(teamSize * 2);
         settings.setPublic(true);
         settings.setNotifyGameStarted(true);
-        
-        //TODO add game extension to settings
+        settings.setExtension(new RoomExtension("nap", "de.htw.saarland.gamedev.nap.server.extension.ServerExtension"));
         
         sfClient.send(new CreateSFSGameRequest(settings));
     }
@@ -101,11 +112,6 @@ public class FrameLauncher extends javax.swing.JFrame implements IEventListener,
         contentPanel.removeAll();
         
         contentPanel.add(new PanelCreateGame(this));
-        contentPanel.revalidate();
-    }
-    
-    private void removeCreateGamePanel() {
-        contentPanel.removeAll();
         contentPanel.revalidate();
     }
     
@@ -162,14 +168,17 @@ public class FrameLauncher extends javax.swing.JFrame implements IEventListener,
                 System.exit(-1);
                 break;
             case SFSEvent.ROOM_JOIN:
-                // TODO show room info (game info if room isGame), update room user list
                 Room roomJoin = (Room) be.getArguments().get(NetworkConstants.ROOM_KEY);
                 
                 joinedRoom = roomJoin;
                 System.out.println(roomJoin);
                 
                 if (roomJoin.isGame()) {
-                    //set game settings
+                    gameInfo = new PanelGameInfo(sfClient, roomJoin);
+                    
+                    contentPanel.removeAll();
+                    contentPanel.add(gameInfo);
+                    contentPanel.revalidate();
                 }
                 
                 updateAvailableUsers(roomJoin);
@@ -205,32 +214,69 @@ public class FrameLauncher extends javax.swing.JFrame implements IEventListener,
                         JOptionPane.ERROR_MESSAGE);
                 break;
             case SFSEvent.USER_ENTER_ROOM:
-                // TODO user entered room add to users in room and add to team if room isGame
                 Room roomNewUser = (Room) be.getArguments().get(NetworkConstants.ROOM_KEY);
                 
                 updateAvailableUsers(roomNewUser);
-                
-                if (roomNewUser.isGame()) {
-                    //add to team
-                }
                 break;
             case SFSEvent.USER_EXIT_ROOM:
-                // TODO remove user from userlist of room and from the team if room isGame
                 Room roomUserLeft = (Room) be.getArguments().get(NetworkConstants.ROOM_KEY);
                 
                 updateAvailableUsers(roomUserLeft);
-                
-                if (roomUserLeft.isGame()) {
-                    //remove from team
-                }
                 break;
             case SFSEvent.PING_PONG:
                 pingReceived((int)be.getArguments().get(NetworkConstants.LAG_VALUE_KEY));
                 break;
+            case SFSEvent.EXTENSION_RESPONSE:
+            	extensionResponse(be);
+            	break;
             default:
                 System.out.println("Server Packet not handled: " + be.getType());
                 break;
         }
+    }
+    
+    private void extensionResponse(BaseEvent be) {
+    	String cmd = (String)be.getArguments().get(NetworkConstants.CMD_KEY);
+    	SFSObject params = (SFSObject)be.getArguments().get(NetworkConstants.PARAMS_KEY);
+    	
+    	switch (cmd) {
+			case LauncherOpcodes.LAUNCHER_CHANGE_CHARACTER_SUCCESS:
+		    	SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						messageReceived("System", "Change character success");
+					}
+				});
+		    	break;
+		    case LauncherOpcodes.LAUNCHER_CHANGE_CHARACTER_ERROR:
+		    	SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						messageReceived("System", "Change character error!");
+					}
+				});
+		    	break;
+		    case LauncherOpcodes.LAUNCHER_CHANGE_TEAM_ERROR:
+		    	final String changeTeamErrorMsg = params.getUtfString(LauncherOpcodes.ERROR_MESSAGE_PARAMETER);
+		    	SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						messageReceived("System", "Change Team error: " + changeTeamErrorMsg);
+					}
+				});
+		    	break;
+		    case LauncherOpcodes.LAUNCHER_TEAMS_CHANGED:
+		    	if (gameInfo != null) {
+		    		gameInfo.teamsChanged(params);
+		    	}
+		    	else {
+		    		System.out.println("gameInfo null!");
+		    	}
+		    	break;
+		    default:
+		        System.out.println("Server Extension Packet not handled: " + cmd);
+		        break;
+    	}
     }
     
     private void pingReceived(final int lagValue) {
@@ -293,7 +339,6 @@ public class FrameLauncher extends javax.swing.JFrame implements IEventListener,
         setTitle("Nap Launcher");
         setMaximumSize(new java.awt.Dimension(1280, 720));
         setMinimumSize(new java.awt.Dimension(800, 600));
-        setPreferredSize(new java.awt.Dimension(800, 600));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -371,6 +416,11 @@ public class FrameLauncher extends javax.swing.JFrame implements IEventListener,
         jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
         listRooms.setModel(availableRooms);
+        listRooms.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                listRoomsMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(listRooms);
 
         matchSelectorPanel.add(jScrollPane1, java.awt.BorderLayout.CENTER);
@@ -446,6 +496,16 @@ public class FrameLauncher extends javax.swing.JFrame implements IEventListener,
     private void buttonCreateGameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCreateGameActionPerformed
         createGameRoom();
     }//GEN-LAST:event_buttonCreateGameActionPerformed
+
+    private void listRoomsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listRoomsMouseClicked
+        if (evt.getButton() == MouseEvent.BUTTON1 && evt.getClickCount() == 2) {
+            String roomName = (String)listRooms.getSelectedValue();
+            
+            if (roomName != null) {
+                sfClient.send(new JoinRoomRequest(roomName, null, joinedRoom.getId()));
+            }
+        }
+    }//GEN-LAST:event_listRoomsMouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonCreateGame;

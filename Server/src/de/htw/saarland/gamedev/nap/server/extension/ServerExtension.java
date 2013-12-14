@@ -12,6 +12,7 @@ import de.htw.saarland.gamedev.nap.server.handler.ChangeCharacterRequestHandler;
 import de.htw.saarland.gamedev.nap.server.handler.ChangeTeamRequestHandler;
 import de.htw.saarland.gamedev.nap.server.handler.RoomJoinServerHandler;
 import de.htw.saarland.gamedev.nap.server.handler.RoomLeaveServerHandler;
+import de.htw.saarland.gamedev.nap.server.handler.UserDisconnectHandler;
 
 public class ServerExtension extends SFSExtension {
 
@@ -23,6 +24,7 @@ public class ServerExtension extends SFSExtension {
 		
 		addEventHandler(SFSEventType.USER_JOIN_ROOM, RoomJoinServerHandler.class);
 		addEventHandler(SFSEventType.USER_LEAVE_ROOM, RoomLeaveServerHandler.class);
+		addEventHandler(SFSEventType.USER_DISCONNECT, UserDisconnectHandler.class);
 		
 		addRequestHandler(LauncherOpcodes.LAUNCHER_CHANGE_CHARACTER_REQUEST, ChangeCharacterRequestHandler.class);
 		addRequestHandler(LauncherOpcodes.LAUNCHER_CHANGE_TEAM_REQUEST, ChangeTeamRequestHandler.class);
@@ -34,6 +36,7 @@ public class ServerExtension extends SFSExtension {
 	
 	public void startGame() {
 		//clean up and start game logic
+		removeEventHandler(SFSEventType.USER_DISCONNECT);
 		removeEventHandler(SFSEventType.USER_JOIN_ROOM);
 		removeEventHandler(SFSEventType.USER_LEAVE_ROOM);
 		

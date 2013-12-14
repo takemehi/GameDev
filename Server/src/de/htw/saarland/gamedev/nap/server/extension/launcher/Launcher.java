@@ -74,8 +74,8 @@ public class Launcher {
 	 * @param sfsUser the User to remove
 	 */
 	public void removePlayer(User sfsUser) {
-		if (!redTeamPlayers.remove(sfsUser)) {
-			blueTeamPlayers.remove(sfsUser);
+		if (!redTeamPlayers.remove(new LauncherPlayer(0, sfsUser))) {
+			blueTeamPlayers.remove(new LauncherPlayer(0, sfsUser));
 		}
 		
 		ArrayList<LauncherPlayer> red = new ArrayList<LauncherPlayer>();

@@ -20,6 +20,8 @@ public class NetworkConstants {
     public static final String SENDER_KEY = "sender";
     public static final String MESSAGE_KEY = "message";
     public static final String ROOM_KEY = "room";
+    public static final String CMD_KEY = "cmd";
+    public static final String PARAMS_KEY = "params";
     
     public static final String ZONE_NAME = "europe";
     public static final String LOBBY_ROOM_NAME = "Lobby";

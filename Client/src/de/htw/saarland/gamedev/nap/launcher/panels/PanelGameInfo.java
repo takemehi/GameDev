@@ -5,8 +5,16 @@
 package de.htw.saarland.gamedev.nap.launcher.panels;
 
 import javax.swing.DefaultListModel;
+import javax.swing.SwingUtilities;
+
+import com.smartfoxserver.v2.entities.data.SFSArray;
+import com.smartfoxserver.v2.entities.data.SFSObject;
+
+import de.htw.saarland.gamedev.nap.server.extension.launcher.LauncherOpcodes;
 import sfs2x.client.SmartFox;
+import sfs2x.client.core.BaseEvent;
 import sfs2x.client.entities.Room;
+import sfs2x.client.requests.ExtensionRequest;
 
 /**
  *
@@ -17,8 +25,8 @@ public class PanelGameInfo extends javax.swing.JPanel {
     private SmartFox sfClient;
     private Room room;
     
-    private DefaultListModel<String> leftTeam;
-    private DefaultListModel<String> rightTeam;
+    private DefaultListModel<String> redTeam;
+    private DefaultListModel<String> blueTeam;
     
     /**
      * Creates new form PanelGameInfo
@@ -27,13 +35,34 @@ public class PanelGameInfo extends javax.swing.JPanel {
         this.sfClient = sfClient;
         this.room = room;
         
-        leftTeam = new DefaultListModel<>();
-        rightTeam = new DefaultListModel<>();
+        redTeam = new DefaultListModel<>();
+        blueTeam = new DefaultListModel<>();
         
         initComponents();
         
         lblGameName.setText(room.getName());
         // TODO set map name
+    }
+    
+    public void teamsChanged(SFSObject params) {
+    	final SFSArray sfsRedTeam = (SFSArray) params.getSFSArray(LauncherOpcodes.RED_TEAM_STRUCTURE_ARRAY_PARAMETER);
+    	final SFSArray sfsBlueTeam = (SFSArray) params.getSFSArray(LauncherOpcodes.BLUE_TEAM_STRUCTURE_ARRAY_PARAMETER);
+    	
+    	SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				redTeam.clear();
+				blueTeam.clear();
+				
+				for (int i = 0; i < sfsRedTeam.size(); i++) {
+					redTeam.add(i, sfsRedTeam.getUtfString(i));
+				}
+				
+				for (int i = 0; i < sfsBlueTeam.size(); i++) {
+					blueTeam.add(i, sfsBlueTeam.getUtfString(i));
+				}				
+			}
+		});
     }
 
     /**
@@ -73,7 +102,7 @@ public class PanelGameInfo extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 5, 5);
         add(lblMapName, gridBagConstraints);
 
-        jList1.setModel(leftTeam);
+        jList1.setModel(redTeam);
         jScrollPane1.setViewportView(jList1);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -86,7 +115,7 @@ public class PanelGameInfo extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(3, 5, 5, 0);
         add(jScrollPane1, gridBagConstraints);
 
-        jList2.setModel(rightTeam);
+        jList2.setModel(blueTeam);
         jScrollPane2.setViewportView(jList2);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -100,6 +129,11 @@ public class PanelGameInfo extends javax.swing.JPanel {
         add(jScrollPane2, gridBagConstraints);
 
         buttonChangeTeam.setText(">>|<<");
+        buttonChangeTeam.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonChangeTeamActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 4;
@@ -122,6 +156,11 @@ public class PanelGameInfo extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
         add(toggleButtonReady, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void buttonChangeTeamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonChangeTeamActionPerformed
+        sfClient.send(new ExtensionRequest(LauncherOpcodes.LAUNCHER_CHANGE_TEAM_REQUEST, null, sfClient.getLastJoinedRoom()));
+    }//GEN-LAST:event_buttonChangeTeamActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonChangeTeam;
     private javax.swing.JComboBox comboBoxCharacter;
