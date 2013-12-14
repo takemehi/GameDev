@@ -1,5 +1,7 @@
 package de.htw.saarland.gamedev.nap.game;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -7,17 +9,23 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.smartfoxserver.v2.entities.data.SFSObject;
 
+import de.htw.saarland.gamedev.nap.box2d.editor.BodyEditorLoader;
 import de.htw.saarland.gamedev.nap.data.CharacterClass;
 import de.htw.saarland.gamedev.nap.data.MoveableEntity;
 import de.htw.saarland.gamedev.nap.data.NPC;
@@ -32,11 +40,14 @@ public class GameServer implements ApplicationListener, InputProcessor {
 	private final static String EXCEPTION_NO_PACKET = "Packet object is missing!";
 	private final static String EXCEPTION_NO_PLAYER = "Player object is missing!";
 	private final static String EXCEPTION_NO_MAP = "Map object is missing!";
+	private final static String EXCEPTION_MAP_EMPTY = "Map name is empty!";
 	private final static String EXCEPTION_NO_TEAM1 = "Team1 object is missing!";
 	private final static String EXCEPTION_NO_TEAM2 = "Team2 object is missing!";
 	private final static String EXCEPTION_ILLEGAL_TEAMSIZE = "Teamsize can't be less than 1!";
 	private final static String EXCEPTION_TEAM_INVALID = "Team is not existing!";
 	private final static String EXCEPTION_TEAM_FULL = "Team is already full!";
+	//folders
+	private final static String FOLDER_MAPS = "data/maps/";
 	//packets processed per tick
 	private final static int PACKETS_PER_TICK = 50;
 	//world renderer constants
@@ -47,7 +58,8 @@ public class GameServer implements ApplicationListener, InputProcessor {
 	private final static Vector2 GRAVITY = new Vector2(0, -9.81f);
 	
 	//input parameters
-	private String map;
+	private String mapName;
+	private TiledMap map;
 	private int teamSize;
 	private ArrayList<Player> team1;
 	private ArrayList<Player> team2;
@@ -57,6 +69,7 @@ public class GameServer implements ApplicationListener, InputProcessor {
 	//internal variables
 	private ConcurrentLinkedQueue<SFSObject> packetQueue;	
 	private World world;
+	private Body worldBody;
 	
 	//test variables
 	private Body box;
@@ -69,13 +82,13 @@ public class GameServer implements ApplicationListener, InputProcessor {
 	//	constructors	//
 	//////////////////////
 	
-	public GameServer(String map, int teamSize, ArrayList<Player> team1, ArrayList<Player> team2){
-		if(map == null) throw new NullPointerException(EXCEPTION_NO_MAP);
+	public GameServer(String mapName, int teamSize, ArrayList<Player> team1, ArrayList<Player> team2){
+		if(mapName.trim().length()<1) throw new IllegalArgumentException(EXCEPTION_MAP_EMPTY);
 		if(teamSize<1) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_TEAMSIZE);
 		if(team1 == null) throw new NullPointerException(EXCEPTION_NO_TEAM1);
 		if(team2 == null) throw new NullPointerException(EXCEPTION_NO_TEAM2);
 		
-		this.map=map;
+		this.mapName=mapName;
 		this.teamSize=teamSize;
 		this.team1=team1;
 		this.team2=team2;
@@ -93,7 +106,10 @@ public class GameServer implements ApplicationListener, InputProcessor {
 	
 	@Override
 	public void create() {
+		//initialize world
+		world = new World(GRAVITY, true);
 		//initialize map
+		initMap(mapName);
 		
 		//initialize static objects
 		
@@ -109,9 +125,8 @@ public class GameServer implements ApplicationListener, InputProcessor {
 		}
 		
 		//Test stuff
-		world = new World(GRAVITY, true);
 		renderer = new Box2DDebugRenderer();
-		camera = new OrthographicCamera(Gdx.graphics.getWidth() / 25, Gdx.graphics.getHeight() / 25);
+		camera = new OrthographicCamera(Gdx.graphics.getWidth() / 5, Gdx.graphics.getHeight() / 5);
 		
 		ChainShape groundShape = new ChainShape();
 		Vector2 groundDim[] = {new Vector2(-50, 0), new Vector2(50, 0)};
@@ -126,7 +141,7 @@ public class GameServer implements ApplicationListener, InputProcessor {
 		playerShape.setAsBox(1, 2);
 		PlayableCharacter player = new PlayableCharacter(playerShape, 0.1f, 0.1f, 1f, 0f, new Vector2(-3, 1), new CharacterClass());
 		
-		world.createBody(ground.getBodyDef()).createFixture(ground.getFixtureDef());
+		//world.createBody(ground.getBodyDef()).createFixture(ground.getFixtureDef());
 		world.createBody(ent.getBodyDef()).createFixture(ent.getFixtureDef());
 		box = world.createBody(player.getBodyDef());
 		box.createFixture(player.getFixtureDef());
@@ -272,8 +287,27 @@ public class GameServer implements ApplicationListener, InputProcessor {
 	//	intern methods	//
 	//////////////////////
 	
-	private void initMap(){
-		//TODO implement this method
+	private void initMap(String mapName){
+		/*
+		TiledMap map = new TiledMap();
+		TmxMapLoader loader = new TmxMapLoader();
+		map = loader.load(FOLDER_MAPS+mapName+".tmx");
+		map.dispose();
+		*/
+		
+		//create bodyDef
+		BodyDef bodyDef = new BodyDef();
+		bodyDef.type = BodyDef.BodyType.StaticBody;
+		bodyDef.position.set(-30,-30);
+		//create fixtureDef
+		FixtureDef fDef = new FixtureDef();
+		fDef.density=1;
+		fDef.friction=1;
+		//create world body
+		worldBody = world.createBody(bodyDef);
+		
+		BodyEditorLoader bLoader = new BodyEditorLoader(new FileHandle(FOLDER_MAPS+mapName+".json"));
+		bLoader.attachFixture(worldBody, "Name", fDef, 320);
 	}
 	
 	private void initNpc(NPC npc){
