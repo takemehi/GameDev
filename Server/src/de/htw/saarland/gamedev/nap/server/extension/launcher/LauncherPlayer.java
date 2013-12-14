@@ -6,6 +6,7 @@ public class LauncherPlayer {
 
 	private int characterId;
 	private User sfsUser;
+	private boolean isReady;
 	
 	public LauncherPlayer(int characterId, User sfsUser) {
 		if (sfsUser == null) {
@@ -13,7 +14,16 @@ public class LauncherPlayer {
 		}
 		
 		setCharacterId(characterId);
+		setReady(false);
 		this.sfsUser = sfsUser;
+	}
+	
+	public void setReady(boolean isReady) {
+		this.isReady = isReady;
+	}
+	
+	public boolean isReady() {
+		return isReady;
 	}
 
 	public int getCharacterId() {

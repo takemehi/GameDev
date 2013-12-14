@@ -9,6 +9,7 @@ import de.htw.saarland.gamedev.nap.server.extension.launcher.Launcher;
 import de.htw.saarland.gamedev.nap.server.extension.launcher.LauncherOpcodes;
 import de.htw.saarland.gamedev.nap.server.extension.launcher.LauncherPlayer;
 import de.htw.saarland.gamedev.nap.server.handler.ChangeCharacterRequestHandler;
+import de.htw.saarland.gamedev.nap.server.handler.ChangeReadyRequestHandler;
 import de.htw.saarland.gamedev.nap.server.handler.ChangeTeamRequestHandler;
 import de.htw.saarland.gamedev.nap.server.handler.RoomJoinServerHandler;
 import de.htw.saarland.gamedev.nap.server.handler.RoomLeaveServerHandler;
@@ -28,6 +29,7 @@ public class ServerExtension extends SFSExtension {
 		
 		addRequestHandler(LauncherOpcodes.LAUNCHER_CHANGE_CHARACTER_REQUEST, ChangeCharacterRequestHandler.class);
 		addRequestHandler(LauncherOpcodes.LAUNCHER_CHANGE_TEAM_REQUEST, ChangeTeamRequestHandler.class);
+		addRequestHandler(LauncherOpcodes.LAUNCHER_CHANGE_READY_REQUEST, ChangeReadyRequestHandler.class);
 	}
 	
 	public Launcher getLauncher() {
@@ -42,6 +44,7 @@ public class ServerExtension extends SFSExtension {
 		
 		removeRequestHandler(LauncherOpcodes.LAUNCHER_CHANGE_CHARACTER_REQUEST);
 		removeRequestHandler(LauncherOpcodes.LAUNCHER_CHANGE_TEAM_REQUEST);
+		removeRequestHandler(LauncherOpcodes.LAUNCHER_CHANGE_READY_REQUEST);
 		
 		ArrayList<LauncherPlayer> redTeam = new ArrayList<LauncherPlayer>();
 		ArrayList<LauncherPlayer> blueTeam = new ArrayList<LauncherPlayer>();

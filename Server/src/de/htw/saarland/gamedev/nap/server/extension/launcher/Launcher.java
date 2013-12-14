@@ -43,6 +43,22 @@ public class Launcher {
 		return blueTeamPlayers.size();
 	}
 	
+	public boolean isGameReadyToStart() {
+		boolean ready = true;
+		
+		ready = redTeamPlayers.size() == maxTeamSize & blueTeamPlayers.size() == maxTeamSize;
+		
+		synchronized (blueTeamPlayers) {
+			synchronized (redTeamPlayers) {
+				for (int i = 0; i < redTeamPlayers.size() && ready; i++) {
+					ready = redTeamPlayers.get(i).isReady() & blueTeamPlayers.get(i).isReady();
+				}
+			}
+		}
+		
+		return ready;
+	}
+	
 	/**
 	 * Add a new player to the red or blue team
 	 * 
@@ -82,6 +98,36 @@ public class Launcher {
 		ArrayList<LauncherPlayer> blue = new ArrayList<LauncherPlayer>();
 		getTeams(red, blue);
 		launcherSender.sendTeamStructureChanged(red, blue);
+	}
+	
+	public boolean changeReady(User sfsUser) {
+		boolean result = false;
+		boolean found = false;
+		
+		synchronized (redTeamPlayers) {
+			for (LauncherPlayer lp: redTeamPlayers) {
+				if (lp.getSfsUser().equals(sfsUser)) {
+					lp.setReady(!lp.isReady());
+					result = lp.isReady();
+					found = true;
+					break;
+				}
+			}
+		}
+		
+		if (!found) {
+			synchronized (blueTeamPlayers) {
+				for (LauncherPlayer lp: blueTeamPlayers) {
+					if (lp.getSfsUser().equals(sfsUser)) {
+						lp.setReady(!lp.isReady());
+						result = lp.isReady();
+						break;
+					}
+				}
+			}
+		}
+		
+		return result;
 	}
 	
 	/**

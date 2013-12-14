@@ -41,6 +41,31 @@ public class LauncherOpcodes {
 	public static final String LAUNCHER_CHANGE_TEAM_ERROR = "launcher.changeteam.error";
 	
 	/**
+	 * Opcode to change the ready state of a player
+	 * 
+	 * returns:
+	 * 	LAUNCHER_CHANGE_READY_SUCCESS
+	 */
+	public static final String LAUNCHER_CHANGE_READY_REQUEST = "launcher.changeready";
+	/**
+	 * Opcode that indicates that a change ready state request succeeded, what could go wrong Oo?
+	 * 
+	 * params:
+	 * 	READY_STATE_PARAMETER
+	 */
+	public static final String LAUNCHER_CHANGE_READY_SUCCESS = "launcher.changeready.success";
+	
+	/**
+	 * Opcode that indicates that every player is ready and the game is about to start, each player
+	 * should send GAME_INITIALIZED packet to the server to indicate that they are ready to play
+	 */
+	public static final String LAUNCHER_GAME_STARTS = "launcher.gamestarts";
+	
+	//////////////////////////////////////////////////////////////////////////////////////////
+	//	Params																				//
+	//////////////////////////////////////////////////////////////////////////////////////////
+	
+	/**
 	 * Param that contains a characterid
 	 */
 	public static final String CHARACTER_ID_PARAMETER = "characterid";
@@ -49,4 +74,6 @@ public class LauncherOpcodes {
 	public static final String BLUE_TEAM_STRUCTURE_ARRAY_PARAMETER = "blueteamstruct";
 	
 	public static final String ERROR_MESSAGE_PARAMETER = "errormessage";
+	
+	public static final String READY_STATE_PARAMETER = "ready";
 }

@@ -149,6 +149,11 @@ public class PanelGameInfo extends javax.swing.JPanel {
         add(comboBoxCharacter, gridBagConstraints);
 
         toggleButtonReady.setText("Ready");
+        toggleButtonReady.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                toggleButtonReadyActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 2;
@@ -160,6 +165,10 @@ public class PanelGameInfo extends javax.swing.JPanel {
     private void buttonChangeTeamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonChangeTeamActionPerformed
         sfClient.send(new ExtensionRequest(LauncherOpcodes.LAUNCHER_CHANGE_TEAM_REQUEST, null, sfClient.getLastJoinedRoom()));
     }//GEN-LAST:event_buttonChangeTeamActionPerformed
+
+    private void toggleButtonReadyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toggleButtonReadyActionPerformed
+        sfClient.send(new ExtensionRequest(LauncherOpcodes.LAUNCHER_CHANGE_READY_REQUEST, null, sfClient.getLastJoinedRoom()));
+    }//GEN-LAST:event_toggleButtonReadyActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonChangeTeam;
