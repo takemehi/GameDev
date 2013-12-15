@@ -1,7 +1,5 @@
 package de.htw.saarland.gamedev.nap.game;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -18,20 +16,18 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.WorldManifold;
 import com.smartfoxserver.v2.entities.data.SFSObject;
 
 import de.htw.saarland.gamedev.nap.box2d.editor.BodyEditorLoader;
-import de.htw.saarland.gamedev.nap.data.CharacterClass;
-import de.htw.saarland.gamedev.nap.data.MoveableEntity;
-import de.htw.saarland.gamedev.nap.data.NPC;
-import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
 import de.htw.saarland.gamedev.nap.data.Player;
-import de.htw.saarland.gamedev.nap.data.StaticEntity;
+import de.htw.saarland.gamedev.nap.data.entities.MoveableEntity;
+import de.htw.saarland.gamedev.nap.data.entities.NPC;
 
 
 public class GameServer implements ApplicationListener, InputProcessor {
@@ -39,7 +35,6 @@ public class GameServer implements ApplicationListener, InputProcessor {
 	//exceptions
 	private final static String EXCEPTION_NO_PACKET = "Packet object is missing!";
 	private final static String EXCEPTION_NO_PLAYER = "Player object is missing!";
-	private final static String EXCEPTION_NO_MAP = "Map object is missing!";
 	private final static String EXCEPTION_MAP_EMPTY = "Map name is empty!";
 	private final static String EXCEPTION_NO_TEAM1 = "Team1 object is missing!";
 	private final static String EXCEPTION_NO_TEAM2 = "Team2 object is missing!";
@@ -52,10 +47,12 @@ public class GameServer implements ApplicationListener, InputProcessor {
 	private final static int PACKETS_PER_TICK = 50;
 	//world renderer constants
 	private final static float TIME_STEP = 1/60f;
-	private final static int VELOCITY_ITERATIONS = 6;
-	private final static int POSITION_ITERATIONS = 2;
+	private final static int ITERATIONS_VELOCITY = 6;
+	private final static int ITERATIONS_POSITION = 2;
 	//world constants
-	private final static Vector2 GRAVITY = new Vector2(0, -9.81f);
+	private final static Vector2 GRAVITY = new Vector2(0, -20);
+	//transformation constants
+	private final static float PIXELS_TO_METERS = 1/8f;
 	
 	//input parameters
 	private String mapName;
@@ -69,13 +66,14 @@ public class GameServer implements ApplicationListener, InputProcessor {
 	//internal variables
 	private ConcurrentLinkedQueue<SFSObject> packetQueue;	
 	private World world;
-	private Body worldBody;
+	private Body mapBody;
 	
 	//test variables
-	private Body box;
 	private OrthographicCamera camera;
 	private Box2DDebugRenderer renderer;
 	private Vector2 velocity = new Vector2(0,0);
+	MoveableEntity ball;
+	MoveableEntity player;
 	
 	
 	//////////////////////
@@ -111,7 +109,7 @@ public class GameServer implements ApplicationListener, InputProcessor {
 		//initialize map
 		initMap(mapName);
 		
-		//initialize static objects
+		//initialize platforms
 		
 		//initialize npcs
 		
@@ -128,34 +126,22 @@ public class GameServer implements ApplicationListener, InputProcessor {
 		renderer = new Box2DDebugRenderer();
 		camera = new OrthographicCamera(Gdx.graphics.getWidth() / 5, Gdx.graphics.getHeight() / 5);
 		
-		ChainShape groundShape = new ChainShape();
-		Vector2 groundDim[] = {new Vector2(-50, 0), new Vector2(50, 0)};
-		groundShape.createChain(groundDim);
-		StaticEntity ground = new StaticEntity(groundShape, 1, new Vector2(0,0));
-		
 		CircleShape shape = new CircleShape();
 		shape.setRadius(1f);
-		MoveableEntity ent = new MoveableEntity(shape, 1, 1, 1, 1, new Vector2(0,3));
+		ball = new MoveableEntity(shape, 1, 1, 0, new Vector2(0,1), new Vector2(10,10));
 		
 		PolygonShape playerShape = new PolygonShape();
 		playerShape.setAsBox(1, 2);
-		PlayableCharacter player = new PlayableCharacter(playerShape, 0.1f, 0.1f, 1f, 0f, new Vector2(-3, 1), new CharacterClass());
+		player = new MoveableEntity(playerShape, 1, 0, 0, new Vector2(3,1), new Vector2(10,10));
 		
-		//world.createBody(ground.getBodyDef()).createFixture(ground.getFixtureDef());
-		world.createBody(ent.getBodyDef()).createFixture(ent.getFixtureDef());
-		box = world.createBody(player.getBodyDef());
-		box.createFixture(player.getFixtureDef());
+		ball.setBody(world.createBody(ball.getBodyDef()));
+		ball.setFixture(ball.getBody().createFixture(ball.getFixtureDef()));
+		ball.getFixture().setUserData("p");
+		player.setBody(world.createBody(player.getBodyDef()));
+		player.setFixture(player.getBody().createFixture(player.getFixtureDef()));
 		
 		Gdx.input.setInputProcessor(this);
 	}
-
-	@Override
-	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	//TODO AI, capture points
 	
 	@Override
 	public void render() {
@@ -184,36 +170,47 @@ public class GameServer implements ApplicationListener, InputProcessor {
 		//send dat shit
 		
 		//Test stuff
-		box.applyForceToCenter(velocity, true);
+		Vector2 pos = player.getBody().getPosition();
+		if(!Gdx.input.isKeyPressed(Keys.A))
+			player.getBody().setLinearVelocity(0, player.getBody().getLinearVelocity().y);
+		if(!Gdx.input.isKeyPressed(Keys.D))
+			player.getBody().setLinearVelocity(0, player.getBody().getLinearVelocity().y);
+		if(Gdx.input.isKeyPressed(Keys.A))
+			player.getBody().setLinearVelocity(-10, player.getBody().getLinearVelocity().y);
+		if(Gdx.input.isKeyPressed(Keys.D))
+			player.getBody().setLinearVelocity(10, player.getBody().getLinearVelocity().y);
+		if(Gdx.input. isKeyPressed(Keys.SPACE)){
+			if(isOnGround(player))
+				player.getBody().setLinearVelocity(player.getBody().getLinearVelocity().x, 10);
+				//player.getBody().applyLinearImpulse(0, 50, player.getBody().getPosition().x, player.getBody().getPosition().y, true);
+		}
+		//if(velocity.x == 0)box.setLinearVelocity(0, box.getLinearVelocity().y);
+		//if(velocity.y == 0) box.setLinearVelocity(box.getLinearVelocity().x, 0);
+			
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		renderer.render(world, camera.combined);
-		world.step(TIME_STEP, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
+		world.step(TIME_STEP, ITERATIONS_VELOCITY, ITERATIONS_POSITION);
 	}
-
-	@Override
-	public void pause() {
-		//pausing is for pussies
-		//thus not supported!
-		
-	}
-
-	@Override
-	public void resume() {
-		//see above
-	}
-
+	
 	@Override
 	public void dispose() {
 		world.dispose();
 		renderer.dispose();		
 	}
+
+	@Override
+	public void resize(int width, int height) {}
+	@Override
+	public void pause() {}
+	@Override
+	public void resume() {}
 	
 	@Override
 	public boolean keyDown(int keycode) {
 		switch (keycode){
 		case (Keys.W):
-			velocity.y=10;
+			
 			return true;
 		case (Keys.S):
 			velocity.y=-10;
@@ -288,12 +285,16 @@ public class GameServer implements ApplicationListener, InputProcessor {
 	//////////////////////
 	
 	private void initMap(String mapName){
-		/*
+		
+		int mapWidth;
+		
 		TiledMap map = new TiledMap();
 		TmxMapLoader loader = new TmxMapLoader();
 		map = loader.load(FOLDER_MAPS+mapName+".tmx");
+		mapWidth=map.getProperties().get("width", Integer.class)
+				* map.getProperties().get("tilewidth", Integer.class);
 		map.dispose();
-		*/
+		
 		
 		//create bodyDef
 		BodyDef bodyDef = new BodyDef();
@@ -302,12 +303,14 @@ public class GameServer implements ApplicationListener, InputProcessor {
 		//create fixtureDef
 		FixtureDef fDef = new FixtureDef();
 		fDef.density=1;
-		fDef.friction=1;
+		fDef.friction=0.3f;
 		//create world body
-		worldBody = world.createBody(bodyDef);
+		mapBody = world.createBody(bodyDef);
 		
 		BodyEditorLoader bLoader = new BodyEditorLoader(new FileHandle(FOLDER_MAPS+mapName+".json"));
-		bLoader.attachFixture(worldBody, "Name", fDef, 320);
+		bLoader.attachFixture(mapBody, "Name", fDef
+				,mapWidth*PIXELS_TO_METERS);
+		System.out.println(mapWidth);
 	}
 	
 	private void initNpc(NPC npc){
@@ -318,19 +321,39 @@ public class GameServer implements ApplicationListener, InputProcessor {
 	
 	private void initPlayer(Player player){
 		//TODO set the correct starting position depending on the map
-		player.setBody(world.createBody(player.getPlChar().getBodyDef()));
-		player.getBody().createFixture(player.getPlChar().getFixtureDef());
+		player.getPlChar().setBody(world.createBody(player.getPlChar().getBodyDef()));
+		player.getPlChar().setFixture(
+				player.getPlChar().getBody()
+				.createFixture(player.getPlChar().getFixtureDef()));
+	}
+	
+	private boolean isOnGround(MoveableEntity entity){
+		
+		for(Contact c: world.getContactList()){
+			if(c.isTouching()
+					&& (c.getFixtureA()==entity.getFixture()
+					|| c.getFixtureB()==entity.getFixture())){
+				Vector2 pos = entity.getBody().getPosition();
+				WorldManifold manifold = c.getWorldManifold();
+				boolean below = true;
+				for(int j = 0; j < manifold.getNumberOfContactPoints(); j++) {
+					below &= (manifold.getPoints()[j].y < pos.y - 1.5f);
+				}
+				if((c.getFixtureA()==entity.getFixture() && c.getFixtureB().getUserData()!=null && c.getFixtureB().getUserData().equals("p")))
+					below=false;
+				if((c.getFixtureB()==entity.getFixture() && c.getFixtureA().getUserData()!=null && c.getFixtureA().getUserData().equals("p")))
+					below=false;
+				if(below) return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	//////////////////////
 	//	public methods	//
 	//////////////////////
 
-	/**
-	 * This method accepts incoming packets from players
-	 * 
-	 * @param packet Packet with recent player action informations
-	 */
 	public void addPacket(SFSObject packet){
 		if(packet == null) throw new NullPointerException(EXCEPTION_NO_PACKET);
 		packetQueue.add(packet);

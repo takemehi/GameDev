@@ -12,7 +12,6 @@ public class Player {
 	
 	private PlayableCharacter plChar;
 	private User user;
-	private Body body;
 	
 	public Player(User user, PlayableCharacter plChar){
 		if(user == null) throw new NullPointerException(EXCEPTION_NO_USER);
@@ -29,14 +28,5 @@ public class Player {
 
 	public User getUser() {
 		return user;
-	}
-	
-	public void setBody(Body body){
-		if(body == null) throw new NullPointerException(EXCEPTION_NO_BODY);
-		this.body=body;
-	}
-	
-	public Body getBody(){
-		return body;
 	}
 }
