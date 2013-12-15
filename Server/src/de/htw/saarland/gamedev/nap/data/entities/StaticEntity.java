@@ -17,4 +17,8 @@ public class StaticEntity extends Entity {
 		getBodyDef().type=BodyDef.BodyType.StaticBody;
 		getFixtureDef().friction=friction;
 	}
+	
+	public StaticEntity(Shape shape, float friction, float x, float y){
+		this(shape, friction, new Vector2(x,y));
+	}
 }

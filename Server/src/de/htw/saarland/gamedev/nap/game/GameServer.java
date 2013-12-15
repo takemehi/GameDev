@@ -16,6 +16,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
@@ -28,6 +29,8 @@ import de.htw.saarland.gamedev.nap.box2d.editor.BodyEditorLoader;
 import de.htw.saarland.gamedev.nap.data.Player;
 import de.htw.saarland.gamedev.nap.data.entities.MoveableEntity;
 import de.htw.saarland.gamedev.nap.data.entities.NPC;
+import de.htw.saarland.gamedev.nap.data.entities.StaticEntity;
+import de.htw.saarland.gamedev.nap.data.platforms.OneWayPlatformContactListener;
 
 
 public class GameServer implements ApplicationListener, InputProcessor {
@@ -74,6 +77,7 @@ public class GameServer implements ApplicationListener, InputProcessor {
 	private Vector2 velocity = new Vector2(0,0);
 	MoveableEntity ball;
 	MoveableEntity player;
+	StaticEntity platform;
 	
 	
 	//////////////////////
@@ -134,11 +138,20 @@ public class GameServer implements ApplicationListener, InputProcessor {
 		playerShape.setAsBox(1, 2);
 		player = new MoveableEntity(playerShape, 1, 0, 0, new Vector2(3,1), new Vector2(10,10));
 		
+		ChainShape platformShape = new ChainShape();
+		platformShape.createChain(new Vector2[]{new Vector2(-8,0), new Vector2(-5,0)});
+		platform = new StaticEntity(platformShape, 0.3f, -5f, -23);
+		
+		
 		ball.setBody(world.createBody(ball.getBodyDef()));
 		ball.setFixture(ball.getBody().createFixture(ball.getFixtureDef()));
 		ball.getFixture().setUserData("p");
 		player.setBody(world.createBody(player.getBodyDef()));
 		player.setFixture(player.getBody().createFixture(player.getFixtureDef()));
+		platform.setBody(world.createBody(platform.getBodyDef()));
+		platform.setFixture(platform.getBody().createFixture(platform.getFixtureDef()));
+		platform.getFixture().setUserData("platformOne");
+		world.setContactListener(new OneWayPlatformContactListener());
 		
 		Gdx.input.setInputProcessor(this);
 	}
@@ -310,7 +323,6 @@ public class GameServer implements ApplicationListener, InputProcessor {
 		BodyEditorLoader bLoader = new BodyEditorLoader(new FileHandle(FOLDER_MAPS+mapName+".json"));
 		bLoader.attachFixture(mapBody, "Name", fDef
 				,mapWidth*PIXELS_TO_METERS);
-		System.out.println(mapWidth);
 	}
 	
 	private void initNpc(NPC npc){
