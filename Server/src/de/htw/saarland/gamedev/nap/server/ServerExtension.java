@@ -1,19 +1,19 @@
-package de.htw.saarland.gamedev.nap.server.extension;
+package de.htw.saarland.gamedev.nap.server;
 
 import java.util.ArrayList;
 
 import com.smartfoxserver.v2.core.SFSEventType;
 import com.smartfoxserver.v2.extensions.SFSExtension;
 
-import de.htw.saarland.gamedev.nap.server.extension.launcher.Launcher;
-import de.htw.saarland.gamedev.nap.server.extension.launcher.LauncherOpcodes;
-import de.htw.saarland.gamedev.nap.server.extension.launcher.LauncherPlayer;
-import de.htw.saarland.gamedev.nap.server.handler.ChangeCharacterRequestHandler;
-import de.htw.saarland.gamedev.nap.server.handler.ChangeReadyRequestHandler;
-import de.htw.saarland.gamedev.nap.server.handler.ChangeTeamRequestHandler;
-import de.htw.saarland.gamedev.nap.server.handler.RoomJoinServerHandler;
-import de.htw.saarland.gamedev.nap.server.handler.RoomLeaveServerHandler;
-import de.htw.saarland.gamedev.nap.server.handler.UserDisconnectHandler;
+import de.htw.saarland.gamedev.nap.server.launcher.Launcher;
+import de.htw.saarland.gamedev.nap.server.launcher.LauncherOpcodes;
+import de.htw.saarland.gamedev.nap.server.launcher.LauncherPlayer;
+import de.htw.saarland.gamedev.nap.server.launcher.handler.ChangeCharacterRequestHandler;
+import de.htw.saarland.gamedev.nap.server.launcher.handler.ChangeReadyRequestHandler;
+import de.htw.saarland.gamedev.nap.server.launcher.handler.ChangeTeamRequestHandler;
+import de.htw.saarland.gamedev.nap.server.launcher.handler.RoomJoinServerHandler;
+import de.htw.saarland.gamedev.nap.server.launcher.handler.RoomLeaveServerHandler;
+import de.htw.saarland.gamedev.nap.server.launcher.handler.UserDisconnectHandler;
 
 public class ServerExtension extends SFSExtension {
 

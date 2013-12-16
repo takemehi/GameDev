@@ -1,4 +1,4 @@
-package de.htw.saarland.gamedev.nap.server.extension.launcher.exception;
+package de.htw.saarland.gamedev.nap.server.launcher.exception;
 
 public class TeamFullException extends RuntimeException {
 

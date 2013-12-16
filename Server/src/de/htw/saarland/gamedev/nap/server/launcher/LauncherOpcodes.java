@@ -1,4 +1,4 @@
-package de.htw.saarland.gamedev.nap.server.extension.launcher;
+package de.htw.saarland.gamedev.nap.server.launcher;
 
 public class LauncherOpcodes {
 	
