@@ -30,10 +30,9 @@ import de.htw.saarland.gamedev.nap.data.Player;
 import de.htw.saarland.gamedev.nap.data.entities.MoveableEntity;
 import de.htw.saarland.gamedev.nap.data.entities.NPC;
 import de.htw.saarland.gamedev.nap.data.entities.StaticEntity;
-import de.htw.saarland.gamedev.nap.data.platforms.OneWayPlatformContactListener;
+import de.htw.saarland.gamedev.nap.data.platforms.CustomContactListener;
 
-
-public class GameServer implements ApplicationListener, InputProcessor {
+public class GameServer implements ApplicationListener {
 	
 	//exceptions
 	private final static String EXCEPTION_NO_PACKET = "Packet object is missing!";
@@ -132,7 +131,7 @@ public class GameServer implements ApplicationListener, InputProcessor {
 		
 		CircleShape shape = new CircleShape();
 		shape.setRadius(1f);
-		ball = new MoveableEntity(shape, 1, 1, 0, new Vector2(0,1), new Vector2(10,10));
+		ball = new MoveableEntity(shape, 1, 1, 1, new Vector2(0,1), new Vector2(10,10));
 		
 		PolygonShape playerShape = new PolygonShape();
 		playerShape.setAsBox(1, 2);
@@ -150,10 +149,8 @@ public class GameServer implements ApplicationListener, InputProcessor {
 		player.setFixture(player.getBody().createFixture(player.getFixtureDef()));
 		platform.setBody(world.createBody(platform.getBodyDef()));
 		platform.setFixture(platform.getBody().createFixture(platform.getFixtureDef()));
-		platform.getFixture().setUserData("platformOne");
-		world.setContactListener(new OneWayPlatformContactListener());
-		
-		Gdx.input.setInputProcessor(this);
+		platform.getFixture().setUserData("platformTwo");
+		world.setContactListener(new CustomContactListener());
 	}
 	
 	@Override
@@ -193,10 +190,11 @@ public class GameServer implements ApplicationListener, InputProcessor {
 		if(Gdx.input.isKeyPressed(Keys.D))
 			player.getBody().setLinearVelocity(10, player.getBody().getLinearVelocity().y);
 		if(Gdx.input. isKeyPressed(Keys.SPACE)){
-			if(isOnGround(player))
+			if(isOnGround(player) && player.getBody().getLinearVelocity().y<=0)
 				player.getBody().setLinearVelocity(player.getBody().getLinearVelocity().x, 10);
 				//player.getBody().applyLinearImpulse(0, 50, player.getBody().getPosition().x, player.getBody().getPosition().y, true);
 		}
+		
 		//if(velocity.x == 0)box.setLinearVelocity(0, box.getLinearVelocity().y);
 		//if(velocity.y == 0) box.setLinearVelocity(box.getLinearVelocity().x, 0);
 			
@@ -219,80 +217,6 @@ public class GameServer implements ApplicationListener, InputProcessor {
 	@Override
 	public void resume() {}
 	
-	@Override
-	public boolean keyDown(int keycode) {
-		switch (keycode){
-		case (Keys.W):
-			
-			return true;
-		case (Keys.S):
-			velocity.y=-10;
-			return true;
-		case (Keys.A):
-			velocity.x=-10;
-			return true;
-		case (Keys.D):
-			velocity.x=10;
-			return true;
-		}
-		return false;
-	}
-
-	@Override
-	public boolean keyUp(int keycode) {
-		switch (keycode){
-		case (Keys.W):
-			velocity.y=0;
-			return true;
-		case (Keys.S):
-			velocity.y=0;
-			return true;
-		case (Keys.A):
-			velocity.x=0;
-			return true;
-		case (Keys.D):
-			velocity.x=0;
-			return true;
-		}
-		return false;
-	}
-
-	@Override
-	public boolean keyTyped(char character) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean mouseMoved(int screenX, int screenY) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean scrolled(int amount) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	
 	//////////////////////
 	//	intern methods	//
 	//////////////////////
@@ -301,7 +225,7 @@ public class GameServer implements ApplicationListener, InputProcessor {
 		
 		int mapWidth;
 		
-		TiledMap map = new TiledMap();
+		map = new TiledMap();
 		TmxMapLoader loader = new TmxMapLoader();
 		map = loader.load(FOLDER_MAPS+mapName+".tmx");
 		mapWidth=map.getProperties().get("width", Integer.class)
@@ -348,8 +272,9 @@ public class GameServer implements ApplicationListener, InputProcessor {
 				Vector2 pos = entity.getBody().getPosition();
 				WorldManifold manifold = c.getWorldManifold();
 				boolean below = true;
+				//TODO calculate offset instead off hardcoding it
 				for(int j = 0; j < manifold.getNumberOfContactPoints(); j++) {
-					below &= (manifold.getPoints()[j].y < pos.y - 1.5f);
+					below &= (manifold.getPoints()[j].y < pos.y - 2f);
 				}
 				if((c.getFixtureA()==entity.getFixture() && c.getFixtureB().getUserData()!=null && c.getFixtureB().getUserData().equals("p")))
 					below=false;
