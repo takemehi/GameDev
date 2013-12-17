@@ -6,13 +6,18 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -29,6 +34,7 @@ import de.htw.saarland.gamedev.nap.box2d.editor.BodyEditorLoader;
 import de.htw.saarland.gamedev.nap.data.Player;
 import de.htw.saarland.gamedev.nap.data.entities.MoveableEntity;
 import de.htw.saarland.gamedev.nap.data.entities.NPC;
+import de.htw.saarland.gamedev.nap.data.entities.SensorEntity;
 import de.htw.saarland.gamedev.nap.data.entities.StaticEntity;
 import de.htw.saarland.gamedev.nap.data.platforms.CustomContactListener;
 
@@ -54,7 +60,7 @@ public class GameServer implements ApplicationListener {
 	//world constants
 	private final static Vector2 GRAVITY = new Vector2(0, -20);
 	//transformation constants
-	private final static float PIXELS_TO_METERS = 1/8f;
+	private final static float PIXELS_TO_METERS = 1/96f;
 	
 	//input parameters
 	private String mapName;
@@ -73,10 +79,14 @@ public class GameServer implements ApplicationListener {
 	//test variables
 	private OrthographicCamera camera;
 	private Box2DDebugRenderer renderer;
-	private Vector2 velocity = new Vector2(0,0);
 	MoveableEntity ball;
 	MoveableEntity player;
 	StaticEntity platform;
+	SensorEntity sensor;
+	//rendering test
+	SpriteBatch batch;
+	OrthogonalTiledMapRenderer mapRenderer;
+	BitmapFont font;
 	
 	
 	//////////////////////
@@ -109,6 +119,7 @@ public class GameServer implements ApplicationListener {
 	public void create() {
 		//initialize world
 		world = new World(GRAVITY, true);
+		world.setContactListener(new CustomContactListener());
 		//initialize map
 		initMap(mapName);
 		
@@ -127,30 +138,47 @@ public class GameServer implements ApplicationListener {
 		
 		//Test stuff
 		renderer = new Box2DDebugRenderer();
-		camera = new OrthographicCamera(Gdx.graphics.getWidth() / 5, Gdx.graphics.getHeight() / 5);
+		camera = new OrthographicCamera(Gdx.graphics.getWidth() / 10, Gdx.graphics.getHeight() / 10);
+		OrthographicCamera mapCam = new OrthographicCamera(Gdx.graphics.getWidth() / 10, Gdx.graphics.getHeight() / 10);
+		mapCam.position.set(new Vector3(30,30,0));
+		mapCam.update();
+		mapRenderer = new OrthogonalTiledMapRenderer(map, PIXELS_TO_METERS);
+		mapRenderer.setView(camera);
+		batch = new SpriteBatch();
+		font=new BitmapFont();
+		
 		
 		CircleShape shape = new CircleShape();
 		shape.setRadius(1f);
 		ball = new MoveableEntity(shape, 1, 1, 1, new Vector2(0,1), new Vector2(10,10));
 		
 		PolygonShape playerShape = new PolygonShape();
-		playerShape.setAsBox(1, 2);
+		playerShape.setAsBox(.5f, 2);
 		player = new MoveableEntity(playerShape, 1, 0, 0, new Vector2(3,1), new Vector2(10,10));
 		
 		ChainShape platformShape = new ChainShape();
-		platformShape.createChain(new Vector2[]{new Vector2(-8,0), new Vector2(-5,0)});
-		platform = new StaticEntity(platformShape, 0.3f, -5f, -23);
+		platformShape.createChain(new Vector2[]{new Vector2(1,0), new Vector2(2,0)});
+		platform = new StaticEntity(platformShape, 0.3f, 1, 2);
+		
+		CircleShape sensorShape = new CircleShape();
+		sensorShape.setRadius(5f);
+		sensor = new SensorEntity(sensorShape, -7.5f, -23);
 		
 		
-		ball.setBody(world.createBody(ball.getBodyDef()));
-		ball.setFixture(ball.getBody().createFixture(ball.getFixtureDef()));
-		ball.getFixture().setUserData("p");
+		
 		player.setBody(world.createBody(player.getBodyDef()));
 		player.setFixture(player.getBody().createFixture(player.getFixtureDef()));
+		/*
 		platform.setBody(world.createBody(platform.getBodyDef()));
 		platform.setFixture(platform.getBody().createFixture(platform.getFixtureDef()));
 		platform.getFixture().setUserData("platformTwo");
-		world.setContactListener(new CustomContactListener());
+		ball.setBody(world.createBody(ball.getBodyDef()));
+		ball.setFixture(ball.getBody().createFixture(ball.getFixtureDef()));
+		ball.getFixture().setUserData("p");
+		sensor.setBody(world.createBody(sensor.getBodyDef()));
+		sensor.setFixture(sensor.getBody().createFixture(sensor.getFixtureDef()));
+		sensor.getFixture().setUserData("sensor");
+		*/
 	}
 	
 	@Override
@@ -190,24 +218,33 @@ public class GameServer implements ApplicationListener {
 		if(Gdx.input.isKeyPressed(Keys.D))
 			player.getBody().setLinearVelocity(10, player.getBody().getLinearVelocity().y);
 		if(Gdx.input. isKeyPressed(Keys.SPACE)){
-			if(isOnGround(player) && player.getBody().getLinearVelocity().y<=0)
-				player.getBody().setLinearVelocity(player.getBody().getLinearVelocity().x, 10);
-				//player.getBody().applyLinearImpulse(0, 50, player.getBody().getPosition().x, player.getBody().getPosition().y, true);
+			if(isOnGround(player)){	//&& player.getBody().getLinearVelocity().y<=0
+				player.getBody().setAwake(true);
+				player.getBody().setLinearVelocity(player.getBody().getLinearVelocity().x, 12);
+			}		
 		}
-		
-		//if(velocity.x == 0)box.setLinearVelocity(0, box.getLinearVelocity().y);
-		//if(velocity.y == 0) box.setLinearVelocity(box.getLinearVelocity().x, 0);
-			
+		if(Gdx.input.isKeyPressed(Keys.S))
+			player.getBody().setAwake(true);
+		//mousecursor
+		Vector3 mousePos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+		camera.unproject(mousePos);
+				
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		
+		batch.begin();
+		batch.end();
+		//System.out.println(player.getBody().getPosition().x+"\t"+player.getBody().getPosition().y);
+		mapRenderer.render();
 		renderer.render(world, camera.combined);
 		world.step(TIME_STEP, ITERATIONS_VELOCITY, ITERATIONS_POSITION);
 	}
 	
 	@Override
 	public void dispose() {
-		world.dispose();
-		renderer.dispose();		
+		world.dispose();		
+		renderer.dispose();
+		map.dispose();
 	}
 
 	@Override
@@ -224,19 +261,34 @@ public class GameServer implements ApplicationListener {
 	private void initMap(String mapName){
 		
 		int mapWidth;
-		
+		//init map
 		map = new TiledMap();
 		TmxMapLoader loader = new TmxMapLoader();
 		map = loader.load(FOLDER_MAPS+mapName+".tmx");
 		mapWidth=map.getProperties().get("width", Integer.class)
 				* map.getProperties().get("tilewidth", Integer.class);
-		map.dispose();
+		//check for meta tiles
+		TiledMapTileLayer layer = (TiledMapTileLayer)map.getLayers().get(1);
+		for(int i=0; i<layer.getWidth(); i++){
+			for(int j=0; j<layer.getHeight(); j++)
+				//TODO change code so that it is modular
+				//check for two way platforms
+				if(layer.getCell(i, j)!=null && layer.getCell(i, j).getTile().getId()==2){	
+					ChainShape platformShape = new ChainShape();
+					StaticEntity plat;
+					platformShape.createChain(new Vector2[]{new Vector2(0,0), new Vector2(1,0)});
+					plat = new StaticEntity(platformShape, 0.3f, i, j+1);
+					plat.setBody(world.createBody(plat.getBodyDef()));
+					plat.getBody().createFixture(plat.getFixtureDef()).setUserData("platformTwo");
+					platformShape.dispose();
+				}
+		}
 		
 		
 		//create bodyDef
 		BodyDef bodyDef = new BodyDef();
 		bodyDef.type = BodyDef.BodyType.StaticBody;
-		bodyDef.position.set(-30,-30);
+		bodyDef.position.set(0,0);
 		//create fixtureDef
 		FixtureDef fDef = new FixtureDef();
 		fDef.density=1;
@@ -245,7 +297,7 @@ public class GameServer implements ApplicationListener {
 		mapBody = world.createBody(bodyDef);
 		
 		BodyEditorLoader bLoader = new BodyEditorLoader(new FileHandle(FOLDER_MAPS+mapName+".json"));
-		bLoader.attachFixture(mapBody, "Name", fDef
+		bLoader.attachFixture(mapBody, "Map", fDef
 				,mapWidth*PIXELS_TO_METERS);
 	}
 	
@@ -279,6 +331,10 @@ public class GameServer implements ApplicationListener {
 				if((c.getFixtureA()==entity.getFixture() && c.getFixtureB().getUserData()!=null && c.getFixtureB().getUserData().equals("p")))
 					below=false;
 				if((c.getFixtureB()==entity.getFixture() && c.getFixtureA().getUserData()!=null && c.getFixtureA().getUserData().equals("p")))
+					below=false;
+				if((c.getFixtureA()==entity.getFixture() && c.getFixtureB().getUserData()!=null && c.getFixtureB().getUserData().equals("sensor")))
+					below=false;
+				if((c.getFixtureB()==entity.getFixture() && c.getFixtureA().getUserData()!=null && c.getFixtureA().getUserData().equals("sensor")))
 					below=false;
 				if(below) return true;
 			}
