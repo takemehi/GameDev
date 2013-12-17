@@ -1,4 +1,4 @@
-package de.htw.saarland.gamedev.nap.server.extension.launcher;
+package de.htw.saarland.gamedev.nap.server.launcher;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +7,7 @@ import com.smartfoxserver.v2.entities.User;
 import com.smartfoxserver.v2.entities.data.SFSArray;
 import com.smartfoxserver.v2.entities.data.SFSObject;
 
-import de.htw.saarland.gamedev.nap.server.extension.ServerExtension;
+import de.htw.saarland.gamedev.nap.server.ServerExtension;
 
 public class LauncherClientSender {
 	private ServerExtension extension;

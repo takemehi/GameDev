@@ -1,4 +1,4 @@
-package de.htw.saarland.gamedev.nap.server.extension.launcher;
+package de.htw.saarland.gamedev.nap.server.launcher;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -7,9 +7,9 @@ import java.util.List;
 
 import com.smartfoxserver.v2.entities.User;
 
-import de.htw.saarland.gamedev.nap.server.extension.ServerExtension;
-import de.htw.saarland.gamedev.nap.server.extension.launcher.exception.PlayerNotFoundException;
-import de.htw.saarland.gamedev.nap.server.extension.launcher.exception.TeamFullException;
+import de.htw.saarland.gamedev.nap.server.ServerExtension;
+import de.htw.saarland.gamedev.nap.server.launcher.exception.PlayerNotFoundException;
+import de.htw.saarland.gamedev.nap.server.launcher.exception.TeamFullException;
 
 /**
  * Thread safe Launcher implementation to handle game creation tasks

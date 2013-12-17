@@ -11,7 +11,7 @@ import com.smartfoxserver.v2.exceptions.SFSException;
 import de.htw.saarland.gamedev.nap.NetworkConstants;
 import de.htw.saarland.gamedev.nap.launcher.panels.PanelCreateGame;
 import de.htw.saarland.gamedev.nap.launcher.panels.PanelGameInfo;
-import de.htw.saarland.gamedev.nap.server.extension.launcher.LauncherOpcodes;
+import de.htw.saarland.gamedev.nap.server.launcher.LauncherOpcodes;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

@@ -1,4 +1,4 @@
-package de.htw.saarland.gamedev.nap.server.handler;
+package de.htw.saarland.gamedev.nap.server.launcher.handler;
 
 import com.smartfoxserver.v2.core.ISFSEvent;
 import com.smartfoxserver.v2.core.SFSEventParam;
@@ -6,9 +6,9 @@ import com.smartfoxserver.v2.entities.User;
 import com.smartfoxserver.v2.exceptions.SFSException;
 import com.smartfoxserver.v2.extensions.BaseServerEventHandler;
 
-import de.htw.saarland.gamedev.nap.server.extension.ServerExtension;
-import de.htw.saarland.gamedev.nap.server.extension.launcher.Launcher;
-import de.htw.saarland.gamedev.nap.server.extension.launcher.exception.TeamFullException;
+import de.htw.saarland.gamedev.nap.server.ServerExtension;
+import de.htw.saarland.gamedev.nap.server.launcher.Launcher;
+import de.htw.saarland.gamedev.nap.server.launcher.exception.TeamFullException;
 
 public class RoomJoinServerHandler extends BaseServerEventHandler {
 

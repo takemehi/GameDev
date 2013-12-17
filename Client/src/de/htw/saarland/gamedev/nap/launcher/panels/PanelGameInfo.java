@@ -10,7 +10,7 @@ import javax.swing.SwingUtilities;
 import com.smartfoxserver.v2.entities.data.SFSArray;
 import com.smartfoxserver.v2.entities.data.SFSObject;
 
-import de.htw.saarland.gamedev.nap.server.extension.launcher.LauncherOpcodes;
+import de.htw.saarland.gamedev.nap.server.launcher.LauncherOpcodes;
 import sfs2x.client.SmartFox;
 import sfs2x.client.core.BaseEvent;
 import sfs2x.client.entities.Room;
