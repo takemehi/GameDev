@@ -4,17 +4,6 @@
  */
 package de.htw.saarland.gamedev.nap.launcher;
 
-import com.smartfoxserver.v2.entities.data.SFSArray;
-import com.smartfoxserver.v2.entities.data.SFSObject;
-import com.smartfoxserver.v2.exceptions.SFSException;
-
-import de.htw.saarland.gamedev.nap.NetworkConstants;
-import de.htw.saarland.gamedev.nap.launcher.panels.PanelCreateGame;
-import de.htw.saarland.gamedev.nap.launcher.panels.PanelGameInfo;
-import de.htw.saarland.gamedev.nap.server.launcher.LauncherOpcodes;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -30,12 +19,19 @@ import sfs2x.client.core.IEventListener;
 import sfs2x.client.core.SFSEvent;
 import sfs2x.client.entities.Room;
 import sfs2x.client.entities.User;
-import sfs2x.client.entities.managers.IRoomManager;
 import sfs2x.client.requests.JoinRoomRequest;
 import sfs2x.client.requests.PublicMessageRequest;
 import sfs2x.client.requests.RoomExtension;
 import sfs2x.client.requests.game.CreateSFSGameRequest;
 import sfs2x.client.requests.game.SFSGameSettings;
+
+import com.smartfoxserver.v2.entities.data.SFSObject;
+import com.smartfoxserver.v2.exceptions.SFSException;
+
+import de.htw.saarland.gamedev.nap.NetworkConstants;
+import de.htw.saarland.gamedev.nap.launcher.panels.PanelCreateGame;
+import de.htw.saarland.gamedev.nap.launcher.panels.PanelGameInfo;
+import de.htw.saarland.gamedev.nap.server.launcher.LauncherOpcodes;
 
 /**
  * The Launcher Frame. Receives also network events for launcher based tasks
@@ -103,7 +99,7 @@ public class FrameLauncher extends javax.swing.JFrame implements IEventListener,
         settings.setMinPlayersToStartGame(teamSize * 2);
         settings.setPublic(true);
         settings.setNotifyGameStarted(true);
-        settings.setExtension(new RoomExtension("nap", "de.htw.saarland.gamedev.nap.server.extension.ServerExtension"));
+        settings.setExtension(new RoomExtension("nap", "de.htw.saarland.gamedev.nap.server.ServerExtension"));
         
         sfClient.send(new CreateSFSGameRequest(settings));
     }
@@ -272,6 +268,25 @@ public class FrameLauncher extends javax.swing.JFrame implements IEventListener,
 		    	else {
 		    		System.out.println("gameInfo null!");
 		    	}
+		    	break;
+		    case LauncherOpcodes.LAUNCHER_START_GAME_ERROR:
+		    	final String startGameErrorMsg = params.getUtfString(LauncherOpcodes.ERROR_MESSAGE_PARAMETER);
+		    	SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						messageReceived("System", "Cannot start game: " + startGameErrorMsg);
+					}
+				});
+		    	break;
+		    case LauncherOpcodes.LAUNCHER_GAME_STARTS:
+		    	// game is about to start!
+		    	// TODO goto game loop!
+		    	SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						messageReceived("System", "Game starts!");
+					}
+				});
 		    	break;
 		    default:
 		        System.out.println("Server Extension Packet not handled: " + cmd);

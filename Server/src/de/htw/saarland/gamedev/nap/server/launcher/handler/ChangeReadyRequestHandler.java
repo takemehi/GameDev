@@ -19,11 +19,6 @@ public class ChangeReadyRequestHandler extends BaseClientRequestHandler {
 		SFSObject params = new SFSObject();
 		params.putBool(LauncherOpcodes.READY_STATE_PARAMETER, val);
 		send(LauncherOpcodes.LAUNCHER_CHANGE_READY_SUCCESS, params, user);
-		
-		if (launcher.isGameReadyToStart()) {
-			//all teams are full and everyone is ready, start it!
-			// TODO start game
-		}
 	}
 
 }

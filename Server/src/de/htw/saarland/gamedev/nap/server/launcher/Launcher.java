@@ -43,15 +43,21 @@ public class Launcher {
 		return blueTeamPlayers.size();
 	}
 	
+	/**
+	 * Check if everyone is ready to go
+	 * 
+	 * @return
+	 */
 	public boolean isGameReadyToStart() {
 		boolean ready = true;
-		
-		ready = redTeamPlayers.size() == maxTeamSize & blueTeamPlayers.size() == maxTeamSize;
 		
 		synchronized (blueTeamPlayers) {
 			synchronized (redTeamPlayers) {
 				for (int i = 0; i < redTeamPlayers.size() && ready; i++) {
-					ready = redTeamPlayers.get(i).isReady() & blueTeamPlayers.get(i).isReady();
+					ready = redTeamPlayers.get(i).isReady();
+					if (i < blueTeamPlayers.size()) {
+						ready &= blueTeamPlayers.get(i).isReady();
+					}
 				}
 			}
 		}
@@ -240,5 +246,18 @@ public class Launcher {
 				blueTeam.add(lp);
 			}
 		}
+	}
+	
+	/**
+	 * Returns all players currently joined in the game
+	 * 
+	 * @return
+	 */
+	public ArrayList<LauncherPlayer> getAllPlayers() {
+		ArrayList<LauncherPlayer> players = new ArrayList<LauncherPlayer>();
+		
+		getTeams(players, players);
+		
+		return players;
 	}
 }

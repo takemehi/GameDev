@@ -84,6 +84,7 @@ public class PanelGameInfo extends javax.swing.JPanel {
         buttonChangeTeam = new javax.swing.JButton();
         comboBoxCharacter = new javax.swing.JComboBox();
         toggleButtonReady = new javax.swing.JToggleButton();
+        buttonStartGame = new javax.swing.JButton();
 
         setLayout(new java.awt.GridBagLayout());
 
@@ -121,6 +122,7 @@ public class PanelGameInfo extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.gridheight = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
@@ -160,6 +162,19 @@ public class PanelGameInfo extends javax.swing.JPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
         add(toggleButtonReady, gridBagConstraints);
+
+        buttonStartGame.setText("Start Game");
+        buttonStartGame.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonStartGameActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
+        add(buttonStartGame, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
     private void buttonChangeTeamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonChangeTeamActionPerformed
@@ -170,8 +185,13 @@ public class PanelGameInfo extends javax.swing.JPanel {
         sfClient.send(new ExtensionRequest(LauncherOpcodes.LAUNCHER_CHANGE_READY_REQUEST, null, sfClient.getLastJoinedRoom()));
     }//GEN-LAST:event_toggleButtonReadyActionPerformed
 
+    private void buttonStartGameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonStartGameActionPerformed
+        sfClient.send(new ExtensionRequest(LauncherOpcodes.LAUNCHER_START_GAME_REQUEST, null, sfClient.getLastJoinedRoom()));
+    }//GEN-LAST:event_buttonStartGameActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonChangeTeam;
+    private javax.swing.JButton buttonStartGame;
     private javax.swing.JComboBox comboBoxCharacter;
     private javax.swing.JList jList1;
     private javax.swing.JList jList2;

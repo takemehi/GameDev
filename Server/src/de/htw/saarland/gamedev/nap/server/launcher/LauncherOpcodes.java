@@ -56,7 +56,22 @@ public class LauncherOpcodes {
 	public static final String LAUNCHER_CHANGE_READY_SUCCESS = "launcher.changeready.success";
 	
 	/**
-	 * Opcode that indicates that every player is ready and the game is about to start, each player
+	 * Opcode that indicates that the game owner wants to start the game
+	 * 
+	 * returns:
+	 * 	LAUNCHER_START_GAME_ERROR if the sender is not the game owner or some players aren't ready
+	 * 	LAUNCHER_GAME_START to all players on success
+	 */
+	public static final String LAUNCHER_START_GAME_REQUEST = "launcher.startgame";
+	/**
+	 * A request to start game failed
+	 * 
+	 * params:
+	 * 	ERROR_MESSAGE_PARAMETER contains the reason why the game start request failed
+	 */
+	public static final String LAUNCHER_START_GAME_ERROR = "launcher.startgame.error";
+	/**
+	 * Opcode that indicates that the game is about to start, each player
 	 * should send GAME_INITIALIZED packet to the server to indicate that they are ready to play
 	 */
 	public static final String LAUNCHER_GAME_STARTS = "launcher.gamestarts";
