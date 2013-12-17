@@ -41,14 +41,17 @@ import de.htw.saarland.gamedev.nap.data.platforms.CustomContactListener;
 public class GameServer implements ApplicationListener {
 	
 	//exceptions
-	private final static String EXCEPTION_NO_PACKET = "Packet object is missing!";
-	private final static String EXCEPTION_NO_PLAYER = "Player object is missing!";
-	private final static String EXCEPTION_MAP_EMPTY = "Map name is empty!";
-	private final static String EXCEPTION_NO_TEAM1 = "Team1 object is missing!";
-	private final static String EXCEPTION_NO_TEAM2 = "Team2 object is missing!";
+	private final static String EXCEPTION_NULL_ENTITY = "Entity object is null!";
+	private final static String EXCEPTION_NULL_PACKET = "Packet object is null!";
+	private final static String EXCEPTION_NULL_PLAYER = "Player object is null!";
+	private final static String EXCEPTION_NULL_TEAM1 = "Team1 object is null!";
+	private final static String EXCEPTION_NULL_TEAM2 = "Team2 object is null!";
+	private final static String EXCEPTION_NULL_VECTOR = "Vector object is null!";
+	private final static String EXCEPTION_ILLEGAL_MAP = "Map name is empty!";
+	private final static String EXCEPTION_ILLEGAL_PLATFORM_ID = "Platform Id doesn't exist!";
 	private final static String EXCEPTION_ILLEGAL_TEAMSIZE = "Teamsize can't be less than 1!";
-	private final static String EXCEPTION_TEAM_INVALID = "Team is not existing!";
-	private final static String EXCEPTION_TEAM_FULL = "Team is already full!";
+	private final static String EXCEPTION_ILLEGAL_TEAM_NOT_EXISTING = "Team is not existing!";
+	private final static String EXCEPTION_ILLEGAL_TEAM_FULL = "Team is already full!";
 	//folders
 	private final static String FOLDER_MAPS = "data/maps/";
 	//packets processed per tick
@@ -61,13 +64,18 @@ public class GameServer implements ApplicationListener {
 	private final static Vector2 GRAVITY = new Vector2(0, -20);
 	//transformation constants
 	private final static float PIXELS_TO_METERS = 1/96f;
+	//meta tile ids //TODO change ids
+	private final static int TILE_ID_PLATFORM_ONE = 0;
+	private final static int TILE_ID_PLATFORM_TWO = 2;
+	private final static int TILE_ID_CAPTURE_POINT = 0;
+	private final static int TILE_ID_CREEP_DMG = 0;
+	private final static int TILE_ID_CREEP_RES = 0;
+	
 	
 	//input parameters
 	private String mapName;
 	private TiledMap map;
 	private int teamSize;
-	private ArrayList<Player> team1;
-	private ArrayList<Player> team2;
 	//TODO maybe change the type from npc to extended class
 	private ArrayList<NPC> npcs;
 	
@@ -75,18 +83,20 @@ public class GameServer implements ApplicationListener {
 	private ConcurrentLinkedQueue<SFSObject> packetQueue;	
 	private World world;
 	private Body mapBody;
+	private ArrayList<Player> team1;
+	private ArrayList<Player> team2;
+	private ArrayList<StaticEntity> platforms;
 	
 	//test variables
 	private OrthographicCamera camera;
 	private Box2DDebugRenderer renderer;
 	MoveableEntity ball;
 	MoveableEntity player;
-	StaticEntity platform;
 	SensorEntity sensor;
 	//rendering test
 	SpriteBatch batch;
 	OrthogonalTiledMapRenderer mapRenderer;
-	BitmapFont font;
+	boolean jump = false;
 	
 	
 	//////////////////////
@@ -94,15 +104,16 @@ public class GameServer implements ApplicationListener {
 	//////////////////////
 	
 	public GameServer(String mapName, int teamSize, ArrayList<Player> team1, ArrayList<Player> team2){
-		if(mapName.trim().length()<1) throw new IllegalArgumentException(EXCEPTION_MAP_EMPTY);
+		if(mapName.trim().length()<1) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_MAP);
 		if(teamSize<1) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_TEAMSIZE);
-		if(team1 == null) throw new NullPointerException(EXCEPTION_NO_TEAM1);
-		if(team2 == null) throw new NullPointerException(EXCEPTION_NO_TEAM2);
+		if(team1 == null) throw new NullPointerException(EXCEPTION_NULL_TEAM1);
+		if(team2 == null) throw new NullPointerException(EXCEPTION_NULL_TEAM2);
 		
 		this.mapName=mapName;
 		this.teamSize=teamSize;
 		this.team1=team1;
 		this.team2=team2;
+		platforms = new ArrayList<StaticEntity>();
 		
 		//box2d stuff
 		
@@ -139,26 +150,17 @@ public class GameServer implements ApplicationListener {
 		//Test stuff
 		renderer = new Box2DDebugRenderer();
 		camera = new OrthographicCamera(Gdx.graphics.getWidth() / 10, Gdx.graphics.getHeight() / 10);
-		OrthographicCamera mapCam = new OrthographicCamera(Gdx.graphics.getWidth() / 10, Gdx.graphics.getHeight() / 10);
-		mapCam.position.set(new Vector3(30,30,0));
-		mapCam.update();
 		mapRenderer = new OrthogonalTiledMapRenderer(map, PIXELS_TO_METERS);
 		mapRenderer.setView(camera);
-		batch = new SpriteBatch();
-		font=new BitmapFont();
-		
+		batch = new SpriteBatch();		
 		
 		CircleShape shape = new CircleShape();
 		shape.setRadius(1f);
 		ball = new MoveableEntity(shape, 1, 1, 1, new Vector2(0,1), new Vector2(10,10));
 		
 		PolygonShape playerShape = new PolygonShape();
-		playerShape.setAsBox(.5f, 2);
+		playerShape.setAsBox(.5f, 1);
 		player = new MoveableEntity(playerShape, 1, 0, 0, new Vector2(3,1), new Vector2(10,10));
-		
-		ChainShape platformShape = new ChainShape();
-		platformShape.createChain(new Vector2[]{new Vector2(1,0), new Vector2(2,0)});
-		platform = new StaticEntity(platformShape, 0.3f, 1, 2);
 		
 		CircleShape sensorShape = new CircleShape();
 		sensorShape.setRadius(5f);
@@ -168,10 +170,9 @@ public class GameServer implements ApplicationListener {
 		
 		player.setBody(world.createBody(player.getBodyDef()));
 		player.setFixture(player.getBody().createFixture(player.getFixtureDef()));
+		player.getFixture().setUserData("player");
+		
 		/*
-		platform.setBody(world.createBody(platform.getBodyDef()));
-		platform.setFixture(platform.getBody().createFixture(platform.getFixtureDef()));
-		platform.getFixture().setUserData("platformTwo");
 		ball.setBody(world.createBody(ball.getBodyDef()));
 		ball.setFixture(ball.getBody().createFixture(ball.getFixtureDef()));
 		ball.getFixture().setUserData("p");
@@ -214,13 +215,15 @@ public class GameServer implements ApplicationListener {
 		if(!Gdx.input.isKeyPressed(Keys.D))
 			player.getBody().setLinearVelocity(0, player.getBody().getLinearVelocity().y);
 		if(Gdx.input.isKeyPressed(Keys.A))
-			player.getBody().setLinearVelocity(-10, player.getBody().getLinearVelocity().y);
+			player.getBody().setLinearVelocity(-5, player.getBody().getLinearVelocity().y);
 		if(Gdx.input.isKeyPressed(Keys.D))
-			player.getBody().setLinearVelocity(10, player.getBody().getLinearVelocity().y);
-		if(Gdx.input. isKeyPressed(Keys.SPACE)){
-			if(isOnGround(player)){	//&& player.getBody().getLinearVelocity().y<=0
+			player.getBody().setLinearVelocity(5, player.getBody().getLinearVelocity().y);
+		if(!Gdx.input.isKeyPressed(Keys.SPACE)) jump=false;
+		if(Gdx.input. isKeyPressed(Keys.SPACE) && !jump){
+			if(isGrounded(player)){
 				player.getBody().setAwake(true);
-				player.getBody().setLinearVelocity(player.getBody().getLinearVelocity().x, 12);
+				player.getBody().setLinearVelocity(player.getBody().getLinearVelocity().x, 10);
+				jump=true;
 			}		
 		}
 		if(Gdx.input.isKeyPressed(Keys.S))
@@ -270,18 +273,18 @@ public class GameServer implements ApplicationListener {
 		//check for meta tiles
 		TiledMapTileLayer layer = (TiledMapTileLayer)map.getLayers().get(1);
 		for(int i=0; i<layer.getWidth(); i++){
-			for(int j=0; j<layer.getHeight(); j++)
-				//TODO change code so that it is modular
+			for(int j=0; j<layer.getHeight(); j++){
 				//check for two way platforms
-				if(layer.getCell(i, j)!=null && layer.getCell(i, j).getTile().getId()==2){	
-					ChainShape platformShape = new ChainShape();
-					StaticEntity plat;
-					platformShape.createChain(new Vector2[]{new Vector2(0,0), new Vector2(1,0)});
-					plat = new StaticEntity(platformShape, 0.3f, i, j+1);
-					plat.setBody(world.createBody(plat.getBodyDef()));
-					plat.getBody().createFixture(plat.getFixtureDef()).setUserData("platformTwo");
-					platformShape.dispose();
-				}
+				if(layer.getCell(i, j)!=null && layer.getCell(i, j).getTile().getId()==TILE_ID_PLATFORM_TWO)	
+					initPlatform(i,j+1, TILE_ID_PLATFORM_TWO);
+				if(layer.getCell(i, j)!=null && layer.getCell(i, j).getTile().getId()==TILE_ID_PLATFORM_ONE)
+					initPlatform(i,j+1, TILE_ID_PLATFORM_ONE);
+				if(layer.getCell(i, j)!=null && layer.getCell(i, j).getTile().getId()==TILE_ID_CAPTURE_POINT)
+					initCapturePoint();
+				//TODO implement
+				if(layer.getCell(i, j)!=null && layer.getCell(i, j).getTile().getId()==TILE_ID_CREEP_DMG);
+				if(layer.getCell(i, j)!=null && layer.getCell(i, j).getTile().getId()==TILE_ID_CREEP_RES);
+			}
 		}
 		
 		
@@ -301,21 +304,52 @@ public class GameServer implements ApplicationListener {
 				,mapWidth*PIXELS_TO_METERS);
 	}
 	
+	private void initCapturePoint(){
+		//TODO implement
+	}
+	
 	private void initNpc(NPC npc){
 		//TODO set the correct starting position depending on the map
 		npc.setBody(world.createBody(npc.getBodyDef()));
+		npc.dispose();
 		npc.getBody().createFixture(npc.getFixtureDef());
 	}
 	
+	private void initPlatform(Vector2 position, int type){
+		if(position==null) throw new NullPointerException(EXCEPTION_NULL_VECTOR);
+		if(type!=TILE_ID_PLATFORM_ONE && type!=TILE_ID_PLATFORM_TWO) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_PLATFORM_ID);
+		ChainShape platformShape = new ChainShape();
+		StaticEntity platform;
+		platformShape.createChain(new Vector2[]{new Vector2(0,0), new Vector2(1,0)});
+		platform = new StaticEntity(platformShape, 0.3f, position);
+		platform.setBody(world.createBody(platform.getBodyDef()));
+		platform.setFixture(platform.getBody().createFixture(platform.getFixtureDef()));
+		if(type==TILE_ID_PLATFORM_ONE) platform.getFixture().setUserData("platformOne");
+		if(type==TILE_ID_PLATFORM_TWO) platform.getFixture().setUserData("platformTwo");
+		platformShape.dispose();
+		platforms.add(platform);
+	}
+	
+	private void initPlatform(float x, float y, int type){
+		initPlatform(new Vector2(x,y), type);
+	}
+	
 	private void initPlayer(Player player){
+		if(player==null) throw new NullPointerException(EXCEPTION_NULL_PLAYER);
 		//TODO set the correct starting position depending on the map
 		player.getPlChar().setBody(world.createBody(player.getPlChar().getBodyDef()));
+		player.getPlChar().dispose();
 		player.getPlChar().setFixture(
 				player.getPlChar().getBody()
 				.createFixture(player.getPlChar().getFixtureDef()));
 	}
 	
-	private boolean isOnGround(MoveableEntity entity){
+	private boolean isGrounded(MoveableEntity entity){
+		if(entity==null) throw new NullPointerException(EXCEPTION_NULL_ENTITY);
+		//calculate y offset
+		Vector2 tmpVector = new Vector2();
+		PolygonShape tmpShape= (PolygonShape) entity.getFixture().getShape();
+		tmpShape.getVertex(0, tmpVector);
 		
 		for(Contact c: world.getContactList()){
 			if(c.isTouching()
@@ -324,13 +358,12 @@ public class GameServer implements ApplicationListener {
 				Vector2 pos = entity.getBody().getPosition();
 				WorldManifold manifold = c.getWorldManifold();
 				boolean below = true;
-				//TODO calculate offset instead off hardcoding it
 				for(int j = 0; j < manifold.getNumberOfContactPoints(); j++) {
-					below &= (manifold.getPoints()[j].y < pos.y - 2f);
+					below &= (manifold.getPoints()[j].y < pos.y - tmpVector.y);
 				}
-				if((c.getFixtureA()==entity.getFixture() && c.getFixtureB().getUserData()!=null && c.getFixtureB().getUserData().equals("p")))
+				if((c.getFixtureA()==entity.getFixture() && c.getFixtureB().getUserData()!=null && c.getFixtureB().getUserData().equals("player")))
 					below=false;
-				if((c.getFixtureB()==entity.getFixture() && c.getFixtureA().getUserData()!=null && c.getFixtureA().getUserData().equals("p")))
+				if((c.getFixtureB()==entity.getFixture() && c.getFixtureA().getUserData()!=null && c.getFixtureA().getUserData().equals("player")))
 					below=false;
 				if((c.getFixtureA()==entity.getFixture() && c.getFixtureB().getUserData()!=null && c.getFixtureB().getUserData().equals("sensor")))
 					below=false;
@@ -339,7 +372,6 @@ public class GameServer implements ApplicationListener {
 				if(below) return true;
 			}
 		}
-		
 		return false;
 	}
 	
@@ -348,23 +380,23 @@ public class GameServer implements ApplicationListener {
 	//////////////////////
 
 	public void addPacket(SFSObject packet){
-		if(packet == null) throw new NullPointerException(EXCEPTION_NO_PACKET);
+		if(packet == null) throw new NullPointerException(EXCEPTION_NULL_PACKET);
 		packetQueue.add(packet);
 	}
 	
 	public void joinGame(Player player, int whichTeam){
-		if(player == null) throw new NullPointerException(EXCEPTION_NO_PLAYER);
-		if(whichTeam<0 || whichTeam>1) throw new IllegalArgumentException(EXCEPTION_TEAM_INVALID);
+		if(player == null) throw new NullPointerException(EXCEPTION_NULL_PLAYER);
+		if(whichTeam<0 || whichTeam>1) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_TEAM_NOT_EXISTING);
 		
 		if(whichTeam==0){
-			if(team1.size()>=teamSize) throw new IllegalStateException(EXCEPTION_TEAM_FULL);
+			if(team1.size()>=teamSize) throw new IllegalStateException(EXCEPTION_ILLEGAL_TEAM_FULL);
 			else {
 				team1.add(player);
 				initPlayer(player);
 			}
 			
 		}else{
-			if(team2.size()>=teamSize) throw new IllegalStateException(EXCEPTION_TEAM_FULL);
+			if(team2.size()>=teamSize) throw new IllegalStateException(EXCEPTION_ILLEGAL_TEAM_FULL);
 			else {
 				team2.add(player);
 				initPlayer(player);
