@@ -12,14 +12,18 @@ import com.badlogic.gdx.physics.box2d.Shape;
  */
 public class MoveableEntity extends Entity{
 	
-	private static final String EXCEPTION_NULL_VELOCITY = "MaxVelocity object is null!";
+	private static final String EXCEPTION_NULL_VELOCITY_BASE = "MaxVelocity object is null!";
+	private static final String EXCEPTION_NULL_VELOCITY_MAX = "MaxVelocity object is null!";
 	
+	private Vector2 baseVelocity;
 	private Vector2 maxVelocity;
 	
 	public MoveableEntity(Shape shape, float density,
-			float friction, float restitution, Vector2 position, Vector2 maxVelocity) {
+			float friction, float restitution, Vector2 position, Vector2 baseVelocity, Vector2 maxVelocity) {
 		super(shape, position);
-		if(maxVelocity==null) throw new NullPointerException(EXCEPTION_NULL_VELOCITY);
+		if(baseVelocity==null) throw new NullPointerException(EXCEPTION_NULL_VELOCITY_BASE);
+		if(maxVelocity==null) throw new NullPointerException(EXCEPTION_NULL_VELOCITY_MAX);
+		this.baseVelocity=baseVelocity;
 		this.maxVelocity=maxVelocity;
 		
 		getBodyDef().type=BodyDef.BodyType.DynamicBody;
@@ -31,8 +35,12 @@ public class MoveableEntity extends Entity{
 	}
 
 	public MoveableEntity(Shape shape, float density,
-			float friction, float restitution, float xPos, float yPos, float xVel, float yVel){
-		this(shape, density, friction, restitution, new Vector2(xPos,yPos), new Vector2(xVel,yVel));
+			float friction, float restitution, float xPos, float yPos, float xVelBase, float yVelBase){
+		this(shape, density, friction, restitution, new Vector2(xPos,yPos), new Vector2(xVelBase,yVelBase), new Vector2(xVelBase, yVelBase));
+	}
+	
+	public Vector2 getBaseVelocity(){
+		return baseVelocity;
 	}
 	
 	public Vector2 getMaxVelocity(){

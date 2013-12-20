@@ -66,6 +66,7 @@ public abstract class Entity {
 	public void setFixture(Fixture fixture){
 		if(fixture==null) throw new NullPointerException(EXCEPTION_NULL_FIXTURE);
 		this.fixture=fixture;
+		dispose();
 	}
 	
 	public Fixture getFixture(){

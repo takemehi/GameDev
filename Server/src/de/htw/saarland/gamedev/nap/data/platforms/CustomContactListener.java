@@ -11,17 +11,25 @@ import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 
 public class CustomContactListener implements ContactListener {
+	//TODO add constants for userdata
 
 	@Override
 	public void beginContact(Contact contact) {
 		Fixture fA = contact.getFixtureA();
 		Fixture fB = contact.getFixtureB();
-		//sensor test
-		if(fA.getUserData()!=null && fA.getUserData().equals("sensor")){
-			System.out.println("true");
+		//spawnPoint team blue
+		if(fA.getUserData()!=null && fA.getUserData().equals("spawnBlue")){
+			//TODO implement
 		}
-		if(fB.getUserData()!=null && fB.getUserData().equals("sensor")){
-			System.out.println("true");
+		if(fB.getUserData()!=null && fB.getUserData().equals("spawnBlue")){
+			//TODO implement
+		}
+		//spawnPoint team red
+		if(fA.getUserData()!=null && fA.getUserData().equals("spawnRed")){
+			//TODO implement
+		}
+		if(fB.getUserData()!=null && fB.getUserData().equals("spawnRed")){
+			//TODO implement
 		}
 	}
 
@@ -29,13 +37,20 @@ public class CustomContactListener implements ContactListener {
 	public void endContact(Contact contact) {
 		Fixture fA = contact.getFixtureA();
 		Fixture fB = contact.getFixtureB();
-		//contact.setEnabled(true);
 		
-		if(fA.getUserData()!=null && fA.getUserData().equals("sensor")){
-			System.out.println("false");
+		//spawnPoint team blue
+		if(fA.getUserData()!=null && fA.getUserData().equals("spawnBlue")){
+			//TODO implement
 		}
-		if(fB.getUserData()!=null && fB.getUserData().equals("sensor")){
-			System.out.println("false");
+		if(fB.getUserData()!=null && fB.getUserData().equals("spawnBlue")){
+			//TODO implement
+		}
+		//spawnPoint team red
+		if(fA.getUserData()!=null && fA.getUserData().equals("spawnRed")){
+			//TODO implement
+		}
+		if(fB.getUserData()!=null && fB.getUserData().equals("spawnRed")){
+			//TODO implement
 		}
 	}
 
