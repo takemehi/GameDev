@@ -299,7 +299,6 @@ public class GameServer implements ApplicationListener {
 		capturePoint.setBody(world.createBody(capturePoint.getBodyDef()));
 		capturePoint.setFixture(capturePoint.getBody().createFixture(capturePoint.getFixtureDef()));
 		capturePoint.getFixture().setUserData("capturePoint");
-		captureShape.dispose();
 		capturePoints.add(capturePoint);
 	}
 	
@@ -372,7 +371,6 @@ public class GameServer implements ApplicationListener {
 		platform.setFixture(platform.getBody().createFixture(platform.getFixtureDef()));
 		if(type==ID_TILE_PLATFORM_ONE) platform.getFixture().setUserData("platformOne");
 		if(type==ID_TILE_PLATFORM_TWO) platform.getFixture().setUserData("platformTwo");
-		platformShape.dispose();
 		platforms.add(platform);
 	}
 	
@@ -413,7 +411,6 @@ public class GameServer implements ApplicationListener {
 			entity.getFixture().setUserData("spawnRed");
 			SpawnPointRed= new SpawnPoint(entity, ID_TEAM_RED);
 		}
-		spawnShape.dispose();
 	}
 	
 	private void initSpawnPoint(float x, float y, int type){
