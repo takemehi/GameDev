@@ -85,6 +85,62 @@ public class GameOpcodes {
 	public static final String GAME_OBJECT_COORD_UPDATE = "game.player.position.update";
 	
 	///////////////////////////////////////////////////////////////////////////////
+	// Player actions															 //
+	///////////////////////////////////////////////////////////////////////////////
+	
+	/**
+	 * Opcode that is sent as soon as a player wants to capture a capture point
+	 */
+	public static final String GAME_CAPTURE_START_REQUEST = "game.player.capture.start";
+	/**
+	 * Opcode that is sent when the player stops to capture a capture point
+	 */
+	public static final String GAME_CAPTURE_STOP_REQUEST = "game.player.capture.stop";
+	/**
+	 * Opcode that indicates that a player started to capture a capture point
+	 * 
+	 * params:
+	 * 	int ENTITY_ID_PARAM the id of the player that started to capture a point
+	 */
+	public static final String GAME_CAPTURE_STARTED = "game.player.capture.started";
+	/**
+	 * Opcode that indicates that a player stopped to capture a capture point
+	 * 
+	 * params:
+	 * 	int ENTITY_ID_PARAM the id of the player that stopped to capture a point
+	 */
+	public static final String GAME_CAPTURE_STOPPED = "game.player.capture.stopped";
+	
+	///////////////////////////////////////////////////////////////////////////////
+	// Game Objects																 //
+	///////////////////////////////////////////////////////////////////////////////
+	
+	/**
+	 * Opcode to send to get all moveable entities on the map (for initialization purposes)
+	 * Send all the players including their current position (except for the own player) and
+	 * all NPC's including their current position
+	 */
+	public static final String GAME_GET_MOVEABLE_ENTITIES = "game.get.objects";
+	
+	/**
+	 * Packet that contains 1!! NPC to set on the map (only used for initialization!)
+	 * 
+	 * params:
+	 * 	int ENTITY_ID_PARAM
+	 * TODO other params to init npc
+	 */
+	public static final String GAME_SPAWN_NPC = "game.spawn.npc";
+	
+	/**
+	 * Packet that contains 1!! Player to set on the map (only used for initialization!)
+	 * 
+	 * params:
+	 * 	int ENTITY_ID_PARAM
+	 * TODO other params to init npc
+	 */
+	public static final String GAME_SPAWN_PLAYER = "game.spawn.player";
+	
+	///////////////////////////////////////////////////////////////////////////////
 	// Params																	 //
 	///////////////////////////////////////////////////////////////////////////////
 	

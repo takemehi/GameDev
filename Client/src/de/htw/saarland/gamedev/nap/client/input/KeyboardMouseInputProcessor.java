@@ -3,8 +3,7 @@ package de.htw.saarland.gamedev.nap.client.input;
 import com.badlogic.gdx.Gdx;
 
 /**
- * Input processor that processes input from the keyboard for all keys except skill 1 and the crosshair position
- * the crosshair position is calculated by the mouse and skill 1 is one of the mouse buttons.
+ * Input processor that processes input from the keyboard and mouse
  * 
  * Before any call to a get function, process must be called to process the current input!
  * 
@@ -39,15 +38,16 @@ public class KeyboardMouseInputProcessor implements IBaseInput {
 	
 	/**
 	 * Creates a new Keyboard and mouse Input processor
+	 * if any key value is less than or equal to 1 it is assumed to be a mouse button
 	 * 
-	 * @param skill1Key the key for skill 1, has to be a mouse button
-	 * @param skill2Key the key for skill 2, has to be a keyboard key
-	 * @param skill3Key the key for skill 3, has to be a keyboard key
-	 * @param jumpKey the key to perform a jump, has to be a keyboard key
-	 * @param leftKey the key to move left, has to be a keyboard key
-	 * @param rightKey the key to move right, has to be a keyboard key
-	 * @param downKey the key to move down (drop through platforms), has to be a keyboard key
-	 * @param captureKey the key to capture a capture point, has to be a keyboard key
+	 * @param skill1Key the key for skill 1
+	 * @param skill2Key the key for skill 2
+	 * @param skill3Key the key for skill 3
+	 * @param jumpKey the key to perform a jump
+	 * @param leftKey the key to move left
+	 * @param rightKey the key to move right
+	 * @param downKey the key to move down (drop through platforms)
+	 * @param captureKey the key to capture a capture point
 	 */
 	public KeyboardMouseInputProcessor(int skill1Key,
 			int skill2Key,
@@ -80,26 +80,35 @@ public class KeyboardMouseInputProcessor implements IBaseInput {
 		wasCaptureDown = false;
 	}
 	
+	private boolean isPressed(int key) {
+		if (key <= 1) {
+			return Gdx.input.isButtonPressed(key);
+		}
+		else {
+			return Gdx.input.isKeyPressed(key);
+		}
+	}
+	
 	@Override
 	public void process() {
-		skill1Down = Gdx.input.isButtonPressed(skill1Key);
+		skill1Down = isPressed(skill1Key);
 		
-		skill2Down = Gdx.input.isKeyPressed(skill2Key);
+		skill2Down = isPressed(skill2Key);
 		
-		skill3Down = Gdx.input.isKeyPressed(skill3Key);
+		skill3Down = isPressed(skill3Key);
 		
 		wasLeftDown = leftDown;
-		leftDown = Gdx.input.isKeyPressed(leftKey);
+		leftDown = isPressed(leftKey);
 		
 		wasRightDown = rightDown;
-		rightDown = Gdx.input.isKeyPressed(rightKey);
+		rightDown = isPressed(rightKey);
 		
-		jumpDown = Gdx.input.isKeyPressed(jumpKey);
+		jumpDown = isPressed(jumpKey);
 		
-		downDown = Gdx.input.isKeyPressed(downKey);
+		downDown = isPressed(downKey);
 		
 		wasCaptureDown = captureDown;
-		captureDown = Gdx.input.isKeyPressed(captureKey);
+		captureDown = isPressed(captureKey);
 		
 		mouseX = Gdx.input.getX();
 		mouseY = Gdx.input.getY();
