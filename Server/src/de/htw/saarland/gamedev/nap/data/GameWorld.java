@@ -31,6 +31,12 @@ public class GameWorld {
 	private final static int ID_TILE_SPAWN_POINT_RED = 13;
 	private final static int ID_TILE_CREEP_DMG = 14;
 	private final static int ID_TILE_CREEP_RES = 15;
+	//fixture user data
+	public final static String USERDATA_FIXTURE_CAPTUREPOINT = "capturepoint";
+	public final static String USERDATA_FIXTURE_PLATFORM_ONE = "platform_one";
+	public final static String USERDATA_FIXTURE_PLATFORM_TWO = "platform_two";
+	public final static String USERDATA_FIXTURE_SPAWNPOINT_BLUE = "spawnpoint_blue";
+	public final static String USERDATA_FIXTURE_SPAWNPOINT_RED = "spawnpoint_red";
 	//Exceptions
 	private final static String EXCEPTION_ILLEGAL_PLATFORM_ID = "Platform Id doesn't exist!";
 	private final static String EXCEPTION_ILLEGAL_TEAM_ID = "Team Id is not existing!";
@@ -45,10 +51,12 @@ public class GameWorld {
 	private World world;
 	private Body mapBody;
 	private int currentId;
+	private boolean idReturned;
 	
 	public GameWorld(World world, String mapName, int currentId){
 		this.world=world;
 		this.currentId=currentId;
+		this.idReturned=false;
 		
 		platforms = new ArrayList<StaticEntity>();
 		capturePoints = new ArrayList<CapturePoint>();
@@ -63,7 +71,7 @@ public class GameWorld {
 		SensorEntity capturePoint = new SensorEntity(captureShape, position.x+.5f, position.y+.5f, currentId++);
 		capturePoint.setBody(world.createBody(capturePoint.getBodyDef()));
 		capturePoint.setFixture(capturePoint.getBody().createFixture(capturePoint.getFixtureDef()));
-		capturePoint.getFixture().setUserData("capturePoint");
+		capturePoint.getFixture().setUserData(USERDATA_FIXTURE_CAPTUREPOINT);
 		CapturePoint cp = new CapturePoint(capturePoint);
 		capturePoints.add(cp);
 	}
@@ -154,8 +162,8 @@ public class GameWorld {
 		platform = new StaticEntity(platformShape, 0.3f, position, currentId++);
 		platform.setBody(world.createBody(platform.getBodyDef()));
 		platform.setFixture(platform.getBody().createFixture(platform.getFixtureDef()));
-		if(type==ID_TILE_PLATFORM_ONE) platform.getFixture().setUserData("platformOne");
-		if(type==ID_TILE_PLATFORM_TWO) platform.getFixture().setUserData("platformTwo");
+		if(type==ID_TILE_PLATFORM_ONE) platform.getFixture().setUserData(USERDATA_FIXTURE_PLATFORM_ONE);
+		if(type==ID_TILE_PLATFORM_TWO) platform.getFixture().setUserData(USERDATA_FIXTURE_PLATFORM_TWO);
 		platforms.add(platform);
 	}
 	
@@ -174,13 +182,13 @@ public class GameWorld {
 			entity = new SensorEntity(spawnShape, position.x+.5f, position.y+.5f, currentId++);
 			entity.setBody(world.createBody(entity.getBodyDef()));
 			entity.setFixture(entity.getBody().createFixture(entity.getFixtureDef()));
-			entity.getFixture().setUserData("spawnBlue");
+			entity.getFixture().setUserData(USERDATA_FIXTURE_SPAWNPOINT_BLUE);
 			spawnPointBlue= new SpawnPoint(entity, ID_TEAM_BLUE);
 		}else{
 			entity = new SensorEntity(spawnShape, position.x+.5f, position.y+.5f, currentId++);
 			entity.setBody(world.createBody(entity.getBodyDef()));
 			entity.setFixture(entity.getBody().createFixture(entity.getFixtureDef()));
-			entity.getFixture().setUserData("spawnRed");
+			entity.getFixture().setUserData(USERDATA_FIXTURE_SPAWNPOINT_RED);
 			spawnPointRed= new SpawnPoint(entity, ID_TEAM_RED);
 		}
 	}
@@ -188,8 +196,30 @@ public class GameWorld {
 	private void initSpawnPoint(float x, float y, int type){
 		initSpawnPoint(new Vector2(x,y), type);
 	}
+	//TODO implement
+	public void update(){
+		
+	}
 	
 	//getter / setter
+	
+	public int getCurrentId(){
+		if (idReturned) return -1;
+		idReturned=true;
+		return currentId;
+	}
+	
+	public Body getMapBody(){
+		return mapBody;
+	}
+	
+	public SpawnPoint getSpawnPointBlue(){
+		return spawnPointBlue;
+	}
+	
+	public SpawnPoint getSpawnPointRed(){
+		return spawnPointRed;
+	}
 	
 	public TiledMap getTiledMap(){
 		return tiledMap;

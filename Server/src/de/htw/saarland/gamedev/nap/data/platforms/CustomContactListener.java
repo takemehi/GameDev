@@ -10,6 +10,8 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 
+import de.htw.saarland.gamedev.nap.data.GameWorld;
+
 public class CustomContactListener implements ContactListener {
 	//TODO add constants for userdata
 
@@ -18,17 +20,17 @@ public class CustomContactListener implements ContactListener {
 		Fixture fA = contact.getFixtureA();
 		Fixture fB = contact.getFixtureB();
 		//spawnPoint team blue
-		if(fA.getUserData()!=null && fA.getUserData().equals("spawnBlue")){
+		if(fA.getUserData()!=null && fA.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_BLUE)){
 			//TODO implement
 		}
-		if(fB.getUserData()!=null && fB.getUserData().equals("spawnBlue")){
+		if(fB.getUserData()!=null && fB.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_BLUE)){
 			//TODO implement
 		}
 		//spawnPoint team red
-		if(fA.getUserData()!=null && fA.getUserData().equals("spawnRed")){
+		if(fA.getUserData()!=null && fA.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_RED)){
 			//TODO implement
 		}
-		if(fB.getUserData()!=null && fB.getUserData().equals("spawnRed")){
+		if(fB.getUserData()!=null && fB.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_RED)){
 			//TODO implement
 		}
 	}
@@ -39,17 +41,17 @@ public class CustomContactListener implements ContactListener {
 		Fixture fB = contact.getFixtureB();
 		
 		//spawnPoint team blue
-		if(fA.getUserData()!=null && fA.getUserData().equals("spawnBlue")){
+		if(fA.getUserData()!=null && fA.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_BLUE)){
 			//TODO implement
 		}
-		if(fB.getUserData()!=null && fB.getUserData().equals("spawnBlue")){
+		if(fB.getUserData()!=null && fB.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_BLUE)){
 			//TODO implement
 		}
 		//spawnPoint team red
-		if(fA.getUserData()!=null && fA.getUserData().equals("spawnRed")){
+		if(fA.getUserData()!=null && fA.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_RED)){
 			//TODO implement
 		}
-		if(fB.getUserData()!=null && fB.getUserData().equals("spawnRed")){
+		if(fB.getUserData()!=null && fB.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_RED)){
 			//TODO implement
 		}
 	}
@@ -79,22 +81,22 @@ public class CustomContactListener implements ContactListener {
 		
 		
 		//player jumping through a platform from below
-		if(fA.getUserData()!=null && (fA.getUserData().equals("platformOne") || fA.getUserData().equals("platformTwo"))){
+		if(fA.getUserData()!=null && (fA.getUserData().equals(GameWorld.USERDATA_FIXTURE_PLATFORM_ONE) || fA.getUserData().equals(GameWorld.USERDATA_FIXTURE_PLATFORM_TWO))){
 			if(fB.getBody().getPosition().y+offsetB<fA.getBody().getPosition().y){
 				contact.setEnabled(false);
 			}
 		}
-		if(fB.getUserData()!=null && (fB.getUserData().equals("platformOne") || fB.getUserData().equals("platformTwo"))){
+		if(fB.getUserData()!=null && (fB.getUserData().equals(GameWorld.USERDATA_FIXTURE_PLATFORM_ONE) || fB.getUserData().equals(GameWorld.USERDATA_FIXTURE_PLATFORM_TWO))){
 			if(fA.getBody().getPosition().y+offsetA<fB.getBody().getPosition().y){
 				contact.setEnabled(false);
 				}
 		}
 		//player dropping through a platform from above
-		if(fA.getUserData()!=null && fA.getUserData().equals("platformTwo")){
+		if(fA.getUserData()!=null && fA.getUserData().equals(GameWorld.USERDATA_FIXTURE_PLATFORM_TWO)){
 			if((Math.abs(fB.getBody().getPosition().y+offsetB-fA.getBody().getPosition().y))<=0.1 && Gdx.input.isKeyPressed(Keys.S))
 				contact.setEnabled(false);
 		}
-		if(fB.getUserData()!=null && fB.getUserData().equals("platformTwo")){
+		if(fB.getUserData()!=null && fB.getUserData().equals(GameWorld.USERDATA_FIXTURE_PLATFORM_TWO)){
 			if((Math.abs(fA.getBody().getPosition().y-offsetA-fB.getBody().getPosition().y))<=0.1 && Gdx.input.isKeyPressed(Keys.S))
 				contact.setEnabled(false);
 		}
