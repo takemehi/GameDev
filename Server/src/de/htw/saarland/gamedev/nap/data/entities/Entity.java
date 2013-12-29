@@ -18,16 +18,17 @@ public abstract class Entity {
 	private BodyDef bodyDef;
 	private Body body;
 	private Fixture fixture;
+	private int id;
 	
-	public Entity(Shape shape, Vector2 position){
+	public Entity(Shape shape, Vector2 position, int id){
 		if(shape==null) throw new NullPointerException(EXCEPTION_NULL_SHAPE);
 		if(position==null) throw new NullPointerException(EXCEPTION_NULL_POSITION);
 		initBodyDef(position);
 		initFixtureDef(shape);
 	}
 	
-	public Entity(Shape shape, float x, float y){
-		this(shape, new Vector2(x,y));
+	public Entity(Shape shape, float x, float y, int id){
+		this(shape, new Vector2(x,y), id);
 	}
 	
 	private void initBodyDef(Vector2 position){

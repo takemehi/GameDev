@@ -12,13 +12,13 @@ import com.badlogic.gdx.physics.box2d.Shape;
  */
 public class StaticEntity extends Entity {
 
-	public StaticEntity(Shape shape, float friction, Vector2 position) {
-		super(shape, position);		
+	public StaticEntity(Shape shape, float friction, Vector2 position, int id) {
+		super(shape, position, id);		
 		getBodyDef().type=BodyDef.BodyType.StaticBody;
 		getFixtureDef().friction=friction;
 	}
 	
-	public StaticEntity(Shape shape, float friction, float x, float y){
-		this(shape, friction, new Vector2(x,y));
+	public StaticEntity(Shape shape, float friction, float x, float y, int id){
+		this(shape, friction, new Vector2(x,y), id);
 	}
 }

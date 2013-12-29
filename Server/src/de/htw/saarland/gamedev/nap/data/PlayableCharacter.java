@@ -22,8 +22,8 @@ public class PlayableCharacter extends MoveableEntity{
 	private boolean movingUp;
 
 	public PlayableCharacter(Shape shape, float density,
-			float friction, float restitution, Vector2 position, Vector2 baseVelocity, Vector2 maxVelocity, int maxHealth) {
-		super(shape, density, friction, restitution, position, baseVelocity, maxVelocity);
+			float friction, float restitution, Vector2 position, Vector2 baseVelocity, Vector2 maxVelocity, int maxHealth, int id) {
+		super(shape, density, friction, restitution, position, baseVelocity, maxVelocity, id);
 		if(maxHealth <= 0) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_HEALTH_MAX);
 		this.maxHealth=maxHealth;
 		this.health=maxHealth;

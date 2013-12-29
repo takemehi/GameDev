@@ -19,8 +19,8 @@ public class MoveableEntity extends Entity{
 	private Vector2 maxVelocity;
 	
 	public MoveableEntity(Shape shape, float density,
-			float friction, float restitution, Vector2 position, Vector2 baseVelocity, Vector2 maxVelocity) {
-		super(shape, position);
+			float friction, float restitution, Vector2 position, Vector2 baseVelocity, Vector2 maxVelocity, int id) {
+		super(shape, position, id);
 		if(baseVelocity==null) throw new NullPointerException(EXCEPTION_NULL_VELOCITY_BASE);
 		if(maxVelocity==null) throw new NullPointerException(EXCEPTION_NULL_VELOCITY_MAX);
 		this.baseVelocity=baseVelocity;
@@ -35,8 +35,8 @@ public class MoveableEntity extends Entity{
 	}
 
 	public MoveableEntity(Shape shape, float density,
-			float friction, float restitution, float xPos, float yPos, float xVelBase, float yVelBase){
-		this(shape, density, friction, restitution, new Vector2(xPos,yPos), new Vector2(xVelBase,yVelBase), new Vector2(xVelBase, yVelBase));
+			float friction, float restitution, float xPos, float yPos, float xVelBase, float yVelBase, int id){
+		this(shape, density, friction, restitution, new Vector2(xPos,yPos), new Vector2(xVelBase,yVelBase), new Vector2(xVelBase, yVelBase), id);
 	}
 	
 	public Vector2 getBaseVelocity(){

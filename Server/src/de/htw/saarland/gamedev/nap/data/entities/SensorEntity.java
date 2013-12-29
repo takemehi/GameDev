@@ -16,13 +16,13 @@ import com.badlogic.gdx.physics.box2d.Shape;
 public class SensorEntity extends Entity {
 		
 	//TODO static or dynamic?
-	public SensorEntity(Shape shape, Vector2 position) {
-		super(shape, position);
+	public SensorEntity(Shape shape, Vector2 position, int id) {
+		super(shape, position, id);
 		getFixtureDef().isSensor=true;
 	}
 	
-	public SensorEntity(Shape shape, float x, float y){
-		this(shape, new Vector2(x,y));
+	public SensorEntity(Shape shape, float x, float y, int id){
+		this(shape, new Vector2(x,y), id);
 	}
 
 }

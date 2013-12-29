@@ -37,6 +37,7 @@ import com.smartfoxserver.v2.entities.User;
 import com.smartfoxserver.v2.entities.data.SFSObject;
 
 import de.htw.saarland.gamedev.nap.box2d.editor.BodyEditorLoader;
+import de.htw.saarland.gamedev.nap.data.CapturePoint;
 import de.htw.saarland.gamedev.nap.data.NPC;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
 import de.htw.saarland.gamedev.nap.data.Player;
@@ -72,8 +73,10 @@ public class GameServer implements ApplicationListener {
 	private final static int ITERATIONS_POSITION = 2;
 	//world constants
 	private final static Vector2 GRAVITY = new Vector2(0, -20);
-	//transformation constants
+	//others
 	private final static float PIXELS_TO_METERS = 1/96f;
+	private final static int MAX_POINTS = 200;
+	private final static float INTERVAL_POINTS = 5.0f;
 	//ids
 	private static final int ID_TEAM_BLUE = 0;
 	private static final int ID_TEAM_RED = 1;
@@ -101,10 +104,15 @@ public class GameServer implements ApplicationListener {
 	private SpawnPoint SpawnPointRed;
 	private ArrayList<Player> teamBlue;
 	private ArrayList<Player> teamRed;
-	private ArrayList<SensorEntity> capturePoints;
+	private ArrayList<CapturePoint> capturePoints;
 	private ArrayList<StaticEntity> platforms;
 	boolean capturing = false;
 	float captureTime = 0;
+	int currentId;
+	int pointsBlue;
+	int pointsRed;
+	boolean gameEnded;
+	float deltaTime;
 	
 	
 	//test variables
@@ -137,7 +145,10 @@ public class GameServer implements ApplicationListener {
 		this.teamBlue=team1;
 		this.teamRed=team2;
 		platforms=new ArrayList<StaticEntity>();
-		capturePoints=new ArrayList<SensorEntity>();	
+		capturePoints=new ArrayList<CapturePoint>();
+		currentId=0;
+		gameEnded=false;
+		deltaTime=0;
 	}
 	
 	//////////////////////////
@@ -167,7 +178,7 @@ public class GameServer implements ApplicationListener {
 		
 		PolygonShape playerShape = new PolygonShape();
 		playerShape.setAsBox(.4f, .7f);
-		PlayableCharacter playerEntity = new PlayableCharacter(playerShape, 0.1f, 0, 0, SpawnPointBlue.getSpawnPoint().getBody().getPosition(), new Vector2(5,10), new Vector2(10,10), 100);		
+		PlayableCharacter playerEntity = new PlayableCharacter(playerShape, 0.1f, 0, 0, SpawnPointBlue.getSpawnPoint().getBody().getPosition(), new Vector2(5,10), new Vector2(10,10), 100, currentId++);		
 		
 		playerEntity.setBody(world.createBody(playerEntity.getBodyDef()));
 		playerEntity.setFixture(playerEntity.getBody().createFixture(playerEntity.getFixtureDef()));
@@ -229,6 +240,7 @@ public class GameServer implements ApplicationListener {
 			if(Gdx.input.isKeyPressed(Keys.S) && p.getPlChar().getTimeOnGround()>0.2f)
 				p.getPlChar().getBody().setAwake(true);
 			//capturing point
+			/*
 			if(Gdx.input.isKeyPressed(Keys.Q) && !capturing){
 				for(Contact c: world.getContactList()){
 					if(c.getFixtureA()==capturePoints.get(0).getFixture()){
@@ -244,7 +256,7 @@ public class GameServer implements ApplicationListener {
 						}
 					}
 				}
-			}
+			}*/
 		}
 		if(capturing) captureTime+=Gdx.graphics.getDeltaTime();
 		if(captureTime>5){
@@ -253,16 +265,24 @@ public class GameServer implements ApplicationListener {
 			System.out.println("Point captured!");
 		}
 		
-		//mouse cursor position test
-		Vector3 mousePos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
-		camera.unproject(mousePos);
+		//Game Logic
+		if(!gameEnded){
+			deltaTime+=Gdx.graphics.getDeltaTime();
+			if(deltaTime>=INTERVAL_POINTS){
+				for(CapturePoint cp: capturePoints){
+					if(cp.getTeamId()==ID_TEAM_BLUE) pointsBlue++;
+					if(cp.getTeamId()==ID_TEAM_RED) pointsRed++;
+				}
+				if(pointsBlue>=MAX_POINTS || pointsRed>= MAX_POINTS) gameEnded=true;
+				deltaTime=0;
+			}
+		}
 		
 		//rendering
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		//System.out.println(player.getBody().getPosition().x+"\t"+player.getBody().getPosition().y);
 		
-		stateTime += Gdx.graphics.getDeltaTime();			// #15
+		stateTime += Gdx.graphics.getDeltaTime();
 		currentFrame = walkAnimation.getKeyFrame(stateTime, true);
 		
 		batch.begin();
@@ -295,11 +315,12 @@ public class GameServer implements ApplicationListener {
 		if(position==null) throw new NullPointerException(EXCEPTION_NULL_VECTOR);
 		PolygonShape captureShape = new PolygonShape();
 		captureShape.setAsBox(.5f, .5f);
-		SensorEntity capturePoint = new SensorEntity(captureShape, position.x+.5f, position.y+.5f);
+		SensorEntity capturePoint = new SensorEntity(captureShape, position.x+.5f, position.y+.5f, currentId++);
 		capturePoint.setBody(world.createBody(capturePoint.getBodyDef()));
 		capturePoint.setFixture(capturePoint.getBody().createFixture(capturePoint.getFixtureDef()));
 		capturePoint.getFixture().setUserData("capturePoint");
-		capturePoints.add(capturePoint);
+		CapturePoint cp = new CapturePoint(capturePoint);
+		capturePoints.add(cp);
 	}
 	
 	private void initCapturePoint(float x, float y){
@@ -356,7 +377,6 @@ public class GameServer implements ApplicationListener {
 	private void initNpc(NPC npc){
 		//TODO set the correct starting position depending on the map
 		npc.setBody(world.createBody(npc.getBodyDef()));
-		npc.dispose();
 		npc.getBody().createFixture(npc.getFixtureDef());
 	}
 	
@@ -366,7 +386,7 @@ public class GameServer implements ApplicationListener {
 		ChainShape platformShape = new ChainShape();
 		StaticEntity platform;
 		platformShape.createChain(new Vector2[]{new Vector2(0,0), new Vector2(1,0)});
-		platform = new StaticEntity(platformShape, 0.3f, position);
+		platform = new StaticEntity(platformShape, 0.3f, position, currentId++);
 		platform.setBody(world.createBody(platform.getBodyDef()));
 		platform.setFixture(platform.getBody().createFixture(platform.getFixtureDef()));
 		if(type==ID_TILE_PLATFORM_ONE) platform.getFixture().setUserData("platformOne");
@@ -399,13 +419,13 @@ public class GameServer implements ApplicationListener {
 		SensorEntity entity;
 		//TODO position
 		if(team==ID_TEAM_BLUE){
-			entity = new SensorEntity(spawnShape, position.x+.5f, position.y+.5f);
+			entity = new SensorEntity(spawnShape, position.x+.5f, position.y+.5f, currentId++);
 			entity.setBody(world.createBody(entity.getBodyDef()));
 			entity.setFixture(entity.getBody().createFixture(entity.getFixtureDef()));
 			entity.getFixture().setUserData("spawnBlue");
 			SpawnPointBlue= new SpawnPoint(entity, ID_TEAM_BLUE);
 		}else{
-			entity = new SensorEntity(spawnShape, position.x+.5f, position.y+.5f);
+			entity = new SensorEntity(spawnShape, position.x+.5f, position.y+.5f, currentId++);
 			entity.setBody(world.createBody(entity.getBodyDef()));
 			entity.setFixture(entity.getBody().createFixture(entity.getFixtureDef()));
 			entity.getFixture().setUserData("spawnRed");

@@ -29,6 +29,7 @@ public class CapturePoint {
 	}
 	public void setTeamId(int teamId){
 		if(teamId!=ID_TEAM_BLUE && teamId!=ID_TEAM_RED) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_TEAM_ID);
+		this.teamId=teamId;
 	}
 	public boolean isBeingCaptured(){
 		return capturing;
