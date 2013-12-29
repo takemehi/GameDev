@@ -151,6 +151,7 @@ public class GameServer implements ApplicationListener {
 		//initialize map
 		gameWorld = new GameWorld(world, mapName, currentId);
 		this.map = gameWorld.getTiledMap();
+		if (gameWorld.getCurrentId()!=-1)this.currentId= gameWorld.getCurrentId();
 		//initialize players
 		
 		//Test stuff
