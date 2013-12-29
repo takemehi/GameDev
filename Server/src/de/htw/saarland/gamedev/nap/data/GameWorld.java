@@ -17,14 +17,13 @@ import com.badlogic.gdx.physics.box2d.World;
 import de.htw.saarland.gamedev.nap.box2d.editor.BodyEditorLoader;
 import de.htw.saarland.gamedev.nap.data.entities.SensorEntity;
 import de.htw.saarland.gamedev.nap.data.entities.StaticEntity;
+import de.htw.saarland.gamedev.nap.game.GameServer;
 
 public class GameWorld {
 	
 	private final static String FOLDER_MAPS = "data/maps/";
 	private final static float PIXELS_TO_METERS = 1/96f;
-	//IDs
-	private static final int ID_TEAM_BLUE = 0;
-	private static final int ID_TEAM_RED = 1;
+	//tile ids
 	private final static int ID_TILE_PLATFORM_ONE = -1;
 	private final static int ID_TILE_PLATFORM_TWO = 2;
 	private final static int ID_TILE_SPAWN_POINT_BLUE = 12;
@@ -126,9 +125,9 @@ public class GameWorld {
 		for(int i=0; i<layer.getWidth(); i++){
 			for(int j=0; j<layer.getHeight(); j++){
 				if(layer.getCell(i, j)!=null && layer.getCell(i, j).getTile().getId()==ID_TILE_SPAWN_POINT_BLUE)	
-					initSpawnPoint(i,j, ID_TEAM_BLUE);
+					initSpawnPoint(i,j, GameServer.ID_TEAM_BLUE);
 				if(layer.getCell(i, j)!=null && layer.getCell(i, j).getTile().getId()==ID_TILE_SPAWN_POINT_RED)	
-					initSpawnPoint(i,j, ID_TEAM_RED);
+					initSpawnPoint(i,j, GameServer.ID_TEAM_RED);
 			}
 		}
 		//creeps
@@ -173,23 +172,23 @@ public class GameWorld {
 	
 	private void initSpawnPoint(Vector2 position, int team){
 		if(position==null) throw new NullPointerException(EXCEPTION_NULL_VECTOR);
-		if(team!=ID_TEAM_BLUE && team!=ID_TEAM_RED) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_TEAM_ID);
+		if(team!=GameServer.ID_TEAM_BLUE && team!=GameServer.ID_TEAM_RED) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_TEAM_ID);
 		PolygonShape spawnShape = new PolygonShape();
 		spawnShape.setAsBox(.5f, .5f);
 		SensorEntity entity;
 		//TODO position
-		if(team==ID_TEAM_BLUE){
+		if(team==GameServer.ID_TEAM_BLUE){
 			entity = new SensorEntity(spawnShape, position.x+.5f, position.y+.5f, currentId++);
 			entity.setBody(world.createBody(entity.getBodyDef()));
 			entity.setFixture(entity.getBody().createFixture(entity.getFixtureDef()));
 			entity.getFixture().setUserData(USERDATA_FIXTURE_SPAWNPOINT_BLUE);
-			spawnPointBlue= new SpawnPoint(entity, ID_TEAM_BLUE);
+			spawnPointBlue= new SpawnPoint(entity, GameServer.ID_TEAM_BLUE);
 		}else{
 			entity = new SensorEntity(spawnShape, position.x+.5f, position.y+.5f, currentId++);
 			entity.setBody(world.createBody(entity.getBodyDef()));
 			entity.setFixture(entity.getBody().createFixture(entity.getFixtureDef()));
 			entity.getFixture().setUserData(USERDATA_FIXTURE_SPAWNPOINT_RED);
-			spawnPointRed= new SpawnPoint(entity, ID_TEAM_RED);
+			spawnPointRed= new SpawnPoint(entity, GameServer.ID_TEAM_RED);
 		}
 	}
 	

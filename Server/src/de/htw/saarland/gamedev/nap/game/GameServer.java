@@ -14,10 +14,15 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.WorldManifold;
@@ -30,16 +35,17 @@ import de.htw.saarland.gamedev.nap.data.NPC;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
 import de.htw.saarland.gamedev.nap.data.Player;
 import de.htw.saarland.gamedev.nap.data.SpawnPoint;
+import de.htw.saarland.gamedev.nap.data.Warrior;
 import de.htw.saarland.gamedev.nap.data.entities.MoveableEntity;
 import de.htw.saarland.gamedev.nap.data.entities.StaticEntity;
 import de.htw.saarland.gamedev.nap.data.platforms.CustomContactListener;
+import de.htw.saarland.gamedev.nap.data.shapes.WarriorShape;
 
 public class GameServer implements ApplicationListener {
 	
 	//exceptions
 	private final static String EXCEPTION_ILLEGAL_MAP = "Map files are missing!";
 	private final static String EXCEPTION_ILLEGAL_MAP_EMPTY = "Map name is empty!";
-	private final static String EXCEPTION_ILLEGAL_PLATFORM_ID = "Platform Id doesn't exist!";
 	private final static String EXCEPTION_ILLEGAL_TEAMSIZE = "Teamsize can't be less than 1!";
 	private final static String EXCEPTION_ILLEGAL_TEAM_FULL = "Team is already full!";
 	private final static String EXCEPTION_ILLEGAL_TEAM_ID = "Team Id is not existing!";
@@ -66,15 +72,8 @@ public class GameServer implements ApplicationListener {
 	private final static float INTERVAL_POINTS = 5.0f;
 	private final static int[] LAYERS_TO_RENDER = {0,1,2};
 	//ids
-	private static final int ID_TEAM_BLUE = 0;
-	private static final int ID_TEAM_RED = 1;
-	private final static int ID_TILE_PLATFORM_ONE = -1;
-	private final static int ID_TILE_PLATFORM_TWO = 2;
-	private final static int ID_TILE_SPAWN_POINT_BLUE = 12;
-	private final static int ID_TILE_SPAWN_POINT_RED = 13;
-	private final static int ID_TILE_CAPTURE_POINT = 0;
-	private final static int ID_TILE_CREEP_DMG = 0;
-	private final static int ID_TILE_CREEP_RES = 0;
+	public static final int ID_TEAM_BLUE = 0;
+	public static final int ID_TEAM_RED = 1;
 	
 	
 	//input parameters
@@ -154,6 +153,8 @@ public class GameServer implements ApplicationListener {
 		if (gameWorld.getCurrentId()!=-1)this.currentId= gameWorld.getCurrentId();
 		//initialize players
 		
+		//initialize npcs
+		
 		//Test stuff
 		renderer = new Box2DDebugRenderer();
 		camera = new OrthographicCamera(Gdx.graphics.getWidth() / 20, Gdx.graphics.getHeight() / 20);
@@ -163,14 +164,28 @@ public class GameServer implements ApplicationListener {
 		mapRenderer.setView(camera);
 		batch = new SpriteBatch();		
 		
-		PolygonShape playerShape = new PolygonShape();
-		playerShape.setAsBox(.2f, .35f);
-		PlayableCharacter playerEntity = new PlayableCharacter(playerShape, 0.1f, 0, 0, new Vector2(2,2), new Vector2(5,2), new Vector2(3,7), 100, currentId++);		
+		/*
+		BodyDef bd = new BodyDef();
+		bd.position.set(new Vector2(2,6));
+		FixtureDef fd1 = new FixtureDef();
+		fd1.isSensor=true;
+		fd1.shape=new WarriorShape();
+		FixtureDef fd2=new FixtureDef();
+		CircleShape cs = new CircleShape();
+		cs.setRadius(0.2f);
+		cs.setPosition(new Vector2(0.2f,0));
+		fd2.isSensor=true;
+		fd2.shape=cs;
 		
-		playerEntity.setBody(world.createBody(playerEntity.getBodyDef()));
-		playerEntity.setFixture(playerEntity.getBody().createFixture(playerEntity.getFixtureDef()));
-		playerEntity.getFixture().setUserData("player");
-		Player player = new Player(null, playerEntity, ID_TEAM_BLUE);
+		Body body = world.createBody(bd);
+		body.createFixture(fd1);
+		body.createFixture(fd2);*/
+		
+		Warrior warrior = new Warrior(new Vector2(2,2), currentId++);
+		warrior.setBody(world.createBody(warrior.getBodyDef()));
+		warrior.setFixture(warrior.getBody().createFixture(warrior.getFixtureDef()));
+		warrior.setMeleeSensorFixture(warrior.getBody().createFixture(warrior.getMeleeSensorFixtureDef()));
+		Player player = new Player(null, warrior, ID_TEAM_BLUE);
 		teamBlue.add(player);
 	}
 	
@@ -197,10 +212,14 @@ public class GameServer implements ApplicationListener {
 				p.getPlChar().getBody().setLinearVelocity(0, p.getPlChar().getBody().getLinearVelocity().y);
 			if(!Gdx.input.isKeyPressed(Keys.D))
 				p.getPlChar().getBody().setLinearVelocity(0, p.getPlChar().getBody().getLinearVelocity().y);
-			if(Gdx.input.isKeyPressed(Keys.A))
+			if(Gdx.input.isKeyPressed(Keys.A)){
 				p.getPlChar().getBody().setLinearVelocity(-p.getPlChar().getMaxVelocity().x, p.getPlChar().getBody().getLinearVelocity().y);
-			if(Gdx.input.isKeyPressed(Keys.D))
+				p.getPlChar().getBody().setTransform(p.getPlChar().getBody().getPosition(), MathUtils.degreesToRadians*180);
+			}
+			if(Gdx.input.isKeyPressed(Keys.D)){
 				p.getPlChar().getBody().setLinearVelocity(p.getPlChar().getMaxVelocity().x, p.getPlChar().getBody().getLinearVelocity().y);
+				p.getPlChar().getBody().setTransform(p.getPlChar().getBody().getPosition(), MathUtils.degreesToRadians*360);
+			}
 			if(!Gdx.input.isKeyPressed(Keys.SPACE) && isGrounded(p.getPlChar())) p.getPlChar().setJumping(false);
 			if(Gdx.input. isKeyPressed(Keys.SPACE) && !p.getPlChar().isJumping()){
 				if(isGrounded(p.getPlChar())){
@@ -231,11 +250,17 @@ public class GameServer implements ApplicationListener {
 				}
 			}*/
 		}
+		//Capturing
 		if(capturing) captureTime+=Gdx.graphics.getDeltaTime();
 		if(captureTime>5){
 			capturing=false;
 			captureTime=0;
 			System.out.println("Point captured!");
+		}
+		
+		//Attacks
+		if(Gdx.input.isButtonPressed(Keys.LEFT)){
+			System.out.println("check");
 		}
 		
 		//Game Logic
