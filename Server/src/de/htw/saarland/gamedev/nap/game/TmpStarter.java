@@ -11,6 +11,6 @@ public class TmpStarter {
 
 	public static void main (String[] args) {
 		ArrayList<Player> team= new ArrayList<Player>();
-		new LwjglApplication(new GameServer("map2", 10, team, team), "Game", 480, 320, true);
+		new LwjglApplication(new GameServer("map", 10, team, team), "Game", 480, 320, true);
 	}
 }

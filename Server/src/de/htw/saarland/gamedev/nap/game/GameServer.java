@@ -77,6 +77,7 @@ public class GameServer implements ApplicationListener {
 	private final static float PIXELS_TO_METERS = 1/96f;
 	private final static int MAX_POINTS = 200;
 	private final static float INTERVAL_POINTS = 5.0f;
+	private final static int[] LAYERS_TO_RENDER = {0,1,2};
 	//ids
 	private static final int ID_TEAM_BLUE = 0;
 	private static final int ID_TEAM_RED = 1;
@@ -177,8 +178,8 @@ public class GameServer implements ApplicationListener {
 		initCapturePoint(10,5);
 		
 		PolygonShape playerShape = new PolygonShape();
-		playerShape.setAsBox(.4f, .7f);
-		PlayableCharacter playerEntity = new PlayableCharacter(playerShape, 0.1f, 0, 0, SpawnPointBlue.getSpawnPoint().getBody().getPosition(), new Vector2(5,10), new Vector2(10,10), 100, currentId++);		
+		playerShape.setAsBox(.2f, .35f);
+		PlayableCharacter playerEntity = new PlayableCharacter(playerShape, 0.1f, 0, 0, new Vector2(2,2), new Vector2(5,2), new Vector2(10,2), 100, currentId++);		
 		
 		playerEntity.setBody(world.createBody(playerEntity.getBodyDef()));
 		playerEntity.setFixture(playerEntity.getBody().createFixture(playerEntity.getFixtureDef()));
@@ -288,7 +289,7 @@ public class GameServer implements ApplicationListener {
 		batch.begin();
 		batch.end();
 		
-		mapRenderer.render();
+		mapRenderer.render(LAYERS_TO_RENDER);
 		renderer.render(world, camera.combined);
 		world.step(TIME_STEP, ITERATIONS_VELOCITY, ITERATIONS_POSITION);
 	}
@@ -337,6 +338,7 @@ public class GameServer implements ApplicationListener {
 		mapWidth=map.getProperties().get("width", Integer.class)
 				* map.getProperties().get("tilewidth", Integer.class);
 		//check for meta tiles
+		//platforms
 		TiledMapTileLayer layer = (TiledMapTileLayer)map.getLayers().get(1);
 		for(int i=0; i<layer.getWidth(); i++){
 			for(int j=0; j<layer.getHeight(); j++){
@@ -345,17 +347,9 @@ public class GameServer implements ApplicationListener {
 					initPlatform(i,j+1, ID_TILE_PLATFORM_TWO);
 				if(layer.getCell(i, j)!=null && layer.getCell(i, j).getTile().getId()==ID_TILE_PLATFORM_ONE)
 					initPlatform(i,j+1, ID_TILE_PLATFORM_ONE);
-				if(layer.getCell(i, j)!=null && layer.getCell(i, j).getTile().getId()==ID_TILE_CAPTURE_POINT)
-					//initCapturePoint(i,j);
-				//TODO implement
-				if(layer.getCell(i, j)!=null && layer.getCell(i, j).getTile().getId()==ID_TILE_CREEP_DMG);
-				if(layer.getCell(i, j)!=null && layer.getCell(i, j).getTile().getId()==ID_TILE_CREEP_RES);
-				if(layer.getCell(i, j)!=null && layer.getCell(i, j).getTile().getId()==ID_TILE_SPAWN_POINT_BLUE);
-					//initSpawnPoint(i, j, TILE_ID_SPAWN_POINT_BLUE);
-				if(layer.getCell(i, j)!=null && layer.getCell(i, j).getTile().getId()==ID_TILE_SPAWN_POINT_RED);
-					//initSpawnPoint(i, j, TILE_ID_SPAWN_POINT_RED);
 			}
 		}
+		//
 		
 		
 		//create bodyDef
@@ -370,7 +364,7 @@ public class GameServer implements ApplicationListener {
 		mapBody = world.createBody(bodyDef);
 		
 		BodyEditorLoader bLoader = new BodyEditorLoader(new FileHandle(FOLDER_MAPS+mapName+".json"));
-		bLoader.attachFixture(mapBody, "Map", fDef
+		bLoader.attachFixture(mapBody, "map", fDef
 				,mapWidth*PIXELS_TO_METERS);
 	}
 	
