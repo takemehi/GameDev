@@ -7,7 +7,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -15,35 +14,23 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.ContactImpulse;
-import com.badlogic.gdx.physics.box2d.ContactListener;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.WorldManifold;
 import com.smartfoxserver.v2.entities.User;
 import com.smartfoxserver.v2.entities.data.SFSObject;
 
-import de.htw.saarland.gamedev.nap.box2d.editor.BodyEditorLoader;
 import de.htw.saarland.gamedev.nap.data.CapturePoint;
+import de.htw.saarland.gamedev.nap.data.GameWorld;
 import de.htw.saarland.gamedev.nap.data.NPC;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
 import de.htw.saarland.gamedev.nap.data.Player;
 import de.htw.saarland.gamedev.nap.data.SpawnPoint;
 import de.htw.saarland.gamedev.nap.data.entities.MoveableEntity;
-import de.htw.saarland.gamedev.nap.data.entities.SensorEntity;
 import de.htw.saarland.gamedev.nap.data.entities.StaticEntity;
 import de.htw.saarland.gamedev.nap.data.platforms.CustomContactListener;
 
@@ -81,10 +68,10 @@ public class GameServer implements ApplicationListener {
 	//ids
 	private static final int ID_TEAM_BLUE = 0;
 	private static final int ID_TEAM_RED = 1;
-	private final static int ID_TILE_PLATFORM_ONE = 0;
+	private final static int ID_TILE_PLATFORM_ONE = -1;
 	private final static int ID_TILE_PLATFORM_TWO = 2;
-	private final static int ID_TILE_SPAWN_POINT_BLUE = 0;
-	private final static int ID_TILE_SPAWN_POINT_RED = 0;
+	private final static int ID_TILE_SPAWN_POINT_BLUE = 12;
+	private final static int ID_TILE_SPAWN_POINT_RED = 13;
 	private final static int ID_TILE_CAPTURE_POINT = 0;
 	private final static int ID_TILE_CREEP_DMG = 0;
 	private final static int ID_TILE_CREEP_RES = 0;
@@ -100,7 +87,7 @@ public class GameServer implements ApplicationListener {
 	//internal variables
 	private ConcurrentLinkedQueue<SFSObject> packetQueue;	
 	private World world;
-	private Body mapBody;
+	private GameWorld gameWorld;
 	private SpawnPoint SpawnPointBlue;
 	private SpawnPoint SpawnPointRed;
 	private ArrayList<Player> teamBlue;
@@ -162,7 +149,8 @@ public class GameServer implements ApplicationListener {
 		world = new World(GRAVITY, true);
 		world.setContactListener(new CustomContactListener());
 		//initialize map
-		initMap(mapName);
+		gameWorld = new GameWorld(world, mapName, currentId);
+		this.map = gameWorld.getTiledMap();
 		//initialize players
 		
 		//Test stuff
@@ -174,9 +162,6 @@ public class GameServer implements ApplicationListener {
 		mapRenderer.setView(camera);
 		batch = new SpriteBatch();		
 		
-		initSpawnPoint(0, 0, 0);
-		initCapturePoint(10,5);
-		
 		PolygonShape playerShape = new PolygonShape();
 		playerShape.setAsBox(.2f, .35f);
 		PlayableCharacter playerEntity = new PlayableCharacter(playerShape, 0.1f, 0, 0, new Vector2(2,2), new Vector2(5,2), new Vector2(10,2), 100, currentId++);		
@@ -186,20 +171,6 @@ public class GameServer implements ApplicationListener {
 		playerEntity.getFixture().setUserData("player");
 		Player player = new Player(null, playerEntity, ID_TEAM_BLUE);
 		teamBlue.add(player);
-		
-		//walking animation test
-		walkSheet = new Texture(Gdx.files.internal(FOLDER_DATA+"animation.png"));	
-		TextureRegion[][] tmp = TextureRegion.split(walkSheet, walkSheet.getWidth() / 
-				6, walkSheet.getHeight());
-		walkFrames = new TextureRegion[6];
-		int index = 0;
-
-		for (int i = 0; i < 6; i++) {
-			walkFrames[index++] = tmp[0][i];
-		}
-		
-		walkAnimation = new Animation(0.1f, walkFrames);		
-		stateTime = 0f;	
 	}
 	
 	@Override
@@ -283,9 +254,6 @@ public class GameServer implements ApplicationListener {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
-		stateTime += Gdx.graphics.getDeltaTime();
-		currentFrame = walkAnimation.getKeyFrame(stateTime, true);
-		
 		batch.begin();
 		batch.end();
 		
@@ -312,86 +280,6 @@ public class GameServer implements ApplicationListener {
 	//	intern methods	//
 	//////////////////////
 	
-	private void initCapturePoint(Vector2 position){
-		if(position==null) throw new NullPointerException(EXCEPTION_NULL_VECTOR);
-		PolygonShape captureShape = new PolygonShape();
-		captureShape.setAsBox(.5f, .5f);
-		SensorEntity capturePoint = new SensorEntity(captureShape, position.x+.5f, position.y+.5f, currentId++);
-		capturePoint.setBody(world.createBody(capturePoint.getBodyDef()));
-		capturePoint.setFixture(capturePoint.getBody().createFixture(capturePoint.getFixtureDef()));
-		capturePoint.getFixture().setUserData("capturePoint");
-		CapturePoint cp = new CapturePoint(capturePoint);
-		capturePoints.add(cp);
-	}
-	
-	private void initCapturePoint(float x, float y){
-		initCapturePoint(new Vector2(x,y));
-	}
-	
-	private void initMap(String mapName){
-		
-		int mapWidth;
-		//init map
-		map = new TiledMap();
-		TmxMapLoader loader = new TmxMapLoader();
-		map = loader.load(FOLDER_MAPS+mapName+".tmx");
-		mapWidth=map.getProperties().get("width", Integer.class)
-				* map.getProperties().get("tilewidth", Integer.class);
-		//check for meta tiles
-		//platforms
-		TiledMapTileLayer layer = (TiledMapTileLayer)map.getLayers().get(1);
-		for(int i=0; i<layer.getWidth(); i++){
-			for(int j=0; j<layer.getHeight(); j++){
-				//check for two way platforms
-				if(layer.getCell(i, j)!=null && layer.getCell(i, j).getTile().getId()==ID_TILE_PLATFORM_TWO)	
-					initPlatform(i,j+1, ID_TILE_PLATFORM_TWO);
-				if(layer.getCell(i, j)!=null && layer.getCell(i, j).getTile().getId()==ID_TILE_PLATFORM_ONE)
-					initPlatform(i,j+1, ID_TILE_PLATFORM_ONE);
-			}
-		}
-		//
-		
-		
-		//create bodyDef
-		BodyDef bodyDef = new BodyDef();
-		bodyDef.type = BodyDef.BodyType.StaticBody;
-		bodyDef.position.set(0,0);
-		//create fixtureDef
-		FixtureDef fDef = new FixtureDef();
-		fDef.density=1;
-		fDef.friction=0.3f;
-		//create world body
-		mapBody = world.createBody(bodyDef);
-		
-		BodyEditorLoader bLoader = new BodyEditorLoader(new FileHandle(FOLDER_MAPS+mapName+".json"));
-		bLoader.attachFixture(mapBody, "map", fDef
-				,mapWidth*PIXELS_TO_METERS);
-	}
-	
-	private void initNpc(NPC npc){
-		//TODO set the correct starting position depending on the map
-		npc.setBody(world.createBody(npc.getBodyDef()));
-		npc.getBody().createFixture(npc.getFixtureDef());
-	}
-	
-	private void initPlatform(Vector2 position, int type){
-		if(position==null) throw new NullPointerException(EXCEPTION_NULL_VECTOR);
-		if(type!=ID_TILE_PLATFORM_ONE && type!=ID_TILE_PLATFORM_TWO) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_PLATFORM_ID);
-		ChainShape platformShape = new ChainShape();
-		StaticEntity platform;
-		platformShape.createChain(new Vector2[]{new Vector2(0,0), new Vector2(1,0)});
-		platform = new StaticEntity(platformShape, 0.3f, position, currentId++);
-		platform.setBody(world.createBody(platform.getBodyDef()));
-		platform.setFixture(platform.getBody().createFixture(platform.getFixtureDef()));
-		if(type==ID_TILE_PLATFORM_ONE) platform.getFixture().setUserData("platformOne");
-		if(type==ID_TILE_PLATFORM_TWO) platform.getFixture().setUserData("platformTwo");
-		platforms.add(platform);
-	}
-	
-	private void initPlatform(float x, float y, int type){
-		initPlatform(new Vector2(x,y), type);
-	}
-	
 	private void initPlayer(User user, int team, PlayableCharacter character){
 		//TODO set the correct starting position depending on the map
 		Player player = new Player(user, character, team);
@@ -403,32 +291,6 @@ public class GameServer implements ApplicationListener {
 		player.getPlChar().setFixture(
 				player.getPlChar().getBody()
 				.createFixture(player.getPlChar().getFixtureDef()));
-	}
-	
-	private void initSpawnPoint(Vector2 position, int team){
-		if(position==null) throw new NullPointerException(EXCEPTION_NULL_VECTOR);
-		if(team!=ID_TEAM_BLUE && team!=ID_TEAM_RED) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_TEAM_ID);
-		PolygonShape spawnShape = new PolygonShape();
-		spawnShape.setAsBox(.5f, .5f);
-		SensorEntity entity;
-		//TODO position
-		if(team==ID_TEAM_BLUE){
-			entity = new SensorEntity(spawnShape, position.x+.5f, position.y+.5f, currentId++);
-			entity.setBody(world.createBody(entity.getBodyDef()));
-			entity.setFixture(entity.getBody().createFixture(entity.getFixtureDef()));
-			entity.getFixture().setUserData("spawnBlue");
-			SpawnPointBlue= new SpawnPoint(entity, ID_TEAM_BLUE);
-		}else{
-			entity = new SensorEntity(spawnShape, position.x+.5f, position.y+.5f, currentId++);
-			entity.setBody(world.createBody(entity.getBodyDef()));
-			entity.setFixture(entity.getBody().createFixture(entity.getFixtureDef()));
-			entity.getFixture().setUserData("spawnRed");
-			SpawnPointRed= new SpawnPoint(entity, ID_TEAM_RED);
-		}
-	}
-	
-	private void initSpawnPoint(float x, float y, int type){
-		initSpawnPoint(new Vector2(x,y), type);
 	}
 	
 	private boolean isGrounded(MoveableEntity entity){
