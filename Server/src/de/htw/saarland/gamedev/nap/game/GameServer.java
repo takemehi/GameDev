@@ -164,7 +164,7 @@ public class GameServer implements ApplicationListener {
 		
 		PolygonShape playerShape = new PolygonShape();
 		playerShape.setAsBox(.2f, .35f);
-		PlayableCharacter playerEntity = new PlayableCharacter(playerShape, 0.1f, 0, 0, new Vector2(2,2), new Vector2(5,2), new Vector2(10,2), 100, currentId++);		
+		PlayableCharacter playerEntity = new PlayableCharacter(playerShape, 0.1f, 0, 0, new Vector2(2,2), new Vector2(5,2), new Vector2(3,7), 100, currentId++);		
 		
 		playerEntity.setBody(world.createBody(playerEntity.getBodyDef()));
 		playerEntity.setFixture(playerEntity.getBody().createFixture(playerEntity.getFixtureDef()));
@@ -197,14 +197,14 @@ public class GameServer implements ApplicationListener {
 			if(!Gdx.input.isKeyPressed(Keys.D))
 				p.getPlChar().getBody().setLinearVelocity(0, p.getPlChar().getBody().getLinearVelocity().y);
 			if(Gdx.input.isKeyPressed(Keys.A))
-				p.getPlChar().getBody().setLinearVelocity(-5, p.getPlChar().getBody().getLinearVelocity().y);
+				p.getPlChar().getBody().setLinearVelocity(-p.getPlChar().getMaxVelocity().x, p.getPlChar().getBody().getLinearVelocity().y);
 			if(Gdx.input.isKeyPressed(Keys.D))
-				p.getPlChar().getBody().setLinearVelocity(5, p.getPlChar().getBody().getLinearVelocity().y);
+				p.getPlChar().getBody().setLinearVelocity(p.getPlChar().getMaxVelocity().x, p.getPlChar().getBody().getLinearVelocity().y);
 			if(!Gdx.input.isKeyPressed(Keys.SPACE) && isGrounded(p.getPlChar())) p.getPlChar().setJumping(false);
 			if(Gdx.input. isKeyPressed(Keys.SPACE) && !p.getPlChar().isJumping()){
 				if(isGrounded(p.getPlChar())){
 					p.getPlChar().getBody().setAwake(true);
-					p.getPlChar().getBody().setLinearVelocity(p.getPlChar().getBody().getLinearVelocity().x, 10);
+					p.getPlChar().getBody().setLinearVelocity(p.getPlChar().getBody().getLinearVelocity().x, p.getPlChar().getMaxVelocity().y);
 					p.getPlChar().setJumping(true);
 				}		
 			}
