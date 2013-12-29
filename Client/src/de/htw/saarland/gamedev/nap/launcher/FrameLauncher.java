@@ -47,13 +47,15 @@ public class FrameLauncher extends javax.swing.JFrame implements IEventListener,
     private DefaultListModel<String> availableRooms;
     
     private PanelGameInfo gameInfo;
+    private IGameStart listener;
     
     /**
      * Creates new form FrameLauncher
      */
-    public FrameLauncher(SmartFox sfClient) {
+    public FrameLauncher(SmartFox sfClient, IGameStart listener) {
         this.sfClient = sfClient;
         this.gameInfo = null;
+        this.listener = listener;
         
         sfClient.addEventListener(SFSEvent.CONNECTION_LOST, this);
         sfClient.addEventListener(SFSEvent.ROOM_JOIN, this);
@@ -280,11 +282,11 @@ public class FrameLauncher extends javax.swing.JFrame implements IEventListener,
 		    	break;
 		    case LauncherOpcodes.LAUNCHER_GAME_STARTS:
 		    	// game is about to start!
-		    	// TODO goto game loop!
 		    	SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
 						messageReceived("System", "Game starts!");
+						listener.startGame();
 					}
 				});
 		    	break;

@@ -4,11 +4,16 @@
  */
 package de.htw.saarland.gamedev.nap;
 
+import de.htw.saarland.gamedev.nap.client.GameClient;
 import de.htw.saarland.gamedev.nap.launcher.FrameConnect;
 import de.htw.saarland.gamedev.nap.launcher.FrameLauncher;
 import de.htw.saarland.gamedev.nap.launcher.IGameStart;
 import de.htw.saarland.gamedev.nap.launcher.ILauncherStart;
+
 import javax.swing.UIManager;
+
+import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
+
 import sfs2x.client.SmartFox;
 
 /**
@@ -35,6 +40,8 @@ public class GameStarter implements IGameStart, ILauncherStart {
         sfClient.removeAllEventListeners(); //remove all Launcher event handlers
         
         launcher.dispose();
+        
+        new LwjglApplication(new GameClient(sfClient), "Nap - Not another platformer", 1280, 1024, true);
     }
 
     @Override
@@ -43,7 +50,7 @@ public class GameStarter implements IGameStart, ILauncherStart {
         
         frameConnect.dispose();
         
-        launcher = new FrameLauncher(sfClient);
+        launcher = new FrameLauncher(sfClient, this);
         launcher.setVisible(true);
     }
     

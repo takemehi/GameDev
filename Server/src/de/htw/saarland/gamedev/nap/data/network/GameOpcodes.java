@@ -6,6 +6,11 @@ public class GameOpcodes {
 	 */
 	public static final String GAME_INITIALIZED = "game.init";
 	
+	/**
+	 * The Server sends this Opcode to each player when the game started
+	 */
+	public static final String GAME_START = "game.start";
+	
 	/////////////////////////////////////////////////////////////////////////
 	// Movement															   //
 	/////////////////////////////////////////////////////////////////////////
