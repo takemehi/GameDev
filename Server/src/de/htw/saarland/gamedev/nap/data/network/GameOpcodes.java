@@ -183,6 +183,10 @@ public class GameOpcodes {
 	 * 
 	 * params:
 	 * 	int OWN_CHARACTER_PARAM id of the character
+	 * 	float COORD_X_PARAM x coord of player
+	 * 	float COORD_Y_PARAM y coord of player
+	 * 	int ENTITY_ID_PARAM entity id of player
+	 * 	int TEAM_ID_PARAM team id of player
 	 */
 	public static final String GAME_OWN_CHARACTER = "game.init.owncharacter";
 	
@@ -217,6 +221,13 @@ public class GameOpcodes {
 	 */
 	public static final String GAME_SPAWN_PLAYER = "game.spawn.player";
 	
+	/**
+	 * S->C
+	 * 
+	 * This opcode is sent as soon as all npcs and players are sent to the player
+	 */
+	public static final String GAME_END_OBJECTS = "game.done.sendobjects";
+	
 	///////////////////////////////////////////////////////////////////////////////
 	// Params																	 //
 	///////////////////////////////////////////////////////////////////////////////
@@ -226,4 +237,5 @@ public class GameOpcodes {
 	public static final String COORD_Y_PARAM = "coordy";
 	public static final String CURRENT_MAP_PARAM = "currentmap";
 	public static final String OWN_CHARACTER_PARAM = "ownchar";
+	public static final String TEAM_ID_PARAM = "teamid";
 }
