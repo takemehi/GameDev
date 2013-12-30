@@ -4,18 +4,22 @@ import sfs2x.client.SmartFox;
 import sfs2x.client.core.BaseEvent;
 import sfs2x.client.core.IEventListener;
 import sfs2x.client.core.SFSEvent;
+import sfs2x.client.entities.Room;
 import sfs2x.client.requests.ExtensionRequest;
 
 import com.badlogic.gdx.ApplicationListener;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.physics.box2d.World;
+import com.smartfoxserver.v2.entities.data.SFSObject;
 import com.smartfoxserver.v2.exceptions.SFSException;
 
 import de.htw.saarland.gamedev.nap.NetworkConstants;
 import de.htw.saarland.gamedev.nap.client.input.IBaseInput;
 import de.htw.saarland.gamedev.nap.client.input.KeyboardMouseInputProcessor;
+import de.htw.saarland.gamedev.nap.data.GameWorld;
 import de.htw.saarland.gamedev.nap.data.network.GameOpcodes;
+import de.htw.saarland.gamedev.nap.game.GameServer;
 
 /**
  * Main Game loop
@@ -26,17 +30,22 @@ import de.htw.saarland.gamedev.nap.data.network.GameOpcodes;
 public class GameClient implements ApplicationListener, IEventListener {
 
 	private SmartFox sfClient;
+	private Room gameRoom;
 	private IBaseInput inputProcessor;
 	
 	private boolean isInitialized;
 	private boolean gameStarted;
 	
-	public GameClient(SmartFox sfClient) {
-		if (sfClient == null) {
+	private World world;
+	private GameWorld gameWorld;
+	
+	public GameClient(SmartFox sfClient, Room gameRoom) {
+		if (sfClient == null || gameRoom == null) {
 			throw new NullPointerException();
 		}
 		
 		this.sfClient = sfClient;
+		this.gameRoom = gameRoom;
 		this.isInitialized = false;
 		this.gameStarted = false;
 		
@@ -56,6 +65,10 @@ public class GameClient implements ApplicationListener, IEventListener {
 				Keys.D,
 				Keys.S,
 				Keys.F);
+		
+		world = new World(GameServer.GRAVITY, true);
+		
+		sfClient.send(new ExtensionRequest(GameOpcodes.GAME_GET_MAP_CHARACTER, null, gameRoom));
 	}
 
 	@Override
@@ -100,15 +113,28 @@ public class GameClient implements ApplicationListener, IEventListener {
 			case SFSEvent.EXTENSION_RESPONSE:
 				dispatchExtensionResponse(be);
 				break;
+			default:
+				System.out.println("Unknown packet received! : " + be.getType());
+				break;
 		}
 	}
 	
 	public void dispatchExtensionResponse(BaseEvent be) {
 		String cmd = (String)be.getArguments().get(NetworkConstants.CMD_KEY);
+		SFSObject params = (SFSObject)be.getArguments().get(NetworkConstants.PARAMS_KEY);
 		
 		switch (cmd) {
 			case GameOpcodes.GAME_START:
 				gameStarted = true; //lets go!
+				break;
+			case GameOpcodes.GAME_CURRENT_MAP:
+				gameWorld = new GameWorld(world, params.getUtfString(GameOpcodes.CURRENT_MAP_PARAM), 0); // TODO is there a concurrency problem?
+				break;
+			case GameOpcodes.GAME_OWN_CHARACTER:
+				// TODO init own player/character
+				break;
+			default:
+				System.out.println("Unknown packet received! : " + cmd);
 				break;
 		}
 	}
