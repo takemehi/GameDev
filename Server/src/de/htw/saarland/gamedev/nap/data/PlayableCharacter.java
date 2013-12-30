@@ -6,15 +6,20 @@ import com.badlogic.gdx.physics.box2d.Shape;
 
 import de.htw.saarland.gamedev.nap.data.entities.MoveableEntity;
 
-public class PlayableCharacter extends MoveableEntity{
+public abstract class PlayableCharacter extends MoveableEntity{
 	
 	private final static String EXCEPTION_ILLEGAL_HEALTH_MAX = "MaxHealth value has to be greater than zero!";
 	private final static String EXCEPTION_ILLEGAL_GROUNDTIME = "Groundtime value can't be smaller than zero!";
-	private final static String USERDATA_PLAYER = "player";
+	public final static String USERDATA_PLAYER = "player";
+	//class ids
+	public final static int ID_WARRIOR = 0;
+	public final static int ID_MAGE = 1;
 	
+	private int characterClass;
 	private int maxHealth;
 	private int health;
 	private float swingTime;
+	private float maxSwingTime;
 	private boolean jumping;
 	private boolean swinging;
 	private float timeOnGround;
@@ -25,11 +30,14 @@ public class PlayableCharacter extends MoveableEntity{
 	private boolean attacking;
 
 	public PlayableCharacter(Shape shape, float density,
-			float friction, float restitution, Vector2 position, Vector2 baseVelocity, Vector2 maxVelocity, int maxHealth, int id) {
+			float friction, float restitution, Vector2 position, Vector2 baseVelocity, Vector2 maxVelocity, int maxHealth
+			, float maxSwingTime, int characterClass, int id) {
 		super(shape, density, friction, restitution, position, baseVelocity, maxVelocity, id);
 		if(maxHealth <= 0) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_HEALTH_MAX);
 		this.maxHealth=maxHealth;
 		this.health=maxHealth;
+		this.characterClass=characterClass;
+		this.maxSwingTime=maxSwingTime;
 		jumping=false;
 		timeOnGround=0;
 		swingTime=0;
@@ -86,6 +94,10 @@ public class PlayableCharacter extends MoveableEntity{
 	
 	//getter / setter
 	
+	public int getCharacterClass(){
+		return characterClass;
+	}
+	
 	public int getHealth(){
 		return health;
 	}
@@ -97,6 +109,10 @@ public class PlayableCharacter extends MoveableEntity{
 	
 	public int getMaxHealth(){
 		return maxHealth;
+	}
+	
+	public float getMaxSwingTime(){
+		return maxSwingTime;
 	}
 	
 	public boolean isJumping(){

@@ -23,7 +23,7 @@ public class Warrior extends PlayableCharacter{
 	
 	public Warrior(Vector2 position, int id) {
 		super(SHAPE, DENSITY, FRICTION, RESTITUTION, position, BASEVELOCITY,
-				MAXVELOCITY, MAXHEALTH, id);
+				MAXVELOCITY, MAXHEALTH, TIME_SWING, PlayableCharacter.ID_WARRIOR, id);
 		
 		initMeleeSensorDef();
 	}

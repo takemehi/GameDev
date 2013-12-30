@@ -28,6 +28,7 @@ import com.smartfoxserver.v2.entities.data.SFSObject;
 
 import de.htw.saarland.gamedev.nap.data.CapturePoint;
 import de.htw.saarland.gamedev.nap.data.GameWorld;
+import de.htw.saarland.gamedev.nap.data.Mage;
 import de.htw.saarland.gamedev.nap.data.NPC;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
 import de.htw.saarland.gamedev.nap.data.Player;
@@ -61,7 +62,7 @@ public class GameServer implements ApplicationListener {
 	private final static int ITERATIONS_VELOCITY = 6;
 	private final static int ITERATIONS_POSITION = 2;
 	//world constants
-	private final static Vector2 GRAVITY = new Vector2(0, -20);
+	public final static Vector2 GRAVITY = new Vector2(0, -20);
 	//others
 	private final static float PIXELS_TO_METERS = 1/96f;
 	private final static int MAX_POINTS = 200;
@@ -146,7 +147,7 @@ public class GameServer implements ApplicationListener {
 		//initialize map
 		gameWorld = new GameWorld(world, mapName, currentId);
 		this.map = gameWorld.getTiledMap();
-		if (gameWorld.getCurrentId()!=-1)this.currentId= gameWorld.getCurrentId();
+		this.currentId= gameWorld.getCurrentId();
 		//initialize players
 		
 		//initialize npcs
@@ -177,11 +178,15 @@ public class GameServer implements ApplicationListener {
 		body.createFixture(fd1);
 		body.createFixture(fd2);*/
 		
-		Warrior warrior = new Warrior(new Vector2(2,2), currentId++);
+		/*Warrior warrior = new Warrior(new Vector2(2,2), currentId++);
 		warrior.setBody(world.createBody(warrior.getBodyDef()));
 		warrior.setFixture(warrior.getBody().createFixture(warrior.getFixtureDef()));
 		warrior.setMeleeSensorFixture(warrior.getBody().createFixture(warrior.getMeleeSensorFixtureDef()));
-		Player player = new Player(null, warrior, ID_TEAM_BLUE);
+		Player player = new Player(null, warrior, ID_TEAM_BLUE);*/
+		Mage mage = new Mage(new Vector2(2,2), currentId++);
+		mage.setBody(world.createBody(mage.getBodyDef()));
+		mage.setFixture(mage.getBody().createFixture(mage.getFixtureDef()));
+		Player player = new Player(null, mage, ID_TEAM_BLUE);
 		teamBlue.add(player);
 	}
 	
@@ -198,30 +203,71 @@ public class GameServer implements ApplicationListener {
 		//calculate hp, apply status effects, recalculate position
 		//send stuff
 
-		//TODO add red team or change from seperate lists to one global list
-		//Movement 
+		//TODO add red team or change from seperate lists to one global list		
+		//iterate through all the players
 		for(Player p: teamBlue){
-			if(p.getPlChar().isJumping()) p.getPlChar().setTimeonGround(0);
-			else p.getPlChar().setTimeonGround(p.getPlChar().getTimeOnGround()+Gdx.graphics.getDeltaTime());
+			//determine class
+			//TODO find better way of handling different classes
+			PlayableCharacter plCh = null;
+			switch(p.getPlChar().getCharacterClass()){
+			case PlayableCharacter.ID_MAGE:
+				plCh = (Mage) p.getPlChar();
+				break;
+			case PlayableCharacter.ID_WARRIOR:
+				plCh = (Warrior) p.getPlChar();
+				break;
+			default: break; //TODO handle this case
+			}
+			//Attacks
+			if(!Gdx.input.isButtonPressed(Keys.LEFT)){
+				plCh.setAttacking(false);
+			}
+			if(Gdx.input.isButtonPressed(Keys.LEFT)){
+				plCh.setAttacking(true);
+			}
+			if(plCh.isSwinging()){
+				if (plCh.getSwingTime()==0 && plCh.getAttacking()) {
+					System.out.println("attack");
+					//player orientation
+					Vector3 coords = new Vector3(Gdx.input.getX(),Gdx.input.getY(),0);
+					camera.unproject(coords);
+					float angle = plCh.getBody().getAngle();
+					if(coords.x > plCh.getBody().getPosition().x)
+						plCh.getBody().setTransform(plCh.getBody().getPosition(), MathUtils.degreesToRadians*360);
+					else
+						plCh.getBody().setTransform(plCh.getBody().getPosition(), MathUtils.degreesToRadians*180);
+					//w.getBody().setTransform(w.getBody().getPosition(), angle);
+				}
+				plCh.setSwingTime(plCh.getSwingTime()+Gdx.graphics.getDeltaTime());
+				//TODO proper swingtime constant
+				if(plCh.getSwingTime()>=plCh.getMaxSwingTime()){
+					plCh.setSwingTime(0);
+					if(!plCh.getAttacking()) plCh.setSwinging(false);
+				}
+			}
+			
+			//movement
+			if(plCh.isJumping()) plCh.setTimeonGround(0);
+			else plCh.setTimeonGround(plCh.getTimeOnGround()+Gdx.graphics.getDeltaTime());
 			
 			if(!Gdx.input.isKeyPressed(Keys.A))
-				p.getPlChar().getBody().setLinearVelocity(0, p.getPlChar().getBody().getLinearVelocity().y);
+				plCh.getBody().setLinearVelocity(0, plCh.getBody().getLinearVelocity().y);
 			if(!Gdx.input.isKeyPressed(Keys.D))
-				p.getPlChar().getBody().setLinearVelocity(0, p.getPlChar().getBody().getLinearVelocity().y);
+				plCh.getBody().setLinearVelocity(0, plCh.getBody().getLinearVelocity().y);
 			if(Gdx.input.isKeyPressed(Keys.A)){
-				p.getPlChar().getBody().setLinearVelocity(-p.getPlChar().getMaxVelocity().x, p.getPlChar().getBody().getLinearVelocity().y);
-				p.getPlChar().getBody().setTransform(p.getPlChar().getBody().getPosition(), MathUtils.degreesToRadians*180);
+				plCh.getBody().setLinearVelocity(-plCh.getMaxVelocity().x, plCh.getBody().getLinearVelocity().y);
+				plCh.getBody().setTransform(plCh.getBody().getPosition(), MathUtils.degreesToRadians*180);
 			}
 			if(Gdx.input.isKeyPressed(Keys.D)){
-				p.getPlChar().getBody().setLinearVelocity(p.getPlChar().getMaxVelocity().x, p.getPlChar().getBody().getLinearVelocity().y);
-				p.getPlChar().getBody().setTransform(p.getPlChar().getBody().getPosition(), MathUtils.degreesToRadians*360);
+				plCh.getBody().setLinearVelocity(plCh.getMaxVelocity().x, plCh.getBody().getLinearVelocity().y);
+				plCh.getBody().setTransform(plCh.getBody().getPosition(), MathUtils.degreesToRadians*360);
 			}
-			if(!Gdx.input.isKeyPressed(Keys.SPACE) && isGrounded(p.getPlChar())) p.getPlChar().setJumping(false);
-			if(Gdx.input. isKeyPressed(Keys.SPACE) && !p.getPlChar().isJumping()){
-				if(isGrounded(p.getPlChar())){
-					p.getPlChar().getBody().setAwake(true);
-					p.getPlChar().getBody().setLinearVelocity(p.getPlChar().getBody().getLinearVelocity().x, p.getPlChar().getMaxVelocity().y);
-					p.getPlChar().setJumping(true);
+			if(!Gdx.input.isKeyPressed(Keys.SPACE) && isGrounded(plCh)) plCh.setJumping(false);
+			if(Gdx.input. isKeyPressed(Keys.SPACE) && !plCh.isJumping()){
+				if(isGrounded(plCh)){
+					plCh.getBody().setAwake(true);
+					plCh.getBody().setLinearVelocity(plCh.getBody().getLinearVelocity().x, plCh.getMaxVelocity().y);
+					plCh.setJumping(true);
 				}		
 			}
 			//TODO implement dropping through platforms here or introduce GroundTime in the contactlistener
@@ -252,36 +298,6 @@ public class GameServer implements ApplicationListener {
 			capturing=false;
 			captureTime=0;
 			System.out.println("Point captured!");
-		}
-		
-		//Attacks
-		//TODO add in loop
-		Warrior w = (Warrior)teamBlue.get(0).getPlChar();
-		if(!Gdx.input.isButtonPressed(Keys.LEFT)){
-			w.setAttacking(false);
-		}
-		if(Gdx.input.isButtonPressed(Keys.LEFT)){
-			w.setAttacking(true);
-		}
-		if(w.isSwinging()){
-			if (w.getSwingTime()==0 && w.getAttacking()) {
-				System.out.println("attack");
-				//player orientation
-				Vector3 coords = new Vector3(Gdx.input.getX(),Gdx.input.getY(),0);
-				camera.unproject(coords);
-				float angle = w.getBody().getAngle();
-				if(coords.x > w.getBody().getPosition().x)
-					w.getBody().setTransform(w.getBody().getPosition(), MathUtils.degreesToRadians*360);
-				else
-					w.getBody().setTransform(w.getBody().getPosition(), MathUtils.degreesToRadians*180);
-				//w.getBody().setTransform(w.getBody().getPosition(), angle);
-			}
-			w.setSwingTime(w.getSwingTime()+Gdx.graphics.getDeltaTime());
-			//TODO proper swingtime constant
-			if(w.getSwingTime()>=w.TIME_SWING){
-				w.setSwingTime(0);
-				if(!w.getAttacking()) w.setSwinging(false);
-			}
 		}
 		
 		//Game Logic
