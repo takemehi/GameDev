@@ -14,15 +14,12 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.WorldManifold;
@@ -39,7 +36,6 @@ import de.htw.saarland.gamedev.nap.data.Warrior;
 import de.htw.saarland.gamedev.nap.data.entities.MoveableEntity;
 import de.htw.saarland.gamedev.nap.data.entities.StaticEntity;
 import de.htw.saarland.gamedev.nap.data.platforms.CustomContactListener;
-import de.htw.saarland.gamedev.nap.data.shapes.WarriorShape;
 
 public class GameServer implements ApplicationListener {
 	
@@ -259,8 +255,33 @@ public class GameServer implements ApplicationListener {
 		}
 		
 		//Attacks
+		//TODO add in loop
+		Warrior w = (Warrior)teamBlue.get(0).getPlChar();
+		if(!Gdx.input.isButtonPressed(Keys.LEFT)){
+			w.setAttacking(false);
+		}
 		if(Gdx.input.isButtonPressed(Keys.LEFT)){
-			System.out.println("check");
+			w.setAttacking(true);
+		}
+		if(w.isSwinging()){
+			if (w.getSwingTime()==0 && w.getAttacking()) {
+				System.out.println("attack");
+				//player orientation
+				Vector3 coords = new Vector3(Gdx.input.getX(),Gdx.input.getY(),0);
+				camera.unproject(coords);
+				float angle = w.getBody().getAngle();
+				if(coords.x > w.getBody().getPosition().x)
+					w.getBody().setTransform(w.getBody().getPosition(), MathUtils.degreesToRadians*360);
+				else
+					w.getBody().setTransform(w.getBody().getPosition(), MathUtils.degreesToRadians*180);
+				//w.getBody().setTransform(w.getBody().getPosition(), angle);
+			}
+			w.setSwingTime(w.getSwingTime()+Gdx.graphics.getDeltaTime());
+			//TODO proper swingtime constant
+			if(w.getSwingTime()>=w.TIME_SWING){
+				w.setSwingTime(0);
+				if(!w.getAttacking()) w.setSwinging(false);
+			}
 		}
 		
 		//Game Logic

@@ -16,6 +16,7 @@ public class Warrior extends PlayableCharacter{
 	private static final Vector2 BASEVELOCITY = new Vector2(2,7);
 	private static final Vector2 MAXVELOCITY = new Vector2(2,7);
 	private static final int MAXHEALTH = 200;
+	public static final float TIME_SWING = 0.7f;
 	
 	private FixtureDef meleeSensorDef;
 	private Fixture meleeSensor;

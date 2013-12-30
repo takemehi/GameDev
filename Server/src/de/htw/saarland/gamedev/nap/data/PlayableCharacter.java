@@ -14,12 +14,15 @@ public class PlayableCharacter extends MoveableEntity{
 	
 	private int maxHealth;
 	private int health;
+	private float swingTime;
 	private boolean jumping;
+	private boolean swinging;
 	private float timeOnGround;
 	private boolean movingLeft;
 	private boolean movingRight;
 	private boolean movingDown;
 	private boolean movingUp;
+	private boolean attacking;
 
 	public PlayableCharacter(Shape shape, float density,
 			float friction, float restitution, Vector2 position, Vector2 baseVelocity, Vector2 maxVelocity, int maxHealth, int id) {
@@ -29,6 +32,7 @@ public class PlayableCharacter extends MoveableEntity{
 		this.health=maxHealth;
 		jumping=false;
 		timeOnGround=0;
+		swingTime=0;
 	}	
 	
 	@Override
@@ -38,6 +42,11 @@ public class PlayableCharacter extends MoveableEntity{
 	}
 	
 	//methods that get used by the network
+	
+	public boolean getAttacking(){
+		return attacking;
+	}
+	
 	public boolean getLeft(){
 		return movingLeft;
 	}
@@ -52,6 +61,11 @@ public class PlayableCharacter extends MoveableEntity{
 	
 	public boolean getDown(){
 		return movingDown;
+	}
+	
+	public void setAttacking(boolean attacking){
+		this.attacking=attacking;
+		if(attacking) swinging=true;
 	}
 	
 	public void setLeft(boolean left){
@@ -91,6 +105,22 @@ public class PlayableCharacter extends MoveableEntity{
 	
 	public void setJumping(boolean jumping){
 		this.jumping=jumping;
+	}
+	
+	public void setSwinging(boolean swinging){
+		this.swinging=swinging;
+	}
+	
+	public boolean isSwinging(){
+		return swinging;
+	}
+	
+	public void setSwingTime(float swingTime){
+		this.swingTime=swingTime;
+	}
+	
+	public float getSwingTime(){
+		return swingTime;
 	}
 	
 	public float getTimeOnGround(){
