@@ -142,12 +142,18 @@ public class GameServer implements ApplicationListener {
 	@Override
 	public void create() {
 		//initialize world
-		world = new World(GRAVITY, true);
+		world=new World(GRAVITY, true);
 		world.setContactListener(new CustomContactListener());
+		//initialize gameWorld
+		gameWorld=new GameWorld(world, mapName, currentId);
 		//initialize map
-		gameWorld = new GameWorld(world, mapName, currentId);
-		this.map = gameWorld.getTiledMap();
-		this.currentId= gameWorld.getCurrentId();
+		this.map=gameWorld.getTiledMap();
+		this.currentId=gameWorld.getCurrentId();
+		//initialize capturePoints
+		this.capturePoints=gameWorld.getCapturePoints();
+		//initialize spawnPoints
+		this.SpawnPointBlue=gameWorld.getSpawnPointBlue();
+		this.SpawnPointRed=gameWorld.getSpawnPointRed();
 		//initialize players
 		
 		//initialize npcs
@@ -192,32 +198,11 @@ public class GameServer implements ApplicationListener {
 	
 	@Override
 	public void render() {
-		//get client packets
-		/*
-		for(int i=0; i<PACKETS_PER_TICK; i++){
-			packetQueue.remove();
-			//do damn cool stuff
-			//nigga
-		}*/
-		//check for ability collisions, damage abilities		
-		//calculate hp, apply status effects, recalculate position
-		//send stuff
 
 		//TODO add red team or change from seperate lists to one global list		
 		//iterate through all the players
 		for(Player p: teamBlue){
-			//determine class
-			//TODO find better way of handling different classes
-			PlayableCharacter plCh = null;
-			switch(p.getPlChar().getCharacterClass()){
-			case PlayableCharacter.ID_MAGE:
-				plCh = (Mage) p.getPlChar();
-				break;
-			case PlayableCharacter.ID_WARRIOR:
-				plCh = (Warrior) p.getPlChar();
-				break;
-			default: break; //TODO handle this case
-			}
+			PlayableCharacter plCh = p.getPlChar();
 			//Attacks
 			if(!Gdx.input.isButtonPressed(Keys.LEFT)){
 				plCh.setAttacking(false);
@@ -228,6 +213,7 @@ public class GameServer implements ApplicationListener {
 			if(plCh.isSwinging()){
 				if (plCh.getSwingTime()==0 && plCh.getAttacking()) {
 					System.out.println("attack");
+					//TODO call attack method
 					//player orientation
 					Vector3 coords = new Vector3(Gdx.input.getX(),Gdx.input.getY(),0);
 					camera.unproject(coords);
@@ -236,7 +222,6 @@ public class GameServer implements ApplicationListener {
 						plCh.getBody().setTransform(plCh.getBody().getPosition(), MathUtils.degreesToRadians*360);
 					else
 						plCh.getBody().setTransform(plCh.getBody().getPosition(), MathUtils.degreesToRadians*180);
-					//w.getBody().setTransform(w.getBody().getPosition(), angle);
 				}
 				plCh.setSwingTime(plCh.getSwingTime()+Gdx.graphics.getDeltaTime());
 				//TODO proper swingtime constant
@@ -246,7 +231,7 @@ public class GameServer implements ApplicationListener {
 				}
 			}
 			
-			//movement
+			//Movement
 			if(plCh.isJumping()) plCh.setTimeonGround(0);
 			else plCh.setTimeonGround(plCh.getTimeOnGround()+Gdx.graphics.getDeltaTime());
 			

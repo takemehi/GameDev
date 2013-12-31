@@ -202,6 +202,10 @@ public class GameWorld {
 	
 	//getter / setter
 	
+	public ArrayList<CapturePoint> getCapturePoints(){
+		return capturePoints;
+	}
+	
 	public int getCurrentId(){
 		if (idReturned) return -1;
 		idReturned=true;
@@ -210,6 +214,10 @@ public class GameWorld {
 	
 	public Body getMapBody(){
 		return mapBody;
+	}
+	
+	public ArrayList<StaticEntity> getPlatforms(){
+		return platforms;
 	}
 	
 	public SpawnPoint getSpawnPointBlue(){
