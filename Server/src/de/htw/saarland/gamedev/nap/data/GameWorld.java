@@ -10,9 +10,11 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.ChainShape;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 
 import de.htw.saarland.gamedev.nap.box2d.editor.BodyEditorLoader;
 import de.htw.saarland.gamedev.nap.data.entities.SensorEntity;
@@ -36,14 +38,15 @@ public class GameWorld {
 	public final static String USERDATA_FIXTURE_PLATFORM_TWO = "platform_two";
 	public final static String USERDATA_FIXTURE_SPAWNPOINT_BLUE = "spawnpoint_blue";
 	public final static String USERDATA_FIXTURE_SPAWNPOINT_RED = "spawnpoint_red";
+	public static final String USERDATA_FIXTURE_WORLD = "world";
 	//Exceptions
 	private final static String EXCEPTION_ILLEGAL_PLATFORM_ID = "Platform Id doesn't exist!";
 	private final static String EXCEPTION_ILLEGAL_TEAM_ID = "Team Id is not existing!";
 	private final static String EXCEPTION_NULL_VECTOR = "Vector object is null!";
 	
-	private ArrayList<CapturePoint> capturePoints;
+	private Array<CapturePoint> capturePoints;
 	private TiledMap tiledMap;
-	private ArrayList<StaticEntity> platforms;
+	private Array<StaticEntity> platforms;
 	private SpawnPoint spawnPointBlue;
 	private SpawnPoint spawnPointRed;
 	
@@ -57,8 +60,8 @@ public class GameWorld {
 		this.currentId=currentId;
 		this.idReturned=false;
 		
-		platforms = new ArrayList<StaticEntity>();
-		capturePoints = new ArrayList<CapturePoint>();
+		platforms = new Array<StaticEntity>();
+		capturePoints = new Array<CapturePoint>();
 		
 		initMap(mapName);
 	}
@@ -94,13 +97,15 @@ public class GameWorld {
 		//create fixtureDef
 		FixtureDef fDef = new FixtureDef();
 		fDef.density=1;
-		fDef.friction=0.3f;
+		fDef.friction=1f;
 		//create world body
 		mapBody = world.createBody(bodyDef);
 		//create world fixture
 		BodyEditorLoader bLoader = new BodyEditorLoader(new FileHandle(FOLDER_MAPS+mapName+".json"));
 		bLoader.attachFixture(mapBody, "map", fDef
 				,mapWidth*PIXELS_TO_METERS);
+		for(Fixture f: mapBody.getFixtureList())
+			f.setUserData(USERDATA_FIXTURE_WORLD);
 		
 		//check for meta tiles
 		//platforms
@@ -125,9 +130,9 @@ public class GameWorld {
 		for(int i=0; i<layer.getWidth(); i++){
 			for(int j=0; j<layer.getHeight(); j++){
 				if(layer.getCell(i, j)!=null && layer.getCell(i, j).getTile().getId()==ID_TILE_SPAWN_POINT_BLUE)	
-					initSpawnPoint(i,j, GameServer.ID_TEAM_BLUE);
+					initSpawnPoint(i,j, PlayableCharacter.ID_TEAM_BLUE);
 				if(layer.getCell(i, j)!=null && layer.getCell(i, j).getTile().getId()==ID_TILE_SPAWN_POINT_RED)	
-					initSpawnPoint(i,j, GameServer.ID_TEAM_RED);
+					initSpawnPoint(i,j, PlayableCharacter.ID_TEAM_RED);
 			}
 		}
 		//creeps
@@ -158,7 +163,7 @@ public class GameWorld {
 		ChainShape platformShape = new ChainShape();
 		StaticEntity platform;
 		platformShape.createChain(new Vector2[]{new Vector2(0,0), new Vector2(1,0)});
-		platform = new StaticEntity(platformShape, 0.3f, position, currentId++);
+		platform = new StaticEntity(platformShape, 1f, position, currentId++);
 		platform.setBody(world.createBody(platform.getBodyDef()));
 		platform.setFixture(platform.getBody().createFixture(platform.getFixtureDef()));
 		if(type==ID_TILE_PLATFORM_ONE) platform.getFixture().setUserData(USERDATA_FIXTURE_PLATFORM_ONE);
@@ -172,23 +177,23 @@ public class GameWorld {
 	
 	private void initSpawnPoint(Vector2 position, int team){
 		if(position==null) throw new NullPointerException(EXCEPTION_NULL_VECTOR);
-		if(team!=GameServer.ID_TEAM_BLUE && team!=GameServer.ID_TEAM_RED) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_TEAM_ID);
+		if(team!=PlayableCharacter.ID_TEAM_BLUE && team!=PlayableCharacter.ID_TEAM_RED) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_TEAM_ID);
 		PolygonShape spawnShape = new PolygonShape();
 		spawnShape.setAsBox(.5f, .5f);
 		SensorEntity entity;
 		//TODO position
-		if(team==GameServer.ID_TEAM_BLUE){
+		if(team==PlayableCharacter.ID_TEAM_BLUE){
 			entity = new SensorEntity(spawnShape, position.x+.5f, position.y+.5f, currentId++);
 			entity.setBody(world.createBody(entity.getBodyDef()));
 			entity.setFixture(entity.getBody().createFixture(entity.getFixtureDef()));
 			entity.getFixture().setUserData(USERDATA_FIXTURE_SPAWNPOINT_BLUE);
-			spawnPointBlue= new SpawnPoint(entity, GameServer.ID_TEAM_BLUE);
+			spawnPointBlue= new SpawnPoint(entity, PlayableCharacter.ID_TEAM_BLUE);
 		}else{
 			entity = new SensorEntity(spawnShape, position.x+.5f, position.y+.5f, currentId++);
 			entity.setBody(world.createBody(entity.getBodyDef()));
 			entity.setFixture(entity.getBody().createFixture(entity.getFixtureDef()));
 			entity.getFixture().setUserData(USERDATA_FIXTURE_SPAWNPOINT_RED);
-			spawnPointRed= new SpawnPoint(entity, GameServer.ID_TEAM_RED);
+			spawnPointRed= new SpawnPoint(entity, PlayableCharacter.ID_TEAM_RED);
 		}
 	}
 	
@@ -202,7 +207,7 @@ public class GameWorld {
 	
 	//getter / setter
 	
-	public ArrayList<CapturePoint> getCapturePoints(){
+	public Array<CapturePoint> getCapturePoints(){
 		return capturePoints;
 	}
 	
@@ -216,7 +221,7 @@ public class GameWorld {
 		return mapBody;
 	}
 	
-	public ArrayList<StaticEntity> getPlatforms(){
+	public Array<StaticEntity> getPlatforms(){
 		return platforms;
 	}
 	

@@ -21,9 +21,9 @@ public class Warrior extends PlayableCharacter{
 	private FixtureDef meleeSensorDef;
 	private Fixture meleeSensor;
 	
-	public Warrior(Vector2 position, int id) {
+	public Warrior(Vector2 position, int teamId,  int id) {
 		super(SHAPE, DENSITY, FRICTION, RESTITUTION, position, BASEVELOCITY,
-				MAXVELOCITY, MAXHEALTH, TIME_SWING, PlayableCharacter.ID_WARRIOR, id);
+				MAXVELOCITY, MAXHEALTH, TIME_SWING, PlayableCharacter.ID_WARRIOR, teamId, id);
 		
 		initMeleeSensorDef();
 	}

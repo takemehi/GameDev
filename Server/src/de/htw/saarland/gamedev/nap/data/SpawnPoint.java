@@ -20,8 +20,8 @@ public class SpawnPoint {
 		this.spawnPoint=spawnPoint;
 		this.teamId=teamId;
 		
-		if(teamId==ID_TEAM_BLUE) spawnPoint.getFixture().setUserData("spawnBlue");
-		else spawnPoint.getFixture().setUserData("spawnRed");
+		if(teamId==ID_TEAM_BLUE) spawnPoint.getFixture().setUserData(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_BLUE);
+		else spawnPoint.getFixture().setUserData(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_RED);
 	}	
 	
 	//getter / setter
