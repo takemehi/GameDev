@@ -11,6 +11,10 @@ public class GameCharacter extends MoveableEntity{
 	private final static String EXCEPTION_ILLEGAL_HEALTH_MAX = "MaxHealth value has to be greater than zero!";
 	private final static String EXCEPTION_ILLEGAL_GROUNDTIME = "Groundtime value can't be smaller than zero!";
 	private final static String EXCEPTION_ILLEGAL_SWINGTIME = "Swingtime value can't be smaller than zero!";
+	private final static String EXCEPTION_ILLEGAL_ORIENTATION = "Orientation can only be 0 or 1!";
+	
+	public static final int ORIENTATION_LEFT = 0;
+	public static final int ORIENTATION_RIGHT = 1;
 
 	private int maxHealth;
 	private int health;
@@ -24,6 +28,7 @@ public class GameCharacter extends MoveableEntity{
 	private boolean movingDown;
 	private boolean movingUp;
 	private boolean attacking;
+	private int orientation;
 	
 	public GameCharacter(Shape shape, float density,
 			float friction, float restitution, Vector2 position, Vector2 baseVelocity, Vector2 maxVelocity, int maxHealth
@@ -38,6 +43,7 @@ public class GameCharacter extends MoveableEntity{
 		jumping=false;
 		timeOnGround=0;
 		swingTime=0;
+		orientation=1;
 	}
 	
 	//methods that get used by the network
@@ -108,6 +114,15 @@ public class GameCharacter extends MoveableEntity{
 	
 	public void setJumping(boolean jumping){
 		this.jumping=jumping;
+	}
+	
+	public int getOrientation(){
+		return orientation;
+	}
+	
+	public void setOrientation(int orientation){
+		if(orientation!=ORIENTATION_LEFT && orientation!=ORIENTATION_RIGHT) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_ORIENTATION);
+		this.orientation=orientation;
 	}
 	
 	public void setSwinging(boolean swinging){

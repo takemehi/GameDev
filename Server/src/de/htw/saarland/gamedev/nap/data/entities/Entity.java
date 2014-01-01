@@ -18,6 +18,8 @@ public abstract class Entity {
 	private static final String EXCEPTION_NULL_FIXTURE = "Fixture object is null!";
 	private static final String EXCEPTION_NULL_SHAPE = "Shape object is null!";
 	private static final String EXCEPTION_NULL_POSITION = "Position object is null!";
+	//Userdata
+	public static final String USERDATA_BODY_FLAG_DELETE = "delete";
 
 	private FixtureDef fixtureDef;
 	private BodyDef bodyDef;
@@ -26,7 +28,6 @@ public abstract class Entity {
 	private int id;
 	private float timeLiving;
 	private float distanceTraveled;
-	private boolean flaggedForDelete;
 	private Vector2 positionOriginal;
 	
 	public Entity(Shape shape, Vector2 position, int id){
@@ -93,14 +94,6 @@ public abstract class Entity {
 	
 	public Fixture getFixture(){
 		return fixture;
-	}
-	
-	public boolean isFlaggedForDelete(){
-		return flaggedForDelete;
-	}
-	
-	public void setFlaggedForDelete(boolean flaggedForDelete){
-		this.flaggedForDelete=flaggedForDelete;
 	}
 	
 	public Vector2 getPositionOriginal(){

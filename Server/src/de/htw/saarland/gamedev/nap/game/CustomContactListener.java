@@ -13,7 +13,9 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import de.htw.saarland.gamedev.nap.data.GameWorld;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
 import de.htw.saarland.gamedev.nap.data.Player;
-import de.htw.saarland.gamedev.nap.data.entities.SensorEntity;
+import de.htw.saarland.gamedev.nap.data.entities.Entity;
+import de.htw.saarland.gamedev.nap.data.skills.Axe;
+import de.htw.saarland.gamedev.nap.data.skills.Fireball;
 
 public class CustomContactListener implements ContactListener {
 	
@@ -34,44 +36,55 @@ public class CustomContactListener implements ContactListener {
 		Fixture fA = contact.getFixtureA();
 		Fixture fB = contact.getFixtureB();
 		
+		//Axe hitting a player
+				if(fA.getUserData()!=null && fB.getUserData()!= null){
+					if(fA.getUserData()==Axe.USERDATA_AXE && fB.getUserData()==PlayableCharacter.USERDATA_PLAYER){
+						for(Player p: game.teamBlue){
+							if(p.getPlChar().getFixture().equals(fB)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Axe.DAMAGE);
+						}
+						for(Player p: game.teamRed){
+							if(p.getPlChar().getFixture().equals(fB)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Axe.DAMAGE);
+						}
+					}
+					if(fB.getUserData()==Axe.USERDATA_AXE && fA.getUserData()==PlayableCharacter.USERDATA_PLAYER){
+						for(Player p: game.teamBlue){
+							if(p.getPlChar().getFixture().equals(fA)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Axe.DAMAGE);
+						}
+						for(Player p: game.teamRed){
+							if(p.getPlChar().getFixture().equals(fA)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Axe.DAMAGE);
+						}
+					}
+				}
+		
 		//Fireball hitting the world
 		if(fA.getUserData()!=null && fB.getUserData()!= null){
-			if(fA.getUserData()=="fireball" && fB.getUserData()==GameWorld.USERDATA_FIXTURE_WORLD){
-				for(SensorEntity s: game.fireBalls){
-					if (s.getFixture()==fA) s.setFlaggedForDelete(true);
-				}
+			if(fA.getUserData()==Fireball.USERDATA_FIREBALL && fB.getUserData()==GameWorld.USERDATA_FIXTURE_WORLD){
+				fA.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
 			}
-			if(fB.getUserData()=="fireball" && fA.getUserData()==GameWorld.USERDATA_FIXTURE_WORLD){
-				for(SensorEntity s: game.fireBalls){
-					if (s.getFixture()==fB) s.setFlaggedForDelete(true);
-				}
+			if(fB.getUserData()==Fireball.USERDATA_FIREBALL && fA.getUserData()==GameWorld.USERDATA_FIXTURE_WORLD){
+				fB.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
 			}
 		}
 		
 		//Fireball hitting a player
-		//TODO change damage value
 		if(fA.getUserData()!=null && fB.getUserData()!= null){
-			if(fA.getUserData()=="fireball" && fB.getUserData()==PlayableCharacter.USERDATA_PLAYER){
+			if(fA.getUserData()==Fireball.USERDATA_FIREBALL && fB.getUserData()==PlayableCharacter.USERDATA_PLAYER){
 				for(Player p: game.teamBlue){
-					if(p.getPlChar().getFixture().equals(fB)) p.getPlChar().setHealth(p.getPlChar().getHealth()-5);
+					if(p.getPlChar().getFixture().equals(fB)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Fireball.DAMAGE);
 				}
 				for(Player p: game.teamRed){
-					if(p.getPlChar().getFixture().equals(fB)) p.getPlChar().setHealth(p.getPlChar().getHealth()-5);
+					if(p.getPlChar().getFixture().equals(fB)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Fireball.DAMAGE);
 				}
-				for(SensorEntity s: game.fireBalls){
-					if (s.getFixture()==fA) s.setFlaggedForDelete(true);
-				}
+				fA.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
 			}
-			if(fB.getUserData()=="fireball" && fA.getUserData()==PlayableCharacter.USERDATA_PLAYER){
+			if(fB.getUserData()==Fireball.USERDATA_FIREBALL && fA.getUserData()==PlayableCharacter.USERDATA_PLAYER){
 				for(Player p: game.teamBlue){
-					if(p.getPlChar().getFixture().equals(fA)) p.getPlChar().setHealth(p.getPlChar().getHealth()-5);
+					if(p.getPlChar().getFixture().equals(fA)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Fireball.DAMAGE);
 				}
 				for(Player p: game.teamRed){
-					if(p.getPlChar().getFixture().equals(fA)) p.getPlChar().setHealth(p.getPlChar().getHealth()-5);
+					if(p.getPlChar().getFixture().equals(fA)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Fireball.DAMAGE);
 				}
-				for(SensorEntity s: game.fireBalls){
-					if (s.getFixture()==fB) s.setFlaggedForDelete(true);
-				}
+				fB.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
 			}
 		}
 		

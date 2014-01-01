@@ -35,6 +35,8 @@ import de.htw.saarland.gamedev.nap.data.NPC;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
 import de.htw.saarland.gamedev.nap.data.Player;
 import de.htw.saarland.gamedev.nap.data.SpawnPoint;
+import de.htw.saarland.gamedev.nap.data.Warrior;
+import de.htw.saarland.gamedev.nap.data.entities.Entity;
 import de.htw.saarland.gamedev.nap.data.entities.MoveableEntity;
 import de.htw.saarland.gamedev.nap.data.entities.SensorEntity;
 import de.htw.saarland.gamedev.nap.data.entities.StaticEntity;
@@ -180,17 +182,17 @@ public class GameServer implements ApplicationListener {
 		body.createFixture(fd1);
 		body.createFixture(fd2);*/
 		
-		/*Warrior warrior = new Warrior(new Vector2(2,2), currentId++);
+		Warrior warrior = new Warrior(new Vector2(2,2), PlayableCharacter.ID_TEAM_BLUE ,currentId++);
 		warrior.setBody(world.createBody(warrior.getBodyDef()));
 		warrior.setFixture(warrior.getBody().createFixture(warrior.getFixtureDef()));
-		warrior.setMeleeSensorFixture(warrior.getBody().createFixture(warrior.getMeleeSensorFixtureDef()));
-		Player player = new Player(null, warrior, ID_TEAM_BLUE);*/
-		Mage mage = new Mage(new Vector2(2,2), PlayableCharacter.ID_TEAM_BLUE, currentId++);
+		Player player = new Player(null, warrior);
+		teamBlue.add(player);
+		/*Mage mage = new Mage(new Vector2(2,2), PlayableCharacter.ID_TEAM_BLUE, currentId++);
 		mage.setBody(world.createBody(mage.getBodyDef()));
 		mage.setFixture(mage.getBody().createFixture(mage.getFixtureDef()));
 		mage.setHealth(20);
 		Player player = new Player(null, mage);
-		teamBlue.add(player);
+		teamBlue.add(player);*/
 		
 		Mage mage1 = new Mage(new Vector2(4,4), PlayableCharacter.ID_TEAM_BLUE, currentId++);
 		mage1.setBody(world.createBody(mage1.getBodyDef()));
@@ -215,6 +217,7 @@ public class GameServer implements ApplicationListener {
 		for(int i=0; i<1; i++){
 			PlayableCharacter plCh=teamBlue.get(i).getPlChar();
 			//PlayableCharacter plCh = p.getPlChar();
+			//get mouse position
 			Vector3 mouseCoords3 = new Vector3(Gdx.input.getX(),Gdx.input.getY(),0);
 			camera.unproject(mouseCoords3);
 			Vector2 mouseCoords = new Vector2(mouseCoords3.x, mouseCoords3.y);
@@ -227,29 +230,9 @@ public class GameServer implements ApplicationListener {
 				plCh.setAttacking(true);
 			}
 			if(plCh.isSwinging()){
-				if (plCh.getSwingTime()==0 && plCh.getAttacking()) {
-					//TODO call attack method
-					switch(plCh.getCharacterClass()){
-					case PlayableCharacter.ID_MAGE:
-						SensorEntity ball;
-						CircleShape shape = new CircleShape();
-						shape.setRadius(0.1f);
-						ball = new SensorEntity(shape, plCh.getBody().getPosition().x, plCh.getBody().getPosition().y, 5);
-						ball.setBody(world.createBody(ball.getBodyDef()));
-						ball.getFixtureDef().filter.groupIndex=PlayableCharacter.GROUP_TEAM_BLUE;
-						ball.setFixture(ball.getBody().createFixture(ball.getFixtureDef()));
-						//TODO change to constant
-						ball.getFixture().setUserData("fireball");
-						ball.getBody().setType(BodyDef.BodyType.DynamicBody);							
-						Vector2 direction = mouseCoords.sub(plCh.getBody().getPosition());
-						direction = direction.nor();
-						Vector2 velocityBall=direction.mul(6);
-						ball.getBody().setLinearVelocity(velocityBall);
-						fireBalls.add(ball);
-						break;
-					case PlayableCharacter.ID_WARRIOR:
-						break;
-					}
+				if (plCh.getSwingTime()==0 && plCh.getAttacking()) {					
+					plCh.getAttack1().start(world, plCh, currentId++, mouseCoords);
+					
 					//player orientation
 					if(mouseCoords.x > plCh.getBody().getPosition().x)
 		 				plCh.getBody().setTransform(plCh.getBody().getPosition(), MathUtils.degreesToRadians*360);
@@ -263,6 +246,9 @@ public class GameServer implements ApplicationListener {
 					if(!plCh.getAttacking()) plCh.setSwinging(false);
 				}
 			}
+			
+			//update attacks
+			plCh.getAttack1().update();
 			
 			//Movement
 			if(!isGrounded(plCh)) plCh.setTimeonGround(0);
@@ -301,17 +287,7 @@ public class GameServer implements ApplicationListener {
 		
 		for(Player p: teamRed){
 			//death test
-			if(p.getPlChar().getHealth()<=0) p.getPlChar().setFlaggedForDelete(true);
-		}
-		//Fireball test
-		for(SensorEntity s: fireBalls){
-			//TODO constant for that value
-			if(s.getDistanceTraveled()>100f){
-				s.setFlaggedForDelete(true);
-			}else{
-				s.setDistanceTraveled((s.getPositionOriginal().sub(s.getBody().getPosition()).len()));
-				s.getBody().applyForceToCenter(0, 20, true);
-			}
+			if(p.getPlChar().getHealth()<=0) p.getPlChar().getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
 		}
 		
 		//Capturing
@@ -339,23 +315,22 @@ public class GameServer implements ApplicationListener {
 		mapRenderer.render(LAYERS_TO_RENDER);
 		renderer.render(world, camera.combined);
 		world.step(TIME_STEP, ITERATIONS_VELOCITY, ITERATIONS_POSITION);
+		
 		//delete entities
-		for (Iterator<SensorEntity> it = fireBalls.iterator(); it.hasNext(); ) {
-		    SensorEntity s = it.next();
-		    if(s.isFlaggedForDelete() && !world.isLocked()){
-				fireBalls.remove(s);
-				world.destroyBody(s.getBody());
-			}
-		}
 
 		for(Player p: teamBlue){
-			
+			if(p.getPlChar().getBody().getUserData()!=null && p.getPlChar().getBody().getUserData().equals(Entity.USERDATA_BODY_FLAG_DELETE)){
+				teamBlue.removeValue(p, true);
+				world.destroyBody(p.getPlChar().getBody());
+			}
+			p.getPlChar().getAttack1().cleanUp(world);
 		}
 		for(Player p: teamRed){
-			if(p.getPlChar().isFlaggedForDelete()){
+			if(p.getPlChar().getBody().getUserData()!=null && p.getPlChar().getBody().getUserData().equals(Entity.USERDATA_BODY_FLAG_DELETE)){
 				teamRed.removeValue(p, true);
 				world.destroyBody(p.getPlChar().getBody());
 			}
+			p.getPlChar().getAttack1().cleanUp(world);
 		}
 		
 	}

@@ -4,6 +4,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Shape;
 
+import de.htw.saarland.gamedev.nap.data.skills.Skill;
+
 public abstract class PlayableCharacter extends GameCharacter{
 	
 	//Exceptions
@@ -26,6 +28,10 @@ public abstract class PlayableCharacter extends GameCharacter{
 	private int characterClass;
 	private boolean atSpawn;
 	private int teamId;
+	
+	protected Skill attack1;
+	protected Skill attack2;
+	protected Skill attack3;
 	
 	public PlayableCharacter(Shape shape, float density, float friction,
 			float restitution, Vector2 position, Vector2 baseVelocity,
@@ -57,6 +63,21 @@ public abstract class PlayableCharacter extends GameCharacter{
 		return atSpawn;
 	}
 	
+	public Skill getAttack1() {
+		return attack1;
+	}
+
+
+	public Skill getAttack2() {
+		return attack2;
+	}
+
+
+	public Skill getAttack3() {
+		return attack3;
+	}
+
+
 	public void setAtSpawn(boolean atSpawn){
 		this.atSpawn=atSpawn;
 	}
