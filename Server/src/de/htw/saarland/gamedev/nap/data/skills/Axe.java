@@ -42,14 +42,14 @@ public class Axe extends Skill{
 		Vector2 position = new Vector2();
 		position.y=character.getBody().getPosition().y;
 		if(character.getOrientation()==PlayableCharacter.ORIENTATION_LEFT)
-			position.x=character.getBody().getPosition().x-0.2f;
+			position.x=character.getBody().getPosition().x-0.8f;
 		else
-			position.x=character.getBody().getPosition().x+0.1f;
+			position.x=character.getBody().getPosition().x+0.0f;
 		axe = new SensorEntity(shape, position, currentId);
 		axe.setBody(world.createBody(axe.getBodyDef()));
 		axe.getBody().setType(BodyType.DynamicBody);
+		axe.getFixtureDef().filter.groupIndex=character.getFixture().getFilterData().groupIndex;
 		axe.setFixture(axe.getBody().createFixture(axe.getFixtureDef()));
-		axe.getFixture().getFilterData().groupIndex=character.getFixture().getFilterData().groupIndex;
 		axe.getFixture().setUserData(USERDATA_AXE);
 		
 		started=true;

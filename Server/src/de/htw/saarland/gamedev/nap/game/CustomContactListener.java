@@ -71,18 +71,22 @@ public class CustomContactListener implements ContactListener {
 			if(fA.getUserData()==Fireball.USERDATA_FIREBALL && fB.getUserData()==PlayableCharacter.USERDATA_PLAYER){
 				for(Player p: game.teamBlue){
 					if(p.getPlChar().getFixture().equals(fB)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Fireball.DAMAGE);
+					break;
 				}
 				for(Player p: game.teamRed){
 					if(p.getPlChar().getFixture().equals(fB)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Fireball.DAMAGE);
+					break;
 				}
 				fA.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
 			}
 			if(fB.getUserData()==Fireball.USERDATA_FIREBALL && fA.getUserData()==PlayableCharacter.USERDATA_PLAYER){
 				for(Player p: game.teamBlue){
 					if(p.getPlChar().getFixture().equals(fA)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Fireball.DAMAGE);
+					break;
 				}
 				for(Player p: game.teamRed){
 					if(p.getPlChar().getFixture().equals(fA)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Fireball.DAMAGE);
+					break;
 				}
 				fB.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
 			}

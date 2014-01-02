@@ -1,5 +1,6 @@
 package de.htw.saarland.gamedev.nap.data;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Shape;
 
@@ -123,6 +124,13 @@ public class GameCharacter extends MoveableEntity{
 	public void setOrientation(int orientation){
 		if(orientation!=ORIENTATION_LEFT && orientation!=ORIENTATION_RIGHT) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_ORIENTATION);
 		this.orientation=orientation;
+		/*
+		if(getBody()!=null){
+			if(orientation== ORIENTATION_LEFT)
+				getBody().setTransform(getBody().getPosition(), MathUtils.degreesToRadians*180);
+			else
+				getBody().setTransform(getBody().getPosition(), MathUtils.degreesToRadians*360);
+		}*/
 	}
 	
 	public void setSwinging(boolean swinging){

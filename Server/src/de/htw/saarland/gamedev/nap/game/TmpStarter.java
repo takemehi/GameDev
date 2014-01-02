@@ -1,18 +1,17 @@
 package de.htw.saarland.gamedev.nap.game;
 
-import java.util.ArrayList;
-
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.utils.Array;
-
-import de.htw.saarland.gamedev.nap.data.Player;
+import com.smartfoxserver.v2.entities.SFSUser;
 
 
 public class TmpStarter {
 
 	public static void main (String[] args) {
-		Array<Player> teamBlue=new Array<Player>();
-		Array<Player> teamRed=new Array<Player>();
-		new LwjglApplication(new GameServer("map", 10, teamBlue, teamRed), "Game", 480, 320, true);
+		Array<SFSUser> userBlue=new Array<SFSUser>();
+		Array<SFSUser> userRed=new Array<SFSUser>();
+		int charactersBlue[] = {1,1};
+		int charactersRed[] = {1,1};
+		new LwjglApplication(new GameServer("map", 10, userBlue, userRed, charactersBlue, charactersRed), "Game", 480, 320, true);
 	}
 }

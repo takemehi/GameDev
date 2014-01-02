@@ -2,8 +2,6 @@ package de.htw.saarland.gamedev.nap.game;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.badlogic.gdx.ApplicationListener;
@@ -11,34 +9,27 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.WorldManifold;
 import com.badlogic.gdx.utils.Array;
-import com.smartfoxserver.v2.entities.User;
+import com.smartfoxserver.v2.entities.SFSUser;
 import com.smartfoxserver.v2.entities.data.SFSObject;
 
 import de.htw.saarland.gamedev.nap.data.CapturePoint;
 import de.htw.saarland.gamedev.nap.data.GameWorld;
-import de.htw.saarland.gamedev.nap.data.Mage;
 import de.htw.saarland.gamedev.nap.data.NPC;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
 import de.htw.saarland.gamedev.nap.data.Player;
 import de.htw.saarland.gamedev.nap.data.SpawnPoint;
-import de.htw.saarland.gamedev.nap.data.Warrior;
 import de.htw.saarland.gamedev.nap.data.entities.Entity;
 import de.htw.saarland.gamedev.nap.data.entities.MoveableEntity;
-import de.htw.saarland.gamedev.nap.data.entities.SensorEntity;
 import de.htw.saarland.gamedev.nap.data.entities.StaticEntity;
 
 public class GameServer implements ApplicationListener {
@@ -86,6 +77,10 @@ public class GameServer implements ApplicationListener {
 	private GameWorld gameWorld;
 	private SpawnPoint SpawnPointBlue;
 	private SpawnPoint SpawnPointRed;
+	private Array <SFSUser> userBlue;
+	private Array <SFSUser> userRed;
+	private int charactersBlue[];
+	private int charactersRed[];
 	protected Array<Player> teamBlue;
 	protected Array<Player> teamRed;
 	private Array<CapturePoint> capturePoints;
@@ -104,26 +99,31 @@ public class GameServer implements ApplicationListener {
 	private OrthographicCamera camera;
 	private Box2DDebugRenderer renderer;
 	//rendering test
-	SpriteBatch batch;
 	OrthogonalTiledMapRenderer mapRenderer;
-	LinkedList<SensorEntity> fireBalls;
 	
 	//////////////////////
 	//	constructors	//
 	//////////////////////
 	
-	public GameServer(String mapName, int teamSize, Array<Player> team1, Array<Player> team2){
+	public GameServer(String mapName, int teamSize, Array <SFSUser> userBlue, Array <SFSUser> userRed, int[] charactersBlue, int[] charactersRed){
 		if(mapName.trim().length()<1) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_MAP_EMPTY);
 		if(teamSize<1) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_TEAMSIZE);
-		if(team1 == null) throw new NullPointerException(EXCEPTION_NULL_TEAM1);
-		if(team2 == null) throw new NullPointerException(EXCEPTION_NULL_TEAM2);
+		if(userBlue == null) throw new NullPointerException(EXCEPTION_NULL_TEAM1);
+		if(userRed == null) throw new NullPointerException(EXCEPTION_NULL_TEAM2);
 		if(!new File(FOLDER_MAPS+mapName+".tmx").exists() || !new File(FOLDER_MAPS+mapName+".json").exists())
 			throw new IllegalArgumentException(EXCEPTION_ILLEGAL_MAP);
 		
 		this.mapName=mapName;
 		this.teamSize=teamSize;
-		this.teamBlue=team1;
-		this.teamRed=team2;
+		this.userBlue=userBlue;
+		this.userRed=userRed;
+		this.charactersBlue=charactersBlue;
+		this.charactersRed=charactersRed;
+		this.teamBlue = new Array<Player>();
+		this.teamRed =new Array<Player>();
+		//TODO remove
+		this.userBlue=new Array<SFSUser>();
+		this.userRed=new Array<SFSUser>();
 		platforms=new Array<StaticEntity>();
 		capturePoints=new Array<CapturePoint>();
 		currentId=0;
@@ -153,6 +153,14 @@ public class GameServer implements ApplicationListener {
 		this.SpawnPointRed=gameWorld.getSpawnPointRed();
 		//initialize players
 		
+		for(int i=0; i<charactersBlue.length; i++){
+			//TODO change user
+			teamBlue.add(new Player(null, world, SpawnPointBlue.getSpawnPoint().getPositionOriginal(), charactersBlue[i], PlayableCharacter.ID_TEAM_BLUE, currentId++));
+		}
+		for(int i=0; i<charactersRed.length; i++){
+			//TODO change user
+			teamRed.add(new Player(null, world, SpawnPointRed.getSpawnPoint().getPositionOriginal(), charactersRed[i], PlayableCharacter.ID_TEAM_RED, currentId++));
+		}
 		//initialize npcs
 		
 		//Test stuff
@@ -162,51 +170,6 @@ public class GameServer implements ApplicationListener {
 		camera.update();
 		mapRenderer = new OrthogonalTiledMapRenderer(map, PIXELS_TO_METERS);
 		mapRenderer.setView(camera);
-		batch = new SpriteBatch();
-		fireBalls = new LinkedList<SensorEntity>();
-		
-		/*
-		BodyDef bd = new BodyDef();
-		bd.position.set(new Vector2(2,6));
-		FixtureDef fd1 = new FixtureDef();
-		fd1.isSensor=true;
-		fd1.shape=new WarriorShape();
-		FixtureDef fd2=new FixtureDef();
-		CircleShape cs = new CircleShape();
-		cs.setRadius(0.2f);
-		cs.setPosition(new Vector2(0.2f,0));
-		fd2.isSensor=true;
-		fd2.shape=cs;
-		
-		Body body = world.createBody(bd);
-		body.createFixture(fd1);
-		body.createFixture(fd2);*/
-		
-		Warrior warrior = new Warrior(new Vector2(2,2), PlayableCharacter.ID_TEAM_BLUE ,currentId++);
-		warrior.setBody(world.createBody(warrior.getBodyDef()));
-		warrior.setFixture(warrior.getBody().createFixture(warrior.getFixtureDef()));
-		Player player = new Player(null, warrior);
-		teamBlue.add(player);
-		/*Mage mage = new Mage(new Vector2(2,2), PlayableCharacter.ID_TEAM_BLUE, currentId++);
-		mage.setBody(world.createBody(mage.getBodyDef()));
-		mage.setFixture(mage.getBody().createFixture(mage.getFixtureDef()));
-		mage.setHealth(20);
-		Player player = new Player(null, mage);
-		teamBlue.add(player);*/
-		
-		Mage mage1 = new Mage(new Vector2(4,4), PlayableCharacter.ID_TEAM_BLUE, currentId++);
-		mage1.setBody(world.createBody(mage1.getBodyDef()));
-		mage1.setFixture(mage1.getBody().createFixture(mage1.getFixtureDef()));
-		mage1.setHealth(20);
-		Player player1 = new Player(null, mage1);
-		teamBlue.add(player1);
-		
-		Mage mage2 = new Mage(new Vector2(6,4 ), PlayableCharacter.ID_TEAM_RED, currentId++);
-		mage2.setBody(world.createBody(mage2.getBodyDef()));
-		mage2.setFixture(mage2.getBody().createFixture(mage2.getFixtureDef()));
-		mage2.setHealth(100);
-		Player player2 = new Player(null, mage2);
-		teamRed.add(player2);
 	}		
 	
 	@Override
@@ -221,6 +184,11 @@ public class GameServer implements ApplicationListener {
 			Vector3 mouseCoords3 = new Vector3(Gdx.input.getX(),Gdx.input.getY(),0);
 			camera.unproject(mouseCoords3);
 			Vector2 mouseCoords = new Vector2(mouseCoords3.x, mouseCoords3.y);
+			//player orientation
+			if(mouseCoords.x > plCh.getBody().getPosition().x)
+				plCh.setOrientation(PlayableCharacter.ORIENTATION_RIGHT);			
+			else
+				plCh.setOrientation(PlayableCharacter.ORIENTATION_LEFT);
 			
 			//Attacks
 			if(!Gdx.input.isButtonPressed(Keys.LEFT)){
@@ -230,15 +198,9 @@ public class GameServer implements ApplicationListener {
 				plCh.setAttacking(true);
 			}
 			if(plCh.isSwinging()){
-				if (plCh.getSwingTime()==0 && plCh.getAttacking()) {					
+				if (plCh.getSwingTime()==0 && plCh.getAttacking())					
 					plCh.getAttack1().start(world, plCh, currentId++, mouseCoords);
 					
-					//player orientation
-					if(mouseCoords.x > plCh.getBody().getPosition().x)
-		 				plCh.getBody().setTransform(plCh.getBody().getPosition(), MathUtils.degreesToRadians*360);
-					else
-						plCh.getBody().setTransform(plCh.getBody().getPosition(), MathUtils.degreesToRadians*180);
-				}
 				plCh.setSwingTime(plCh.getSwingTime()+Gdx.graphics.getDeltaTime());
 				//TODO proper swingtime constant
 				if(plCh.getSwingTime()>=plCh.getMaxSwingTime()){
@@ -260,15 +222,16 @@ public class GameServer implements ApplicationListener {
 				plCh.getBody().setLinearVelocity(0, plCh.getBody().getLinearVelocity().y);
 			if(Gdx.input.isKeyPressed(Keys.A)){
 				plCh.getBody().setLinearVelocity(-plCh.getMaxVelocity().x, plCh.getBody().getLinearVelocity().y);
-				plCh.getBody().setTransform(plCh.getBody().getPosition(), MathUtils.degreesToRadians*180);
+				plCh.setOrientation(PlayableCharacter.ORIENTATION_LEFT);
 			}
 			if(Gdx.input.isKeyPressed(Keys.D)){
 				plCh.getBody().setLinearVelocity(plCh.getMaxVelocity().x, plCh.getBody().getLinearVelocity().y);
-				plCh.getBody().setTransform(plCh.getBody().getPosition(), MathUtils.degreesToRadians*360);
+				plCh.setOrientation(PlayableCharacter.ORIENTATION_RIGHT);
 			}
 			if(!Gdx.input.isKeyPressed(Keys.SPACE) && isGrounded(plCh)) plCh.setJumping(false);
 			if(Gdx.input. isKeyPressed(Keys.SPACE) && !plCh.isJumping()){
-				if(isGrounded(plCh)){
+				//if(isGrounded(plCh)){
+				if(true){
 					plCh.getBody().setAwake(true);
 					plCh.getBody().setLinearVelocity(plCh.getBody().getLinearVelocity().x, plCh.getMaxVelocity().y);
 					plCh.setJumping(true);
@@ -282,14 +245,23 @@ public class GameServer implements ApplicationListener {
 			if(plCh.isAtSpawn() && spawnRegTime>=INTERVAL_REGEN_SPAWN){
 				plCh.setHealth(plCh.getHealth()+5);
 				spawnRegTime=0;
+				
+			//death test
+			if(plCh.getHealth()<=0) plCh.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
 			}
 		}
 		
 		for(Player p: teamRed){
+			PlayableCharacter plCh = p.getPlChar();
+			//Spawn regeneration
+			spawnRegTime+=Gdx.graphics.getDeltaTime();
+			if(plCh.isAtSpawn() && spawnRegTime>=INTERVAL_REGEN_SPAWN){
+				plCh.setHealth(plCh.getHealth()+5);
+				spawnRegTime=0;
+			}
 			//death test
 			if(p.getPlChar().getHealth()<=0) p.getPlChar().getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
 		}
-		
 		//Capturing
 		
 		//Game Logic
@@ -309,30 +281,31 @@ public class GameServer implements ApplicationListener {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
-		batch.begin();
-		batch.end();
-		
 		mapRenderer.render(LAYERS_TO_RENDER);
 		renderer.render(world, camera.combined);
 		world.step(TIME_STEP, ITERATIONS_VELOCITY, ITERATIONS_POSITION);
 		
 		//delete entities
 
-		for(Player p: teamBlue){
-			if(p.getPlChar().getBody().getUserData()!=null && p.getPlChar().getBody().getUserData().equals(Entity.USERDATA_BODY_FLAG_DELETE)){
-				teamBlue.removeValue(p, true);
-				world.destroyBody(p.getPlChar().getBody());
+		for(int i=0; i<teamBlue.size; i++){
+			PlayableCharacter character;
+			character = teamBlue.get(i).getPlChar();
+			if(character.getBody().getUserData()!=null && character.getBody().getUserData().equals(Entity.USERDATA_BODY_FLAG_DELETE)){
+				teamBlue.removeIndex(i);
+				world.destroyBody(character.getBody());
 			}
-			p.getPlChar().getAttack1().cleanUp(world);
+			character.getAttack1().cleanUp(world);
 		}
-		for(Player p: teamRed){
-			if(p.getPlChar().getBody().getUserData()!=null && p.getPlChar().getBody().getUserData().equals(Entity.USERDATA_BODY_FLAG_DELETE)){
-				teamRed.removeValue(p, true);
-				world.destroyBody(p.getPlChar().getBody());
+		for(int i=0; i<teamRed.size; i++){
+			PlayableCharacter character;
+			character = teamRed.get(i).getPlChar();
+			if(character.getBody().getUserData()!=null && character.getBody().getUserData().equals(Entity.USERDATA_BODY_FLAG_DELETE)){
+				teamRed.removeIndex(i);
+				world.destroyBody(character.getBody());
 			}
-			p.getPlChar().getAttack1().cleanUp(world);
+			character.getAttack1().cleanUp(world);
 		}
-		
+		//System.out.println(teamBlue.get(0).getPlChar().getHealth()+"\t"+teamRed.get(0).getPlChar().getHealth());
 	}
 	
 	@Override
@@ -353,19 +326,6 @@ public class GameServer implements ApplicationListener {
 	//	intern methods	//
 	//////////////////////
 	
-	private void initPlayer(User user, PlayableCharacter character){
-		//TODO set the correct starting position depending on the map
-		Player player = new Player(user, character);
-		if(character.getTeamId()==PlayableCharacter.ID_TEAM_BLUE) teamBlue.add(player);
-		if(character.getTeamId()==PlayableCharacter.ID_TEAM_RED) teamRed.add(player);
-		
-		player.getPlChar().setBody(world.createBody(player.getPlChar().getBodyDef()));
-		player.getPlChar().dispose();
-		player.getPlChar().setFixture(
-				player.getPlChar().getBody()
-				.createFixture(player.getPlChar().getFixtureDef()));
-	}
-	
 	private boolean isGrounded(MoveableEntity entity){
 		if(entity==null) throw new NullPointerException(EXCEPTION_NULL_ENTITY);
 		//calculate y offset
@@ -385,9 +345,11 @@ public class GameServer implements ApplicationListener {
 					for(int j = 0; j < manifold.getNumberOfContactPoints(); j++) {
 						below &= (manifold.getPoints()[j].y < pos.y - Math.abs(tmpVector.y));
 					}
-					if((c.getFixtureA()==entity.getFixture() && c.getFixtureB().getUserData()!=null && c.getFixtureB().getUserData().equals("player")))
+					if((c.getFixtureA()==entity.getFixture() 
+							&& c.getFixtureB().getUserData()!=null && c.getFixtureB().getUserData().equals(PlayableCharacter.USERDATA_PLAYER)))
 						below=false;
-					if((c.getFixtureB()==entity.getFixture() && c.getFixtureA().getUserData()!=null && c.getFixtureA().getUserData().equals("player")))
+					if((c.getFixtureB()==entity.getFixture() 
+							&& c.getFixtureA().getUserData()!=null && c.getFixtureA().getUserData().equals(PlayableCharacter.USERDATA_PLAYER)))
 						below=false;
 					if(below) return true;
 				}

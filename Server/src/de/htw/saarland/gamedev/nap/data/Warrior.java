@@ -10,7 +10,6 @@ import de.htw.saarland.gamedev.nap.data.skills.Axe;
 
 public class Warrior extends PlayableCharacter{
 
-	public static final PolygonShape SHAPE = new WarriorShape();
 	public static final float DENSITY = 1;
 	public static final float FRICTION = 0;
 	public static final float RESTITUTION = 0;
@@ -22,7 +21,7 @@ public class Warrior extends PlayableCharacter{
 	public static final String USERDATA_AXE = "axe";
 	
 	public Warrior(Vector2 position, int teamId,  int id) {
-		super(SHAPE, DENSITY, FRICTION, RESTITUTION, position, BASEVELOCITY,
+		super(new WarriorShape(), DENSITY, FRICTION, RESTITUTION, position, BASEVELOCITY,
 				MAXVELOCITY, MAXHEALTH, TIME_SWING, PlayableCharacter.ID_WARRIOR, teamId, id);
 		
 		attack1=new Axe();

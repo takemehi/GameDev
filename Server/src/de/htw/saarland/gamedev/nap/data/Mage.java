@@ -8,7 +8,7 @@ import de.htw.saarland.gamedev.nap.data.skills.Fireball;
 public class Mage extends PlayableCharacter{
 
 	private static final float DENSITY = 1f;
-	private static final float FRICTION = 1f;
+	private static final float FRICTION = 0f;
 	private static final float RESTITUTION = 0;
 	private static final Vector2 BASEVELOCITY = new Vector2(3,8);
 	private static final Vector2 MAXVELOCITY = new Vector2(3,8);
