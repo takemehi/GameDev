@@ -179,10 +179,10 @@ public class GameClient implements ApplicationListener, IEventListener {
 				
 				switch (charid) {
 					case PlayableCharacter.ID_WARRIOR:
-						character = new Warrior(new Vector2(coordx, coordy), entid);
+						character = new Warrior(new Vector2(coordx, coordy), teamid, entid);
 						break;
 					case PlayableCharacter.ID_MAGE:
-						character = new Mage(new Vector2(coordx, coordy), entid);
+						character = new Mage(new Vector2(coordx, coordy), teamid, entid);
 						break;
 					default:
 						System.out.println("This character id does not exist! " + charid);
