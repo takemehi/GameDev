@@ -1,63 +1,80 @@
 package de.htw.saarland.gamedev.nap.client.entity;
 
-import sfs2x.client.SmartFox;
-import sfs2x.client.requests.ExtensionRequest;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 
-import de.htw.saarland.gamedev.nap.client.input.IBaseInput;
 import de.htw.saarland.gamedev.nap.client.render.IRender;
-import de.htw.saarland.gamedev.nap.client.render.PlayerAnimation;
+import de.htw.saarland.gamedev.nap.client.render.EntityAnimation;
+import de.htw.saarland.gamedev.nap.client.render.EntityAnimation.CharacterStates;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
-import de.htw.saarland.gamedev.nap.data.network.GameOpcodes;
 
-public class ClientPlayer implements IRender {
+public class ClientPlayer implements IRender, IMoveable {
 
-	private PlayableCharacter character;
-	private int team;
-	private IBaseInput inputProcessor;
+	protected PlayableCharacter character;
+	protected int team;
 	
-	private PlayerAnimation animations;
+	private EntityAnimation animations;
 	private float stateTime;
-	private SmartFox sfClient;
 	
-	public ClientPlayer(PlayableCharacter character, int team, IBaseInput inputProcessor, SmartFox sfClient) {
-		if (character == null || inputProcessor == null || sfClient == null) {
+	public ClientPlayer(PlayableCharacter character, int team) {
+		if (character == null) {
 			throw new NullPointerException();
 		}
 		
 		this.character = character;
 		this.team = team;
-		this.inputProcessor = inputProcessor;
-		this.sfClient = sfClient;
 		
-		//init Player Animation based on character
+		// TODO init Player Animation based on character
 	}
 
 	@Override
 	public void render(SpriteBatch batch) {
 		stateTime += Gdx.graphics.getDeltaTime();
 		
-		//TODO calculate x & y pos to render
-		//batch.draw(animations.getAnimationFrame(getCharacterState(), stateTime), x, y);
+		Vector2 pos = character.getBody().getPosition();
+		batch.draw(animations.getAnimationFrame(getCharacterState(), stateTime), pos.x, pos.y);
 		
-		if (inputProcessor.isLeftDown() && !inputProcessor.wasLeftDown()) {
-			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_MOVE_LEFT_REQUEST, null, sfClient.getLastJoinedRoom()));
-		}
-		else if (inputProcessor.isRightDown() && !inputProcessor.wasRightDown()) {
-			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_MOVE_RIGHT_REQUEST, null, sfClient.getLastJoinedRoom()));
-		}
-		else if ((!inputProcessor.isLeftDown() && inputProcessor.wasLeftDown()) ||
-				(!inputProcessor.isRightDown() && inputProcessor.wasRightDown())) {
-			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_MOVE_STOP_REQUEST, null, sfClient.getLastJoinedRoom()));
-		}
+		// TODO render healthbar & name
+	}
+
+	protected CharacterStates getCharacterState() {
+		// TODO return correct state
 		
-		if (inputProcessor.isJumpDown()) {
-			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_MOVE_JUMP_REQUEST, null, sfClient.getLastJoinedRoom()));
-		}
+		return CharacterStates.IDLE;
+	}
+	
+	public int getEntityId() {
+		return character.getId();
+	}
+	
+	@Override
+	public void setPosition(Vector2 pos) {
+		character.getBody().setTransform(pos, character.getBody().getAngle());
+	}
+
+	@Override
+	public void moveLeft() {
+		// TODO call method to start moving left (needs to get implemented at MoveableEntity class)
 		
-		// TODO capture request
+	}
+
+	@Override
+	public void moveRight() {
+		// TODO call method to start moving right (needs to get implemented at MoveableEntity class)
+		
+	}
+
+	@Override
+	public void startJump() {
+		// TODO call method to start to jump (needs to get implemented at MoveableEntity class)
+		
+	}
+
+	@Override
+	public void stopMove() {
+		// TODO call method to stop moving (needs to get implemented at MoveableEntity class)
+		
 	}
 
 }

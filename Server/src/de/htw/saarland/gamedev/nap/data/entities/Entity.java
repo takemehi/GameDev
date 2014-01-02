@@ -25,6 +25,7 @@ public abstract class Entity {
 		if(position==null) throw new NullPointerException(EXCEPTION_NULL_POSITION);
 		initBodyDef(position);
 		initFixtureDef(shape);
+		this.id = id;
 	}
 	
 	public Entity(Shape shape, float x, float y, int id){
@@ -72,5 +73,9 @@ public abstract class Entity {
 	
 	public Fixture getFixture(){
 		return fixture;
+	}
+
+	public int getId() {
+		return id;
 	}
 }
