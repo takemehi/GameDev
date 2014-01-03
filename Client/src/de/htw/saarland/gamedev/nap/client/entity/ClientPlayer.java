@@ -39,7 +39,17 @@ public class ClientPlayer implements IRender, IMoveable {
 	}
 
 	protected CharacterStates getCharacterState() {
-		// TODO return correct state
+		if (character.isJumping()) {
+			return CharacterStates.JUMPING;
+		}
+		else if (character.getLeft() || character.getRight()) {
+			return CharacterStates.WALKING;
+		}
+		else if (character.getHealth() <= 0) {
+			return CharacterStates.DEAD;
+		}
+		
+		// TODO skills?, capturing
 		
 		return CharacterStates.IDLE;
 	}
@@ -55,26 +65,33 @@ public class ClientPlayer implements IRender, IMoveable {
 
 	@Override
 	public void moveLeft() {
-		// TODO call method to start moving left (needs to get implemented at MoveableEntity class)
-		
+		character.setLeft(true);
 	}
 
 	@Override
 	public void moveRight() {
-		// TODO call method to start moving right (needs to get implemented at MoveableEntity class)
-		
+		character.setRight(true);
 	}
 
 	@Override
 	public void startJump() {
-		// TODO call method to start to jump (needs to get implemented at MoveableEntity class)
-		
+		character.setJumping(true);
 	}
 
 	@Override
 	public void stopMove() {
-		// TODO call method to stop moving (needs to get implemented at MoveableEntity class)
-		
+		character.setLeft(false);
+		character.setRight(false);
+	}
+
+	@Override
+	public void moveDown() {
+		character.setDown(true);
+	}
+
+	@Override
+	public void stopDown() {
+		character.setDown(false);
 	}
 
 }

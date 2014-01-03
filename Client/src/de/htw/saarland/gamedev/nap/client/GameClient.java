@@ -1,5 +1,7 @@
 package de.htw.saarland.gamedev.nap.client;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,8 +15,6 @@ import sfs2x.client.requests.ExtensionRequest;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Buttons;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -22,7 +22,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.smartfoxserver.v2.entities.data.SFSObject;
 import com.smartfoxserver.v2.exceptions.SFSException;
-import com.sun.corba.se.spi.legacy.connection.GetEndPointInfoAgainException;
 
 import de.htw.saarland.gamedev.nap.NetworkConstants;
 import de.htw.saarland.gamedev.nap.client.entity.ClientNPC;
@@ -31,10 +30,10 @@ import de.htw.saarland.gamedev.nap.client.entity.EntityNotFound;
 import de.htw.saarland.gamedev.nap.client.entity.IMoveable;
 import de.htw.saarland.gamedev.nap.client.entity.MeClientPlayer;
 import de.htw.saarland.gamedev.nap.client.input.IBaseInput;
+import de.htw.saarland.gamedev.nap.client.input.InputConfigLoader;
 import de.htw.saarland.gamedev.nap.client.input.KeyboardMouseInputProcessor;
 import de.htw.saarland.gamedev.nap.client.world.RenderableGameWorld;
 import de.htw.saarland.gamedev.nap.data.Mage;
-import de.htw.saarland.gamedev.nap.data.NPC;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
 import de.htw.saarland.gamedev.nap.data.Warrior;
 import de.htw.saarland.gamedev.nap.data.network.GameOpcodes;
@@ -48,6 +47,8 @@ import de.htw.saarland.gamedev.nap.game.GameServer;
  */
 public class GameClient implements ApplicationListener, IEventListener {
 
+	public final static String FOLDER_CONFIG = "data/config/";
+	
 	private SmartFox sfClient;
 	private Room gameRoom;
 	private IBaseInput inputProcessor;
@@ -82,16 +83,37 @@ public class GameClient implements ApplicationListener, IEventListener {
 	
 	@Override
 	public void create() {
-		// TODO load keys from own file
+		//this is the standard config!
+//		this.inputProcessor = new KeyboardMouseInputProcessor(
+//				Buttons.LEFT,
+//				Keys.NUM_1,
+//				Keys.NUM_2,
+//				Keys.SPACE,
+//				Keys.A,
+//				Keys.D,
+//				Keys.S,
+//				Keys.F);
+		
+		InputConfigLoader icf = new InputConfigLoader(new File(FOLDER_CONFIG, "keys.cfg"));
+		try {
+			icf.load();
+		} catch (NumberFormatException e) {
+			System.out.println("Error loading config file, invalid character!");
+			System.exit(-1);
+		} catch (IOException e) {
+			System.out.println("Error loading config file, io error!");
+			e.printStackTrace();
+			System.exit(-1);
+		}
 		this.inputProcessor = new KeyboardMouseInputProcessor(
-				Buttons.LEFT,
-				Keys.NUM_1,
-				Keys.NUM_2,
-				Keys.SPACE,
-				Keys.A,
-				Keys.D,
-				Keys.S,
-				Keys.F);
+				icf.getSkill1Key(),
+				icf.getSkill2Key(),
+				icf.getSkill3Key(),
+				icf.getJumpKey(),
+				icf.getRightKey(),
+				icf.getLeftKey(),
+				icf.getDownKey(),
+				icf.getCaptureKey());
 		
 		batch = new SpriteBatch();
 		world = new World(GameServer.GRAVITY, true);
@@ -218,11 +240,17 @@ public class GameClient implements ApplicationListener, IEventListener {
 			case GameOpcodes.GAME_MOVE_RIGHT_START:
 				moveEntity(Direction.RIGHT, params.getInt(GameOpcodes.ENTITY_ID_PARAM));
 				break;
+			case GameOpcodes.GAME_MOVE_DOWN_START:
+				moveEntity(Direction.DOWN, params.getInt(GameOpcodes.ENTITY_ID_PARAM));
+				break;
 			case GameOpcodes.GAME_MOVE_JUMP_START:
 				moveEntity(Direction.JUMP, params.getInt(GameOpcodes.ENTITY_ID_PARAM));
 				break;
 			case GameOpcodes.GAME_MOVE_STOP:
 				moveEntity(Direction.STOP, params.getInt(GameOpcodes.ENTITY_ID_PARAM));
+				break;
+			case GameOpcodes.GAME_MOVE_DOWN_STOP:
+				moveEntity(Direction.STOP_DOWN, params.getInt(GameOpcodes.ENTITY_ID_PARAM));
 				break;
 			default:
 				System.out.println("Unknown packet received! : " + cmd);
@@ -295,11 +323,16 @@ public class GameClient implements ApplicationListener, IEventListener {
 			case RIGHT:
 				entity.moveRight();
 				break;
+			case DOWN:
+				entity.moveDown();
 			case JUMP:
 				entity.startJump();
 				break;
 			case STOP:
 				entity.stopMove();
+				break;
+			case STOP_DOWN:
+				entity.stopDown();
 				break;
 		}
 	}
@@ -316,8 +349,10 @@ public class GameClient implements ApplicationListener, IEventListener {
 	public enum Direction {
 		LEFT,
 		RIGHT,
+		DOWN,
 		JUMP,
-		STOP
+		STOP,
+		STOP_DOWN
 	}
 	
 }

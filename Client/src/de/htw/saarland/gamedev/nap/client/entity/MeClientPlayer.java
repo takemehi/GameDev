@@ -44,8 +44,15 @@ public class MeClientPlayer extends ClientPlayer {
 			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_MOVE_STOP_REQUEST, null, gameRoom));
 		}
 		
-		if (inputProcessor.isJumpDown() && !character.isJumping()) {
+		if (inputProcessor.isJumpDown() && !inputProcessor.wasJumpDown()) {
 			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_MOVE_JUMP_REQUEST, null, gameRoom));
+		}
+		else if (inputProcessor.isDownDown() && !inputProcessor.wasDownDown()) {
+			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_MOVE_DOWN_REQUEST, null, gameRoom));
+		}
+		
+		if (!inputProcessor.isDownDown() && inputProcessor.wasDownDown()) {
+			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_MOVE_DOWN_STOP_REQUEST, null, gameRoom));
 		}
 		
 		if (inputProcessor.isCaptureDown() && !inputProcessor.wasCaptureDown()) {

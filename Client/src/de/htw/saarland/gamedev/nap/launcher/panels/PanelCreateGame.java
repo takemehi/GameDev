@@ -140,7 +140,7 @@ public class PanelCreateGame extends javax.swing.JPanel {
     private void buttonCreateGameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCreateGameActionPerformed
         if (textName.getText().trim().length() > 0) {
             if (listener != null) {
-                listener.createGame(textName.getText(), Integer.parseInt(comboBoxTeamSize.getSelectedItem().toString()), comboBoxTeamSize.getSelectedItem().toString());
+                listener.createGame(textName.getText(), Integer.parseInt(comboBoxTeamSize.getSelectedItem().toString()), comboBoxMap.getSelectedItem().toString());
             }
         }
         else {

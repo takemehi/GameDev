@@ -38,7 +38,15 @@ public class ClientNPC implements IRender, IMoveable {
 	}
 	
 	protected CharacterStates getCharacterState() {
-		// TODO return correct state
+		if (npc.isJumping()) {
+			return CharacterStates.JUMPING;
+		}
+		else if (npc.getLeft() || npc.getRight()) {
+			return CharacterStates.WALKING;
+		}
+		else if (npc.getHealth() <= 0) {
+			return CharacterStates.DEAD;
+		}
 		
 		return CharacterStates.IDLE;
 	}
@@ -54,25 +62,32 @@ public class ClientNPC implements IRender, IMoveable {
 
 	@Override
 	public void moveLeft() {
-		// TODO call move left method at npc class once it is implemented
-
+		npc.setLeft(true);
 	}
 
 	@Override
 	public void moveRight() {
-		// TODO call move right method at npc class once it is implemented
-
+		npc.setRight(true);
 	}
 
 	@Override
 	public void startJump() {
-		// TODO call jump method at npc class once it is implemented
-
+		npc.setJumping(true);
 	}
 
 	@Override
 	public void stopMove() {
-		// TODO call stop move method at npc class once it is implemented
+		npc.setLeft(false);
+		npc.setRight(false);
+	}
 
+	@Override
+	public void moveDown() {
+		npc.setDown(true);
+	}
+	
+	@Override
+	public void stopDown() {
+		npc.setDown(false);
 	}
 }

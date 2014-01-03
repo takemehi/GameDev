@@ -6,6 +6,8 @@ public interface IMoveable {
 	public void setPosition(Vector2 pos);
 	public void moveLeft();
 	public void moveRight();
+	public void moveDown();
 	public void startJump();
 	public void stopMove();
+	public void stopDown();
 }

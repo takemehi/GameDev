@@ -6,6 +6,7 @@ package de.htw.saarland.gamedev.nap.launcher;
 
 import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -19,12 +20,16 @@ import sfs2x.client.core.IEventListener;
 import sfs2x.client.core.SFSEvent;
 import sfs2x.client.entities.Room;
 import sfs2x.client.entities.User;
+import sfs2x.client.entities.variables.RoomVariable;
+import sfs2x.client.entities.variables.SFSRoomVariable;
 import sfs2x.client.requests.JoinRoomRequest;
 import sfs2x.client.requests.PublicMessageRequest;
 import sfs2x.client.requests.RoomExtension;
 import sfs2x.client.requests.game.CreateSFSGameRequest;
 import sfs2x.client.requests.game.SFSGameSettings;
 
+import com.smartfoxserver.v2.entities.data.ISFSArray;
+import com.smartfoxserver.v2.entities.data.ISFSObject;
 import com.smartfoxserver.v2.entities.data.SFSObject;
 import com.smartfoxserver.v2.exceptions.SFSException;
 
@@ -102,6 +107,9 @@ public class FrameLauncher extends javax.swing.JFrame implements IEventListener,
         settings.setPublic(true);
         settings.setNotifyGameStarted(true);
         settings.setExtension(new RoomExtension("nap", "de.htw.saarland.gamedev.nap.server.ServerExtension"));
+        List<RoomVariable> vars = new ArrayList<RoomVariable>();
+        vars.add(new SFSRoomVariable(LauncherOpcodes.MAP_NAME_VAR, mapName));
+        settings.setVariables(vars);
         
         sfClient.send(new CreateSFSGameRequest(settings));
     }
@@ -171,8 +179,8 @@ public class FrameLauncher extends javax.swing.JFrame implements IEventListener,
                 joinedRoom = roomJoin;
                 System.out.println(roomJoin);
                 
-                if (roomJoin.isGame()) {
-                    gameInfo = new PanelGameInfo(sfClient, roomJoin);
+                if (roomJoin.isGame()) {                	
+                    gameInfo = new PanelGameInfo(sfClient, roomJoin, (String)roomJoin.getVariable(LauncherOpcodes.MAP_NAME_VAR).getValue());
                     
                     contentPanel.removeAll();
                     contentPanel.add(gameInfo);

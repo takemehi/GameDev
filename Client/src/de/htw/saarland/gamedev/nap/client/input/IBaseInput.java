@@ -34,6 +34,10 @@ public interface IBaseInput {
 	 */
 	public boolean isJumpDown();
 	/**
+	 * Whether jump was down on the last iteration
+	 */
+	public boolean wasJumpDown();
+	/**
 	 * Whether left key is pressed
 	 */
 	public boolean isLeftDown();
@@ -53,6 +57,10 @@ public interface IBaseInput {
 	 * Whether the down key is pressed
 	 */
 	public boolean isDownDown(); // :D
+	/**
+	 * Whether the down key was down on the last iteration
+	 */
+	public boolean wasDownDown();
 	/**
 	 * Whether the capture key is pressed
 	 */

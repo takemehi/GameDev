@@ -97,15 +97,15 @@
     <Component class="javax.swing.JComboBox" name="comboBoxCharacter">
       <Properties>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="5">
-            <StringItem index="0" value="TODO"/>
-            <StringItem index="1" value="load"/>
-            <StringItem index="2" value="characters"/>
-            <StringItem index="3" value="from"/>
-            <StringItem index="4" value="file"/>
+          <StringArray count="2">
+            <StringItem index="0" value="Warrior"/>
+            <StringItem index="1" value="Mage"/>
           </StringArray>
         </Property>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="comboBoxCharacterActionPerformed"/>
+      </Events>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
           <GridBagConstraints gridX="0" gridY="2" gridWidth="1" gridHeight="1" fill="2" ipadX="0" ipadY="0" insetsTop="5" insetsLeft="5" insetsBottom="0" insetsRight="5" anchor="10" weightX="0.0" weightY="0.0"/>

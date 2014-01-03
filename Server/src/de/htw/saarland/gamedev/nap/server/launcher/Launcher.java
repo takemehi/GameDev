@@ -20,6 +20,7 @@ import de.htw.saarland.gamedev.nap.server.launcher.exception.TeamFullException;
 public class Launcher {
 	
 	private int maxTeamSize;
+	private String mapName;
 	private List<LauncherPlayer> redTeamPlayers;
 	private List<LauncherPlayer> blueTeamPlayers;
 	private LauncherClientSender launcherSender;
@@ -29,12 +30,25 @@ public class Launcher {
 			throw new IllegalArgumentException("Team size has to be greater 0!");
 		}
 		
+		setMapName("blablablubb"); // TODO enter standard here
 		this.maxTeamSize = maxTeamSize;
 		redTeamPlayers = Collections.synchronizedList(new ArrayList<LauncherPlayer>());
 		blueTeamPlayers = Collections.synchronizedList(new ArrayList<LauncherPlayer>());
 		launcherSender = new LauncherClientSender(extension);
 	}
 	
+	public String getMapName() {
+		return mapName;
+	}
+
+	public void setMapName(String mapName) {
+		if (mapName == null || mapName.trim().length() == 0) {
+			throw new NullPointerException();
+		}
+		
+		this.mapName = mapName;
+	}
+
 	public int getRedTeamSize() {
 		return redTeamPlayers.size();
 	}

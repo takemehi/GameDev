@@ -31,7 +31,7 @@ public class PanelGameInfo extends javax.swing.JPanel {
     /**
      * Creates new form PanelGameInfo
      */
-    public PanelGameInfo(SmartFox sfClient, Room room) {
+    public PanelGameInfo(SmartFox sfClient, Room room, String map) {
         this.sfClient = sfClient;
         this.room = room;
         
@@ -41,7 +41,7 @@ public class PanelGameInfo extends javax.swing.JPanel {
         initComponents();
         
         lblGameName.setText(room.getName());
-        // TODO set map name
+        lblMapName.setText(map);
     }
     
     public void teamsChanged(SFSObject params) {
@@ -142,7 +142,12 @@ public class PanelGameInfo extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(0, 1, 0, 1);
         add(buttonChangeTeam, gridBagConstraints);
 
-        comboBoxCharacter.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "TODO", "load", "characters", "from", "file" }));
+        comboBoxCharacter.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Warrior", "Mage" }));
+        comboBoxCharacter.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboBoxCharacterActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
@@ -188,6 +193,12 @@ public class PanelGameInfo extends javax.swing.JPanel {
     private void buttonStartGameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonStartGameActionPerformed
         sfClient.send(new ExtensionRequest(LauncherOpcodes.LAUNCHER_START_GAME_REQUEST, null, sfClient.getLastJoinedRoom()));
     }//GEN-LAST:event_buttonStartGameActionPerformed
+
+    private void comboBoxCharacterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboBoxCharacterActionPerformed
+    	SFSObject params = new SFSObject();
+    	params.putInt(LauncherOpcodes.CHARACTER_ID_PARAMETER, comboBoxCharacter.getSelectedIndex());
+        sfClient.send(new ExtensionRequest(LauncherOpcodes.LAUNCHER_CHANGE_CHARACTER_REQUEST, params, sfClient.getLastJoinedRoom()));
+    }//GEN-LAST:event_comboBoxCharacterActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonChangeTeam;

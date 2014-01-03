@@ -2,6 +2,8 @@ package de.htw.saarland.gamedev.nap.server.launcher;
 
 import com.smartfoxserver.v2.entities.User;
 
+import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
+
 public class LauncherPlayer {
 
 	private int characterId;
@@ -31,7 +33,9 @@ public class LauncherPlayer {
 	}
 	
 	public void setCharacterId(int characterId) {
-		// TODO check characterId for correctness
+		if (characterId != PlayableCharacter.ID_MAGE && characterId != PlayableCharacter.ID_WARRIOR) {
+			throw new IllegalArgumentException("CharId wrong!");
+		}
 		
 		this.characterId = characterId;
 	}

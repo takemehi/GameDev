@@ -7,6 +7,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+/**
+ * This class loads key configurations from a config file. Call load before retrieving the keys
+ * 
+ * @author Pascal
+ *
+ */
 public class InputConfigLoader {
 	
 	private File configFile;

@@ -26,7 +26,9 @@ public class KeyboardMouseInputProcessor implements IBaseInput {
 	private boolean wasLeftDown;
 	private boolean wasRightDown;
 	private boolean jumpDown;
+	private boolean wasJumpDown;
 	private boolean downDown;
+	private boolean wasDownDown;
 	private boolean skill1Down;
 	private boolean skill2Down;
 	private boolean skill3Down;
@@ -78,6 +80,8 @@ public class KeyboardMouseInputProcessor implements IBaseInput {
 		skill3Down = false;
 		captureDown = false;
 		wasCaptureDown = false;
+		wasDownDown = false;
+		wasJumpDown = false;
 	}
 	
 	private boolean isPressed(int key) {
@@ -103,8 +107,10 @@ public class KeyboardMouseInputProcessor implements IBaseInput {
 		wasRightDown = rightDown;
 		rightDown = isPressed(rightKey);
 		
+		wasJumpDown = jumpDown;
 		jumpDown = isPressed(jumpKey);
 		
+		wasDownDown = downDown;
 		downDown = isPressed(downKey);
 		
 		wasCaptureDown = captureDown;
@@ -168,6 +174,11 @@ public class KeyboardMouseInputProcessor implements IBaseInput {
 	public boolean isDownDown() {
 		return downDown;
 	}
+	
+	@Override
+	public boolean wasDownDown() {
+		return wasDownDown;
+	}
 
 	@Override
 	public boolean isCaptureDown() {
@@ -177,5 +188,10 @@ public class KeyboardMouseInputProcessor implements IBaseInput {
 	@Override
 	public boolean wasCaptureDown() {
 		return wasCaptureDown;
+	}
+
+	@Override
+	public boolean wasJumpDown() {
+		return wasJumpDown;
 	}
 }

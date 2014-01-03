@@ -366,4 +366,8 @@ public class GameServer implements ApplicationListener {
 		if(packet == null) throw new NullPointerException(EXCEPTION_NULL_PACKET);
 		packetQueue.add(packet);
 	}
+	
+	public boolean isGameEnd() {
+		return gameEnded;
+	}
 }

@@ -58,6 +58,26 @@ public class GameOpcodes {
 	/**
 	 * C->S<br/>
 	 * <br/>
+	 * Opcode to request that the player would like to drop through a platform<br/>
+	 * <br/>
+	 * returns:<br/>
+	 * 	GAME_MOVE_DOWN_START when the server accepted the move and the character started to drop through<br/>
+	 * 	GAME_OBJECT_COORD_UPDATE regularly updates to improve accuracy
+	 */
+	public static final String GAME_MOVE_DOWN_REQUEST = "game.player.down.right";
+	/**
+	 * C->S<br/>
+	 * <br/>
+	 * Opcode to request that the player would like set the down var to false<br/>
+	 * <br/>
+	 * returns:<br/>
+	 * 	GAME_MOVE_DOWN_STOP when the server setted down to false on the character<br/>
+	 * 	GAME_OBJECT_COORD_UPDATE regularly updates to improve accuracy
+	 */
+	public static final String GAME_MOVE_DOWN_STOP_REQUEST = "game.player.down.right";
+	/**
+	 * C->S<br/>
+	 * <br/>
 	 * Opcode to request that the player would like to jump<br/>
 	 * <br/>
 	 * returns:<br/>
@@ -84,6 +104,24 @@ public class GameOpcodes {
 	 * 	int ENTITY_ID_PARAM the id of the entity that starts moving right
 	 */
 	public static final String GAME_MOVE_RIGHT_START = "game.player.move.right.start";
+	/**
+	 * S->C<br/>
+	 * <br/>
+	 * Opcode that indicates that a request to move down (through a platform) succeeded and the character should drop through<br/>
+	 * <br/>
+	 * params:<br/>
+	 * 	int ENTITY_ID_PARAM the id of the entity that starts moving right
+	 */
+	public static final String GAME_MOVE_DOWN_START = "game.player.move.down.start";
+	/**
+	 * S->C<br/>
+	 * <br/>
+	 * Opcode that indicates that a request to stop moving down succeeded and the character should stop dropping through platforms<br/>
+	 * <br/>
+	 * params:<br/>
+	 * 	int ENTITY_ID_PARAM the id of the entity that starts moving right
+	 */
+	public static final String GAME_MOVE_DOWN_STOP = "game.player.move.down.stop";
 	/**
 	 * S->C<br/>
 	 * <br/>

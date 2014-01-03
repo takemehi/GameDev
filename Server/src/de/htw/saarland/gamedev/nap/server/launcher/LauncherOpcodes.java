@@ -91,4 +91,6 @@ public class LauncherOpcodes {
 	public static final String ERROR_MESSAGE_PARAMETER = "errormessage";
 	
 	public static final String READY_STATE_PARAMETER = "ready";
+	
+	public static final String MAP_NAME_VAR = "mapname";
 }

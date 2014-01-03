@@ -17,7 +17,7 @@ public class StartGameRequestHandler extends BaseClientRequestHandler {
 			Launcher launcher = ((ServerExtension)getParentExtension()).getLauncher();
 			
 			if (launcher.isGameReadyToStart()) {
-				// TODO start game
+				((ServerExtension)getParentExtension()).startGame();
 			}
 			else {
 				SFSObject ret = new SFSObject();
