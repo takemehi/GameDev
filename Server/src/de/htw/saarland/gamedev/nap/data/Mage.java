@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import de.htw.saarland.gamedev.nap.data.shapes.MageShape;
 import de.htw.saarland.gamedev.nap.data.skills.Fireball;
+import de.htw.saarland.gamedev.nap.data.skills.Nova;
 
 public class Mage extends PlayableCharacter{
 
@@ -21,6 +22,7 @@ public class Mage extends PlayableCharacter{
 				MAXVELOCITY, MAXHEALTH, TIME_SWING, PlayableCharacter.ID_MAGE, teamId, id);
 		
 		attack1 = new Fireball();
+		attack3 = new Nova();
 	}
 
 }

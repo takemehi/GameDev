@@ -12,7 +12,7 @@ public class CapturePoint {
 
 	private SensorEntity capturePoint;
 	private int teamId;
-	boolean capturing;
+	boolean beingCaptured;
 	
 	public CapturePoint(SensorEntity capturePoint){
 		if(capturePoint==null) throw new NullPointerException(EXCEPTION_NULL_ENTITY);	
@@ -32,6 +32,6 @@ public class CapturePoint {
 		this.teamId=teamId;
 	}
 	public boolean isBeingCaptured(){
-		return capturing;
+		return beingCaptured;
 	}
 }
