@@ -16,6 +16,7 @@ import de.htw.saarland.gamedev.nap.data.Player;
 import de.htw.saarland.gamedev.nap.data.entities.Entity;
 import de.htw.saarland.gamedev.nap.data.skills.Axe;
 import de.htw.saarland.gamedev.nap.data.skills.Fireball;
+import de.htw.saarland.gamedev.nap.data.skills.Nova;
 
 public class CustomContactListener implements ContactListener {
 	
@@ -89,6 +90,58 @@ public class CustomContactListener implements ContactListener {
 					break;
 				}
 				fB.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
+			}
+		}
+		
+		//Nova hitting a player
+		if(fA.getUserData()!=null && fB.getUserData()!= null){
+			if(fA.getUserData()==Nova.USERDATA_NOVA && fB.getUserData()==PlayableCharacter.USERDATA_PLAYER){
+				Vector2 direction;
+				
+				for(Player p: game.teamBlue){
+					if(p.getPlChar().getFixture().equals(fB)){
+						direction = new Vector2(p.getPlChar().getBody().getPosition().x - fA.getBody().getPosition().x
+								, p.getPlChar().getBody().getPosition().y - fA.getBody().getPosition().y);
+						direction = direction.nor();
+						direction.mul(Nova.FORCE);
+						p.getPlChar().setHealth(p.getPlChar().getHealth()-Nova.DAMAGE);
+						p.getPlChar().getBody().applyLinearImpulse(direction, p.getPlChar().getBody().getPosition(), true);
+					}
+				}
+				for(Player p: game.teamRed){
+					if(p.getPlChar().getFixture().equals(fB)){
+						direction = new Vector2(p.getPlChar().getBody().getPosition().x - fA.getBody().getPosition().x
+								, p.getPlChar().getBody().getPosition().y - fA.getBody().getPosition().y);
+						direction = direction.nor();
+						direction.mul(Nova.FORCE);
+						p.getPlChar().setHealth(p.getPlChar().getHealth()-Nova.DAMAGE);
+						p.getPlChar().getBody().applyLinearImpulse(direction, p.getPlChar().getBody().getPosition(), true);
+					}
+				}
+			}
+			if(fB.getUserData()==Nova.USERDATA_NOVA && fA.getUserData()==PlayableCharacter.USERDATA_PLAYER){
+				Vector2 direction;
+				
+				for(Player p: game.teamBlue){
+					if(p.getPlChar().getFixture().equals(fA)){
+						direction = new Vector2(p.getPlChar().getBody().getPosition().x - fB.getBody().getPosition().x
+								, p.getPlChar().getBody().getPosition().y - fB.getBody().getPosition().y);
+						direction = direction.nor();
+						direction.mul(Nova.FORCE);
+						p.getPlChar().setHealth(p.getPlChar().getHealth()-Nova.DAMAGE);
+						p.getPlChar().getBody().applyLinearImpulse(direction, p.getPlChar().getBody().getPosition(), true);
+					}
+				}
+				for(Player p: game.teamRed){
+					if(p.getPlChar().getFixture().equals(fA)){
+						direction = new Vector2(p.getPlChar().getBody().getPosition().x - fB.getBody().getPosition().x
+								, p.getPlChar().getBody().getPosition().y - fB.getBody().getPosition().y);
+						direction = direction.nor();
+						direction.mul(Nova.FORCE);
+						p.getPlChar().setHealth(p.getPlChar().getHealth()-Nova.DAMAGE);
+						p.getPlChar().getBody().applyLinearImpulse(direction, p.getPlChar().getBody().getPosition(), true);
+					}
+				}
 			}
 		}
 		

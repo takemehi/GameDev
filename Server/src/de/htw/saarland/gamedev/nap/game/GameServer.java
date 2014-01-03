@@ -199,7 +199,7 @@ public class GameServer implements ApplicationListener {
 			}
 			if(plCh.isSwinging()){
 				if (plCh.getSwingTime()==0 && plCh.getAttacking())					
-					plCh.getAttack1().start(world, plCh, currentId++, mouseCoords);
+					plCh.getAttack3().start(world, plCh, currentId++, mouseCoords);
 					
 				plCh.setSwingTime(plCh.getSwingTime()+Gdx.graphics.getDeltaTime());
 				//TODO proper swingtime constant
@@ -210,7 +210,7 @@ public class GameServer implements ApplicationListener {
 			}
 			
 			//update attacks
-			plCh.getAttack1().update();
+			plCh.getAttack3().update();
 			
 			//Movement
 			if(!isGrounded(plCh)) plCh.setTimeonGround(0);
@@ -295,6 +295,7 @@ public class GameServer implements ApplicationListener {
 				world.destroyBody(character.getBody());
 			}
 			character.getAttack1().cleanUp(world);
+			character.getAttack3().cleanUp(world);
 		}
 		for(int i=0; i<teamRed.size; i++){
 			PlayableCharacter character;
