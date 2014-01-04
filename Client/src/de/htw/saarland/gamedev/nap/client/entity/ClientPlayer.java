@@ -7,6 +7,8 @@ import com.badlogic.gdx.math.Vector2;
 import de.htw.saarland.gamedev.nap.client.render.IRender;
 import de.htw.saarland.gamedev.nap.client.render.EntityAnimation;
 import de.htw.saarland.gamedev.nap.client.render.EntityAnimation.CharacterStates;
+import de.htw.saarland.gamedev.nap.client.render.character.MageAnimation;
+import de.htw.saarland.gamedev.nap.client.render.character.WarriorAnimation;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
 
 public class ClientPlayer implements IRender, IMoveable {
@@ -25,7 +27,13 @@ public class ClientPlayer implements IRender, IMoveable {
 		this.character = character;
 		this.team = team;
 		
-		// TODO init Player Animation based on character
+		switch (character.getCharacterClass()) {
+			case PlayableCharacter.ID_MAGE:
+				animations = new MageAnimation();
+				break;
+			case PlayableCharacter.ID_WARRIOR:
+				animations = new WarriorAnimation();
+		}
 	}
 
 	@Override

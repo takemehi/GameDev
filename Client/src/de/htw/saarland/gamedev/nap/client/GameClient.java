@@ -130,7 +130,6 @@ public class GameClient implements ApplicationListener, IEventListener {
 
 	@Override
 	public void resize(int width, int height) {
-		// TODO what todo on resizing?
 	}
 
 	@Override

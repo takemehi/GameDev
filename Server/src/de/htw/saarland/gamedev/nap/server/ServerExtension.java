@@ -23,6 +23,7 @@ public class ServerExtension extends SFSExtension implements Runnable {
 
 	private Launcher launcher;
 	private GameServer game;
+	private DeltaTime deltaTime;
 	
 	@Override
 	public void init() {
@@ -72,6 +73,8 @@ public class ServerExtension extends SFSExtension implements Runnable {
 			redChars[i] = redTeam.get(i).getCharacterId();
 		}
 		
+		deltaTime = new DeltaTime();
+		
 		game = new GameServer((String)(getParentRoom().getVariable(LauncherOpcodes.MAP_NAME_VAR).getValue()),
 				redTeam.size() + blueTeam.size(),
 				sfsBlue,
@@ -92,10 +95,11 @@ public class ServerExtension extends SFSExtension implements Runnable {
 	public void run() {
 		//gameloop
 		
+		deltaTime.update();
 		game.create();
 		
 		while (!game.isGameEnd()) {
-			// TODO Gdx.graphics.deltaTime
+			deltaTime.update();
 			game.render();
 		}
 		

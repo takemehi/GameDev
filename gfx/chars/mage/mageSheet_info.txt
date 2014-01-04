@@ -1,0 +1,5 @@
+Sprite size: 96 x 96
+Row 1: idle
+Row 2: walking
+Row 3: fireball
+Row 4: nova
