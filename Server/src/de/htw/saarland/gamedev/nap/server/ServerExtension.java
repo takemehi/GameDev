@@ -7,6 +7,7 @@ import com.smartfoxserver.v2.core.SFSEventType;
 import com.smartfoxserver.v2.entities.SFSUser;
 import com.smartfoxserver.v2.extensions.SFSExtension;
 
+import de.htw.saarland.gamedev.nap.data.network.GameOpcodes;
 import de.htw.saarland.gamedev.nap.game.GameServer;
 import de.htw.saarland.gamedev.nap.server.launcher.Launcher;
 import de.htw.saarland.gamedev.nap.server.launcher.LauncherOpcodes;
@@ -43,6 +44,10 @@ public class ServerExtension extends SFSExtension implements Runnable {
 		return launcher;
 	}
 	
+	public GameServer getGame() {
+		return game;
+	}
+	
 	public void startGame() {
 		//clean up and start game logic
 		removeEventHandler(SFSEventType.USER_DISCONNECT);
@@ -53,6 +58,19 @@ public class ServerExtension extends SFSExtension implements Runnable {
 		removeRequestHandler(LauncherOpcodes.LAUNCHER_CHANGE_TEAM_REQUEST);
 		removeRequestHandler(LauncherOpcodes.LAUNCHER_CHANGE_READY_REQUEST);
 		removeRequestHandler(LauncherOpcodes.LAUNCHER_START_GAME_REQUEST);
+		
+		// TODO implement request handlers
+		addRequestHandler(GameOpcodes.GAME_CAPTURE_START_REQUEST, theClass);
+		addRequestHandler(GameOpcodes.GAME_CAPTURE_STOP_REQUEST, theClass);
+		addRequestHandler(GameOpcodes.GAME_GET_MAP_CHARACTER, theClass);
+		addRequestHandler(GameOpcodes.GAME_GET_MOVEABLE_ENTITIES, theClass);
+		addRequestHandler(GameOpcodes.GAME_INITIALIZED, theClass);
+		addRequestHandler(GameOpcodes.GAME_MOVE_DOWN_REQUEST, theClass);
+		addRequestHandler(GameOpcodes.GAME_MOVE_DOWN_STOP_REQUEST, theClass);
+		addRequestHandler(GameOpcodes.GAME_MOVE_JUMP_REQUEST, theClass);
+		addRequestHandler(GameOpcodes.GAME_MOVE_LEFT_REQUEST, theClass);
+		addRequestHandler(GameOpcodes.GAME_MOVE_RIGHT_REQUEST, theClass);
+		addRequestHandler(GameOpcodes.GAME_MOVE_STOP_REQUEST, theClass);
 		
 		ArrayList<LauncherPlayer> redTeam = new ArrayList<LauncherPlayer>();
 		ArrayList<LauncherPlayer> blueTeam = new ArrayList<LauncherPlayer>();

@@ -149,6 +149,12 @@ public class GameClient implements ApplicationListener, IEventListener {
 			}
 		}
 		
+		synchronized (npcs) {
+			for (ClientNPC npc: npcs) {
+				npc.render(batch);
+			}
+		}
+		
 		gameWorld.render(batch);
 		world.step(GameServer.TIME_STEP, GameServer.ITERATIONS_VELOCITY, GameServer.ITERATIONS_POSITION);
 	}
@@ -157,6 +163,15 @@ public class GameClient implements ApplicationListener, IEventListener {
 	public void dispose() {
 		gameWorld.dispose();
 		world.dispose();
+		player.dispose();
+		
+		for (ClientPlayer player: players) {
+			player.dispose();
+		}
+		
+		for (ClientNPC npc: npcs) {
+			npc.dispose();
+		}
 		
 		sfClient.removeAllEventListeners();
 		sfClient.disconnect();

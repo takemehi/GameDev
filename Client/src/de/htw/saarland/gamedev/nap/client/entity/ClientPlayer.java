@@ -3,6 +3,7 @@ package de.htw.saarland.gamedev.nap.client.entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Disposable;
 
 import de.htw.saarland.gamedev.nap.client.render.IRender;
 import de.htw.saarland.gamedev.nap.client.render.EntityAnimation;
@@ -11,7 +12,7 @@ import de.htw.saarland.gamedev.nap.client.render.character.MageAnimation;
 import de.htw.saarland.gamedev.nap.client.render.character.WarriorAnimation;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
 
-public class ClientPlayer implements IRender, IMoveable {
+public class ClientPlayer implements IRender, IMoveable, Disposable {
 
 	protected PlayableCharacter character;
 	protected int team;
@@ -100,6 +101,12 @@ public class ClientPlayer implements IRender, IMoveable {
 	@Override
 	public void stopDown() {
 		character.setDown(false);
+	}
+
+	@Override
+	public void dispose() {
+		character.dispose();
+		animations.dispose();
 	}
 
 }

@@ -18,9 +18,11 @@ public class WarriorAnimation extends EntityAnimation {
 	private static final float FRAME_DURATION = 0.025f;
 	private static final int WALK_FRAMES = 6;
 	private static final int SKILL1_FRAMES = 5;
+	private static final int DIE_FRAMES = 6;
 	
 	private static final int WALKING = 0;
 	private static final int SKILL1 = 1;
+	private static final int DIE = 2;
 	
 	private Texture animationSheet;
 	private Animation[] animations;
@@ -30,10 +32,11 @@ public class WarriorAnimation extends EntityAnimation {
 		animationSheet = new Texture(new FileHandle(new File(ANIMATIONSHEET_FILEPATH)));
 		
 		idle = new TextureRegion(animationSheet, 0, 0, SPRITE_WIDTH, SPRITE_HEIGHT);
-		animations = new Animation[2]; // 2 animations, idle is no animation!
+		animations = new Animation[3]; // 3 animations, idle is no animation!
 		
 		animations[WALKING] = createAnimation(animationSheet, 1, WALK_FRAMES, SPRITE_WIDTH, SPRITE_HEIGHT, FRAME_DURATION);
 		animations[SKILL1] = createAnimation(animationSheet, 2, SKILL1_FRAMES, SPRITE_WIDTH, SPRITE_HEIGHT, FRAME_DURATION);
+		animations[DIE] = createAnimation(animationSheet, 3, DIE_FRAMES, SPRITE_WIDTH, SPRITE_HEIGHT, FRAME_DURATION);
 	}
 	
 	@Override
@@ -45,7 +48,7 @@ public class WarriorAnimation extends EntityAnimation {
 			case IDLE:
 				return idle;
 			case DEAD:
-				return idle; // TODO death animation
+				return animations[DIE].getKeyFrame(stateTime, false);
 			case SKILL1:
 				return animations[SKILL1].getKeyFrame(stateTime, false);
 			case WALKING:
@@ -56,5 +59,10 @@ public class WarriorAnimation extends EntityAnimation {
 				System.out.println("Character state not handled!");
 				return idle;
 		}
+	}
+
+	@Override
+	public void dispose() {
+		animationSheet.dispose();
 	}
 }

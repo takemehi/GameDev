@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import de.htw.saarland.gamedev.nap.client.render.EntityAnimation;
-import de.htw.saarland.gamedev.nap.client.render.EntityAnimation.CharacterStates;
 
 public class MageAnimation extends EntityAnimation {
 
@@ -20,10 +19,12 @@ private static final String ANIMATIONSHEET_FILEPATH = "data/gfx/mageSheet.png";
 	private static final int WALK_FRAMES = 6;
 	private static final int SKILL1_FRAMES = 6;
 	private static final int SKILL3_FRAMES = 6;
+	private static final int DIE_FRAMES = 6;
 	
 	private static final int WALKING = 0;
 	private static final int SKILL1 = 1;
 	private static final int SKILL3 = 2;
+	private static final int DIE = 3;
 	
 	private Texture animationSheet;
 	private Animation[] animations;
@@ -33,11 +34,12 @@ private static final String ANIMATIONSHEET_FILEPATH = "data/gfx/mageSheet.png";
 		animationSheet = new Texture(new FileHandle(new File(ANIMATIONSHEET_FILEPATH)));
 		
 		idle = new TextureRegion(animationSheet, 0, 0, SPRITE_WIDTH, SPRITE_HEIGHT);
-		animations = new Animation[3]; // 3 animations, idle is no animation!
+		animations = new Animation[4]; // 4 animations, idle is no animation!
 		
 		animations[WALKING] = createAnimation(animationSheet, 1, WALK_FRAMES, SPRITE_WIDTH, SPRITE_HEIGHT, FRAME_DURATION);
 		animations[SKILL1] = createAnimation(animationSheet, 2, SKILL1_FRAMES, SPRITE_WIDTH, SPRITE_HEIGHT, FRAME_DURATION);
 		animations[SKILL3] = createAnimation(animationSheet, 3, SKILL3_FRAMES, SPRITE_WIDTH, SPRITE_HEIGHT, FRAME_DURATION);
+		animations[DIE] = createAnimation(animationSheet, 4, DIE_FRAMES, SPRITE_WIDTH, SPRITE_HEIGHT, FRAME_DURATION);
 	}
 	
 	@Override
@@ -47,7 +49,7 @@ private static final String ANIMATIONSHEET_FILEPATH = "data/gfx/mageSheet.png";
 			case IDLE:
 				return idle;
 			case DEAD:
-				return idle; // TODO death animation
+				return animations[DIE].getKeyFrame(stateTime, false);
 			case SKILL2:
 			case SKILL1:
 				return animations[SKILL1].getKeyFrame(stateTime, false);
@@ -61,5 +63,10 @@ private static final String ANIMATIONSHEET_FILEPATH = "data/gfx/mageSheet.png";
 				System.out.println("Character state not handled!");
 				return idle;
 		}
+	}
+
+	@Override
+	public void dispose() {
+		animationSheet.dispose();
 	}
 }

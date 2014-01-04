@@ -3,13 +3,14 @@ package de.htw.saarland.gamedev.nap.client.entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Disposable;
 
 import de.htw.saarland.gamedev.nap.client.render.EntityAnimation;
 import de.htw.saarland.gamedev.nap.client.render.IRender;
 import de.htw.saarland.gamedev.nap.client.render.EntityAnimation.CharacterStates;
 import de.htw.saarland.gamedev.nap.data.NPC;
 
-public class ClientNPC implements IRender, IMoveable {
+public class ClientNPC implements IRender, IMoveable, Disposable {
 
 	private NPC npc;
 	
@@ -89,5 +90,11 @@ public class ClientNPC implements IRender, IMoveable {
 	@Override
 	public void stopDown() {
 		npc.setDown(false);
+	}
+
+	@Override
+	public void dispose() {
+		npc.dispose();
+		animation.dispose();
 	}
 }

@@ -2,3 +2,4 @@ sprite size: 115 x 96
 row 1: idle
 row 2: walking
 row 3: skill1 (attack)
+row 4: die

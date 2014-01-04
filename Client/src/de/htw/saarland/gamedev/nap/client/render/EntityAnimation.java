@@ -3,8 +3,9 @@ package de.htw.saarland.gamedev.nap.client.render;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.utils.Disposable;
 
-public abstract class EntityAnimation {	
+public abstract class EntityAnimation implements Disposable {	
 	public enum CharacterStates {
 		IDLE,
 		WALKING,
