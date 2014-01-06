@@ -33,11 +33,15 @@ public abstract class PlayableCharacter extends GameCharacter{
 	protected Skill attack2;
 	protected Skill attack3;
 	
+	private boolean attacking1;
+	private boolean attacking2;
+	private boolean attacking3;
+	
 	public PlayableCharacter(Shape shape, float density, float friction,
 			float restitution, Vector2 position, Vector2 baseVelocity,
-			Vector2 maxVelocity, int maxHealth, float maxSwingTime, int characterClass, int teamId, int id) {
+			Vector2 maxVelocity, int maxHealth, int characterClass, int teamId, int id) {
 		super(shape, density, friction, restitution, position, baseVelocity,
-				maxVelocity, maxHealth, maxSwingTime, id);
+				maxVelocity, maxHealth, id);
 		
 		if(teamId!=ID_TEAM_BLUE && teamId!=ID_TEAM_RED) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_ID_TEAM);
 		if(characterClass!=ID_MAGE && characterClass!=ID_WARRIOR) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_ID_CHARACTERCLASS);
@@ -63,6 +67,48 @@ public abstract class PlayableCharacter extends GameCharacter{
 		return atSpawn;
 	}
 	
+	public boolean isAttacking1() {
+		return attacking1;
+	}
+
+
+	public void setAttacking1(boolean attacking1) {
+		if(attacking1 && attack2.isCasted() && attack3.isCasted()){
+			this.attacking1 = attacking1;
+			attack1.setAttacking(attacking1);
+		}else
+			attack1.setAttacking(false);
+	}
+
+
+	public boolean isAttacking2() {
+		return attacking2;
+	}
+
+
+	public void setAttacking2(boolean attacking2) {
+		if(attacking2 && attack1.isCasted() && attack3.isCasted()){
+			this.attacking2 = attacking2;
+			attack2.setAttacking(attacking2);
+		}else
+			attack2.setAttacking(false);
+	}
+
+
+	public boolean isAttacking3() {
+		return attacking3;
+	}
+
+
+	public void setAttacking3(boolean attacking3) {
+		if(attacking3 && attack1.isCasted() && attack2.isCasted()){
+			this.attacking3 = attacking3;
+			attack3.setAttacking(attacking3);
+		}else
+			attack3.setAttacking(false);
+	}
+
+
 	public Skill getAttack1() {
 		return attack1;
 	}

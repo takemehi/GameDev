@@ -18,9 +18,9 @@ public class NPC extends GameCharacter{
 	
 	public NPC(Shape shape, float density,
 			float friction, float restitution, Vector2 position, Vector2 baseVelocity, Vector2 maxVelocity, int maxHealth
-			, float maxSwingTime, int npcType, int id) {
+			, int npcType, int id) {
 		super(shape, density, friction, restitution, position, baseVelocity,
-				maxVelocity, maxHealth, maxSwingTime, id);
+				maxVelocity, maxHealth, id);
 		
 		if(npcType!=ID_CREEP_DMG && npcType!=ID_CREEP_RES) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_ID_NPC);
 		this.npcType=npcType;

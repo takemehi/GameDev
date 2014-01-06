@@ -1,13 +1,17 @@
 package de.htw.saarland.gamedev.nap.data.entities;
 
-import java.io.ObjectInputStream.GetField;
-
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
+import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.WorldManifold;
+
+import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
 
 public abstract class Entity {
 	
@@ -29,6 +33,7 @@ public abstract class Entity {
 	private float timeLiving;
 	private float distanceTraveled;
 	private Vector2 positionOriginal;
+	private boolean initialized;
 	
 	public Entity(Shape shape, Vector2 position, int id){
 		if(shape==null) throw new NullPointerException(EXCEPTION_NULL_SHAPE);
@@ -39,6 +44,7 @@ public abstract class Entity {
 		timeLiving=0;
 		distanceTraveled=0;
 		positionOriginal=new Vector2(position);
+		initialized=false;
 	}
 	
 	public Entity(Shape shape, float x, float y, int id){
@@ -71,7 +77,8 @@ public abstract class Entity {
 	
 	public void setBody(Body body){
 		if(body==null) throw new NullPointerException(EXCEPTION_NULL_BODY);
-		this.body=body;
+		this.body=body;	
+		if(this.body!=null && this.fixture!=null) initialized=true;
 	}
 	
 	public Body getBody(){
@@ -90,6 +97,7 @@ public abstract class Entity {
 	public void setFixture(Fixture fixture){
 		if(fixture==null) throw new NullPointerException(EXCEPTION_NULL_FIXTURE);
 		this.fixture=fixture;
+		if(this.body!=null && this.fixture!=null) initialized=true;
 		dispose();
 	}
 	
@@ -112,5 +120,38 @@ public abstract class Entity {
 	public void setTimeLiving(float timeLiving){
 		if(timeLiving<0) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_TIME_LIVING);
 		this.timeLiving=timeLiving;
+	}
+	
+	public boolean isGrounded(World world){
+		if(initialized){
+			//calculate y offset
+			Vector2 tmpVector = new Vector2();
+			PolygonShape tmpShape= (PolygonShape) getFixture().getShape();
+			tmpShape.getVertex(0, tmpVector);
+			
+			for(Contact c: world.getContactList()){
+				if(c.isTouching()
+						&& (c.getFixtureA()==getFixture()
+						|| c.getFixtureB()==getFixture())){
+					Vector2 pos = getBody().getPosition();
+					WorldManifold manifold = c.getWorldManifold();
+					boolean below = false;
+					if(Math.abs(c.getWorldManifold().getNormal().x)<Math.abs(c.getWorldManifold().getNormal().y)){
+						below=true;
+						for(int j = 0; j < manifold.getNumberOfContactPoints(); j++) {
+							below &= (manifold.getPoints()[j].y < pos.y - Math.abs(tmpVector.y));
+						}
+						if((c.getFixtureA()==getFixture() 
+								&& c.getFixtureB().getUserData()!=null && c.getFixtureB().getUserData().equals(PlayableCharacter.USERDATA_PLAYER)))
+							below=false;
+						if((c.getFixtureB()==getFixture() 
+								&& c.getFixtureA().getUserData()!=null && c.getFixtureA().getUserData().equals(PlayableCharacter.USERDATA_PLAYER)))
+							below=false;
+						if(below) return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 }

@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import de.htw.saarland.gamedev.nap.data.shapes.MageShape;
 import de.htw.saarland.gamedev.nap.data.skills.Fireball;
 import de.htw.saarland.gamedev.nap.data.skills.Nova;
+import de.htw.saarland.gamedev.nap.data.skills.Pyroblast;
 
 public class Mage extends PlayableCharacter{
 
@@ -14,14 +15,14 @@ public class Mage extends PlayableCharacter{
 	private static final Vector2 BASEVELOCITY = new Vector2(3,8);
 	private static final Vector2 MAXVELOCITY = new Vector2(3,8);
 	private static final int MAXHEALTH = 100;
-	public static final float TIME_SWING = 0.4f;
 	public static final float VELOCITY_FIREBALL = 1f;
 	
 	public Mage(Vector2 position, int teamId, int id) {
 		super(new MageShape(), DENSITY, FRICTION, RESTITUTION, position, BASEVELOCITY,
-				MAXVELOCITY, MAXHEALTH, TIME_SWING, PlayableCharacter.ID_MAGE, teamId, id);
+				MAXVELOCITY, MAXHEALTH, PlayableCharacter.ID_MAGE, teamId, id);
 		
 		attack1 = new Fireball();
+		attack2 = new Pyroblast();
 		attack3 = new Nova();
 	}
 

@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -191,55 +192,55 @@ public class DebugGameServer implements ApplicationListener {
 				plCh.setOrientation(PlayableCharacter.ORIENTATION_LEFT);
 			
 			//Attacks
-			if(!Gdx.input.isButtonPressed(Keys.LEFT)){
-				plCh.setAttacking(false);
+			if(!Gdx.input.isButtonPressed(Buttons.LEFT)){
+				plCh.setAttacking1(false);
 			}
-			if(Gdx.input.isButtonPressed(Keys.LEFT)){
-				plCh.setAttacking(true);
+			if(Gdx.input.isButtonPressed(Buttons.LEFT)){
+				plCh.setAttacking1(true);
 			}
-			if(plCh.isSwinging()){
-				if (plCh.getSwingTime()==0 && plCh.getAttacking())					
-					plCh.getAttack3().start(world, plCh, currentId++, mouseCoords);
-					
-				plCh.setSwingTime(plCh.getSwingTime()+Gdx.graphics.getDeltaTime());
-				//TODO proper swingtime constant
-				if(plCh.getSwingTime()>=plCh.getMaxSwingTime()){
-					plCh.setSwingTime(0);
-					if(!plCh.getAttacking()) plCh.setSwinging(false);
-				}
+			
+			if(!Gdx.input.isButtonPressed(Buttons.RIGHT)){
+				plCh.setAttacking2(false);
 			}
+			if(Gdx.input.isButtonPressed(Buttons.RIGHT)){
+				plCh.setAttacking2(true);
+			}
+			
+			if(!Gdx.input.isKeyPressed(Keys.E)){
+				plCh.setAttacking3(false);
+			}
+			if(Gdx.input.isKeyPressed(Keys.E)){
+				plCh.setAttacking3(true);
+			}
+		
 			
 			//update attacks
-			plCh.getAttack3().update();
+			plCh.getAttack1().update(world, plCh, i, mouseCoords);
+			plCh.getAttack2().update(world, plCh, i, mouseCoords);
+			plCh.getAttack3().update(world, plCh, i, mouseCoords);
 			
-			//Movement
-			if(!isGrounded(plCh)) plCh.setTimeonGround(0);
+			//Movement			
+			if(!plCh.isGrounded(world)) plCh.setTimeonGround(0);
 			else plCh.setTimeonGround(plCh.getTimeOnGround()+Gdx.graphics.getDeltaTime());
-			
-			if(!Gdx.input.isKeyPressed(Keys.A))
-				plCh.getBody().setLinearVelocity(0, plCh.getBody().getLinearVelocity().y);
-			if(!Gdx.input.isKeyPressed(Keys.D))
-				plCh.getBody().setLinearVelocity(0, plCh.getBody().getLinearVelocity().y);
-			if(Gdx.input.isKeyPressed(Keys.A)){
-				plCh.getBody().setLinearVelocity(-plCh.getMaxVelocity().x, plCh.getBody().getLinearVelocity().y);
-				plCh.setOrientation(PlayableCharacter.ORIENTATION_LEFT);
+			if(plCh.isMovementEnabled()){
+				if(!Gdx.input.isKeyPressed(Keys.A))
+					plCh.setLeft(false);
+				if(!Gdx.input.isKeyPressed(Keys.D))
+					plCh.setRight(false);
+				if(Gdx.input.isKeyPressed(Keys.A))
+					plCh.setLeft(true);
+				if(Gdx.input.isKeyPressed(Keys.D))
+					plCh.setRight(true);
+				//TODO consider putting a world reference into the entity class
+				if(!Gdx.input.isKeyPressed(Keys.SPACE) && plCh.isGrounded(world))
+					plCh.setUp(false);
+				if(Gdx.input. isKeyPressed(Keys.SPACE))
+					plCh.setUp(true);
+				if(!Gdx.input.isKeyPressed(Keys.S))
+					plCh.setDown(false);
+				if(Gdx.input.isKeyPressed(Keys.S))
+					plCh.setDown(true);
 			}
-			if(Gdx.input.isKeyPressed(Keys.D)){
-				plCh.getBody().setLinearVelocity(plCh.getMaxVelocity().x, plCh.getBody().getLinearVelocity().y);
-				plCh.setOrientation(PlayableCharacter.ORIENTATION_RIGHT);
-			}
-			if(!Gdx.input.isKeyPressed(Keys.SPACE) && isGrounded(plCh)) plCh.setJumping(false);
-			if(Gdx.input. isKeyPressed(Keys.SPACE) && !plCh.isJumping()){
-				//if(isGrounded(plCh)){
-				if(true){
-					plCh.getBody().setAwake(true);
-					plCh.getBody().setLinearVelocity(plCh.getBody().getLinearVelocity().x, plCh.getMaxVelocity().y);
-					plCh.setJumping(true);
-				}		
-			}
-			if(Gdx.input.isKeyPressed(Keys.S) && plCh.getTimeOnGround()>0.2f)
-				plCh.getBody().setAwake(true);
-			
 			//Spawn regeneration
 			spawnRegTime+=Gdx.graphics.getDeltaTime();
 			if(plCh.isAtSpawn() && spawnRegTime>=INTERVAL_REGEN_SPAWN){
@@ -262,20 +263,6 @@ public class DebugGameServer implements ApplicationListener {
 			//death test
 			if(p.getPlChar().getHealth()<=0) p.getPlChar().getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
 		}
-		//Capturing
-		
-		//Game Logic
-		if(!gameEnded){
-			deltaTime+=Gdx.graphics.getDeltaTime();
-			if(deltaTime>=INTERVAL_POINTS){
-				for(CapturePoint cp: capturePoints){
-					if(cp.getTeamId()==PlayableCharacter.ID_TEAM_BLUE) pointsBlue++;
-					if(cp.getTeamId()==PlayableCharacter.ID_TEAM_RED) pointsRed++;
-				}
-				if(pointsBlue>=MAX_POINTS || pointsRed>= MAX_POINTS) gameEnded=true;
-				deltaTime=0;
-			}
-		}
 		
 		//rendering
 		Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -294,7 +281,8 @@ public class DebugGameServer implements ApplicationListener {
 				teamBlue.removeIndex(i);
 				world.destroyBody(character.getBody());
 			}
-			character.getAttack1().cleanUp(world);
+			character.getAttack1().cleanUp(world);	
+			character.getAttack2().cleanUp(world);
 			character.getAttack3().cleanUp(world);
 		}
 		for(int i=0; i<teamRed.size; i++){
@@ -306,7 +294,7 @@ public class DebugGameServer implements ApplicationListener {
 			}
 			character.getAttack1().cleanUp(world);
 		}
-		//System.out.println(teamBlue.get(0).getPlChar().getHealth()+"\t"+teamRed.get(0).getPlChar().getHealth());
+		
 	}
 	
 	@Override
@@ -322,43 +310,7 @@ public class DebugGameServer implements ApplicationListener {
 	public void pause() {}
 	@Override
 	public void resume() {}
-	
-	//////////////////////
-	//	intern methods	//
-	//////////////////////
-	
-	private boolean isGrounded(MoveableEntity entity){
-		if(entity==null) throw new NullPointerException(EXCEPTION_NULL_ENTITY);
-		//calculate y offset
-		Vector2 tmpVector = new Vector2();
-		PolygonShape tmpShape= (PolygonShape) entity.getFixture().getShape();
-		tmpShape.getVertex(0, tmpVector);
-		
-		for(Contact c: world.getContactList()){
-			if(c.isTouching()
-					&& (c.getFixtureA()==entity.getFixture()
-					|| c.getFixtureB()==entity.getFixture())){
-				Vector2 pos = entity.getBody().getPosition();
-				WorldManifold manifold = c.getWorldManifold();
-				boolean below = false;
-				if(Math.abs(c.getWorldManifold().getNormal().x)<Math.abs(c.getWorldManifold().getNormal().y)){
-					below=true;
-					for(int j = 0; j < manifold.getNumberOfContactPoints(); j++) {
-						below &= (manifold.getPoints()[j].y < pos.y - Math.abs(tmpVector.y));
-					}
-					if((c.getFixtureA()==entity.getFixture() 
-							&& c.getFixtureB().getUserData()!=null && c.getFixtureB().getUserData().equals(PlayableCharacter.USERDATA_PLAYER)))
-						below=false;
-					if((c.getFixtureB()==entity.getFixture() 
-							&& c.getFixtureA().getUserData()!=null && c.getFixtureA().getUserData().equals(PlayableCharacter.USERDATA_PLAYER)))
-						below=false;
-					if(below) return true;
-				}
-			}
-		}
-		return false;
-	}
-	
+
 	//////////////////////
 	//	public methods	//
 	//////////////////////
@@ -366,9 +318,5 @@ public class DebugGameServer implements ApplicationListener {
 	public void addPacket(SFSObject packet){
 		if(packet == null) throw new NullPointerException(EXCEPTION_NULL_PACKET);
 		packetQueue.add(packet);
-	}
-	
-	public boolean isGameEnd() {
-		return gameEnded;
 	}
 }

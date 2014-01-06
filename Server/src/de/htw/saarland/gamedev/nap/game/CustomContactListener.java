@@ -17,6 +17,7 @@ import de.htw.saarland.gamedev.nap.data.entities.Entity;
 import de.htw.saarland.gamedev.nap.data.skills.Axe;
 import de.htw.saarland.gamedev.nap.data.skills.Fireball;
 import de.htw.saarland.gamedev.nap.data.skills.Nova;
+import de.htw.saarland.gamedev.nap.data.skills.Pyroblast;
 
 public class CustomContactListener implements ContactListener {
 	
@@ -24,9 +25,9 @@ public class CustomContactListener implements ContactListener {
 	private static final String EXCEPTION_NULL_GAME = "The game object is null!";
 	//TODO add constants for userdata
 	
-	private GameServer game;
+	private DebugGameServer game;
 	
-	public CustomContactListener(GameServer game){
+	public CustomContactListener(DebugGameServer game){
 		if(game==null) throw new NullPointerException(EXCEPTION_NULL_GAME);
 		
 		this.game=game;
@@ -92,6 +93,42 @@ public class CustomContactListener implements ContactListener {
 				fB.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
 			}
 		}
+		
+		//Pyroblast hitting the world
+		if(fA.getUserData()!=null && fB.getUserData()!= null){
+			if(fA.getUserData()==Pyroblast.USERDATA_PYROBLAST && fB.getUserData()==GameWorld.USERDATA_FIXTURE_WORLD){
+				fA.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
+			}
+			if(fB.getUserData()==Pyroblast.USERDATA_PYROBLAST && fA.getUserData()==GameWorld.USERDATA_FIXTURE_WORLD){
+				fB.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
+			}
+		}
+		
+		//Pyroblast hitting a player
+				if(fA.getUserData()!=null && fB.getUserData()!= null){
+					if(fA.getUserData()==Pyroblast.USERDATA_PYROBLAST && fB.getUserData()==PlayableCharacter.USERDATA_PLAYER){
+						for(Player p: game.teamBlue){
+							if(p.getPlChar().getFixture().equals(fB)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Pyroblast.DAMAGE);
+							break;
+						}
+						for(Player p: game.teamRed){
+							if(p.getPlChar().getFixture().equals(fB)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Pyroblast.DAMAGE);
+							break;
+						}
+						fA.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
+					}
+					if(fB.getUserData()==Pyroblast.USERDATA_PYROBLAST && fA.getUserData()==PlayableCharacter.USERDATA_PLAYER){
+						for(Player p: game.teamBlue){
+							if(p.getPlChar().getFixture().equals(fA)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Pyroblast.DAMAGE);
+							break;
+						}
+						for(Player p: game.teamRed){
+							if(p.getPlChar().getFixture().equals(fA)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Pyroblast.DAMAGE);
+							break;
+						}
+						fB.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
+					}
+				}
 		
 		//Nova hitting a player
 		if(fA.getUserData()!=null && fB.getUserData()!= null){

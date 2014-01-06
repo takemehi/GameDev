@@ -11,7 +11,6 @@ public class GameCharacter extends MoveableEntity{
 	//Exceptions
 	private final static String EXCEPTION_ILLEGAL_HEALTH_MAX = "MaxHealth value has to be greater than zero!";
 	private final static String EXCEPTION_ILLEGAL_GROUNDTIME = "Groundtime value can't be smaller than zero!";
-	private final static String EXCEPTION_ILLEGAL_SWINGTIME = "Swingtime value can't be smaller than zero!";
 	private final static String EXCEPTION_ILLEGAL_ORIENTATION = "Orientation can only be 0 or 1!";
 	
 	public static final int ORIENTATION_LEFT = 0;
@@ -19,39 +18,30 @@ public class GameCharacter extends MoveableEntity{
 
 	private int maxHealth;
 	private int health;
-	private float swingTime;
-	private float maxSwingTime;
 	private boolean jumping;
-	private boolean swinging;
 	private float timeOnGround;
+	private boolean movementEnabled;
 	private boolean movingLeft;
 	private boolean movingRight;
 	private boolean movingDown;
 	private boolean movingUp;
-	private boolean attacking;
 	private int orientation;
 	
 	public GameCharacter(Shape shape, float density,
 			float friction, float restitution, Vector2 position, Vector2 baseVelocity, Vector2 maxVelocity, int maxHealth
-			, float maxSwingTime, int id){
+			, int id){
 		super(shape, density, friction, restitution, position, baseVelocity, maxVelocity, id);
 		
 		if(maxHealth <= 0) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_HEALTH_MAX);
-		if(maxSwingTime<=0) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_SWINGTIME);
 		this.maxHealth=maxHealth;
 		this.health=maxHealth;
-		this.maxSwingTime=maxSwingTime;
 		jumping=false;
 		timeOnGround=0;
-		swingTime=0;
 		orientation=1;
+		movementEnabled=true;
 	}
 	
 	//methods that get used by the network
-	
-	public boolean getAttacking(){
-		return attacking;
-	}
 	
 	public boolean getLeft(){
 		return movingLeft;
@@ -69,25 +59,48 @@ public class GameCharacter extends MoveableEntity{
 		return movingDown;
 	}
 	
-	public void setAttacking(boolean attacking){
-		this.attacking=attacking;
-		if(attacking) swinging=true;
-	}
-	
 	public void setLeft(boolean left){
 		this.movingLeft=left;
+		if(movementEnabled){
+			if(left){
+				movingRight=false;
+				getBody().setLinearVelocity(-getBaseVelocity().x, getBody().getLinearVelocity().y);
+			}else{
+				getBody().setLinearVelocity(0, getBody().getLinearVelocity().y);
+			}
+		}
 	}
 	
 	public void setRight(boolean right){
 		this.movingRight=right;
+		if(movementEnabled){
+			if(right){
+				movingLeft=false;
+				getBody().setLinearVelocity(getBaseVelocity().x, getBody().getLinearVelocity().y);
+			}else{
+				getBody().setLinearVelocity(0, getBody().getLinearVelocity().y);
+			}
+		}
 	}
 	
 	public void setUp(boolean up){
 		this.movingUp=up;
+		if(movementEnabled){
+			if(movingUp && !jumping){
+				getBody().setAwake(true);
+				getBody().setLinearVelocity(getBody().getLinearVelocity().x, getBaseVelocity().y);
+				jumping=true;
+			}
+			if(!movingUp) jumping=false;
+		}
 	}
 	
 	public void setDown(boolean down){
 		this.movingDown=down;
+		if(movementEnabled){
+			if(down && timeOnGround>0.2f)
+				getBody().setAwake(true);
+		}
 	}
 	
 	//getter / setter
@@ -105,16 +118,20 @@ public class GameCharacter extends MoveableEntity{
 		return maxHealth;
 	}
 	
-	public float getMaxSwingTime(){
-		return maxSwingTime;
-	}
-	
 	public boolean isJumping(){
 		return jumping;
 	}
 	
 	public void setJumping(boolean jumping){
 		this.jumping=jumping;
+	}
+	
+	public boolean isMovementEnabled(){
+		return movementEnabled;
+	}
+	
+	public void setMovementEnabled(boolean movementEnabled){
+		this.movementEnabled=movementEnabled;
 	}
 	
 	public int getOrientation(){
@@ -124,29 +141,6 @@ public class GameCharacter extends MoveableEntity{
 	public void setOrientation(int orientation){
 		if(orientation!=ORIENTATION_LEFT && orientation!=ORIENTATION_RIGHT) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_ORIENTATION);
 		this.orientation=orientation;
-		/*
-		if(getBody()!=null){
-			if(orientation== ORIENTATION_LEFT)
-				getBody().setTransform(getBody().getPosition(), MathUtils.degreesToRadians*180);
-			else
-				getBody().setTransform(getBody().getPosition(), MathUtils.degreesToRadians*360);
-		}*/
-	}
-	
-	public void setSwinging(boolean swinging){
-		this.swinging=swinging;
-	}
-	
-	public boolean isSwinging(){
-		return swinging;
-	}
-	
-	public void setSwingTime(float swingTime){
-		this.swingTime=swingTime;
-	}
-	
-	public float getSwingTime(){
-		return swingTime;
 	}
 	
 	public float getTimeOnGround(){

@@ -21,10 +21,7 @@ public class Axe extends Skill{
 	public static final int DAMAGE = 10;
 	
 	public static final String USERDATA_AXE = "axe";
-	
-	private PlayableCharacter character;
-	private boolean started;
-	private int swingCount;
+
 	private SensorEntity axe;
 	
 	public Axe() {
@@ -33,9 +30,8 @@ public class Axe extends Skill{
 	}
 
 	@Override
-	public void start(World world, PlayableCharacter character, int currentId,
+	protected void start(World world, PlayableCharacter character, int currentId,
 			Vector2 mouseCoords) {
-		this.character=character;
 		
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(0.2f, 0.35f, new Vector2(0.4f,0), 0);
@@ -52,19 +48,15 @@ public class Axe extends Skill{
 		axe.setFixture(axe.getBody().createFixture(axe.getFixtureDef()));
 		axe.getFixture().setUserData(USERDATA_AXE);
 		
-		started=true;
-		swingCount=0;
 	}
 
 	@Override
-	public void update() {
-		if(started){
-			if(swingCount==1){
-				swingCount=0;
-				started=false;
+	protected void doUpdate(World world, PlayableCharacter character, int currentId,
+			Vector2 mouseCoords) {
+		if(isOnCooldown()){
+			try{
 				axe.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
-			}
-			else swingCount++;
+			}catch(Exception e){}
 		}
 	}
 

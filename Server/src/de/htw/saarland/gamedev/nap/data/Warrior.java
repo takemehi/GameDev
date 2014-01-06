@@ -22,7 +22,7 @@ public class Warrior extends PlayableCharacter{
 	
 	public Warrior(Vector2 position, int teamId,  int id) {
 		super(new WarriorShape(), DENSITY, FRICTION, RESTITUTION, position, BASEVELOCITY,
-				MAXVELOCITY, MAXHEALTH, TIME_SWING, PlayableCharacter.ID_WARRIOR, teamId, id);
+				MAXVELOCITY, MAXHEALTH, PlayableCharacter.ID_WARRIOR, teamId, id);
 		
 		attack1=new Axe();
 	}

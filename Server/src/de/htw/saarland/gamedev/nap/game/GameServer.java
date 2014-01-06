@@ -204,42 +204,6 @@ public class GameServer implements ApplicationListener {
 	public void resume() {}
 	
 	//////////////////////
-	//	intern methods	//
-	//////////////////////
-	
-	private boolean isGrounded(MoveableEntity entity){
-		if(entity==null) throw new NullPointerException(EXCEPTION_NULL_ENTITY);
-		//calculate y offset
-		Vector2 tmpVector = new Vector2();
-		PolygonShape tmpShape= (PolygonShape) entity.getFixture().getShape();
-		tmpShape.getVertex(0, tmpVector);
-		
-		for(Contact c: world.getContactList()){
-			if(c.isTouching()
-					&& (c.getFixtureA()==entity.getFixture()
-					|| c.getFixtureB()==entity.getFixture())){
-				Vector2 pos = entity.getBody().getPosition();
-				WorldManifold manifold = c.getWorldManifold();
-				boolean below = false;
-				if(Math.abs(c.getWorldManifold().getNormal().x)<Math.abs(c.getWorldManifold().getNormal().y)){
-					below=true;
-					for(int j = 0; j < manifold.getNumberOfContactPoints(); j++) {
-						below &= (manifold.getPoints()[j].y < pos.y - Math.abs(tmpVector.y));
-					}
-					if((c.getFixtureA()==entity.getFixture() 
-							&& c.getFixtureB().getUserData()!=null && c.getFixtureB().getUserData().equals(PlayableCharacter.USERDATA_PLAYER)))
-						below=false;
-					if((c.getFixtureB()==entity.getFixture() 
-							&& c.getFixtureA().getUserData()!=null && c.getFixtureA().getUserData().equals(PlayableCharacter.USERDATA_PLAYER)))
-						below=false;
-					if(below) return true;
-				}
-			}
-		}
-		return false;
-	}
-	
-	//////////////////////
 	//	public methods	//
 	//////////////////////
 

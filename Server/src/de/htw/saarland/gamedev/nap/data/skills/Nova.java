@@ -11,7 +11,7 @@ import de.htw.saarland.gamedev.nap.data.entities.SensorEntity;
 
 public class Nova extends Skill{
 	
-	public static final float COOLDOWN = 0.3f;
+	public static final float COOLDOWN = 5f;
 	public static final float CASTTIME = 0f;
 	public static final float RADIUS = 1f;
 	public static final float TRAVEL_DISTANCE = 2f;
@@ -21,20 +21,16 @@ public class Nova extends Skill{
 	public static final String USERDATA_NOVA = "nova";
 	
 	private SensorEntity nova;
-	private PlayableCharacter character;
-	private boolean started;
-	private int swingCount;
 	
 	public Nova(){
 		super(COOLDOWN, CASTTIME);
 		
+		maxSwingTime=0.1f;
 	}
 
 	@Override
 	public void start(World world, PlayableCharacter character, int currentId,
-			Vector2 mouseCoords) {
-		this.character=character;
-		
+			Vector2 mouseCoords) {		
 		CircleShape circle = new CircleShape();
 		circle.setRadius(RADIUS);
 				
@@ -45,18 +41,15 @@ public class Nova extends Skill{
 		nova.setFixture(nova.getBody().createFixture(nova.getFixtureDef()));
 		nova.getFixture().setUserData(USERDATA_NOVA);
 		
-		started=true;
 	}
 
 	@Override
-	public void update() {
-		if(started){
-			if(swingCount==1){
-				swingCount=0;
-				started=false;
+	public void doUpdate(World world, PlayableCharacter character, int currentId,
+			Vector2 mouseCoords) {
+		if(isOnCooldown()){
+			try{
 				nova.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
-			}
-			else swingCount++;
+			}catch(Exception e){}
 		}
 	}
 
