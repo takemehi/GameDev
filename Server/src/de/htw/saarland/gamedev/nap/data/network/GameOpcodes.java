@@ -64,7 +64,7 @@ public class GameOpcodes {
 	 * 	GAME_MOVE_DOWN_START when the server accepted the move and the character started to drop through<br/>
 	 * 	GAME_OBJECT_COORD_UPDATE regularly updates to improve accuracy
 	 */
-	public static final String GAME_MOVE_DOWN_REQUEST = "game.player.down.right";
+	public static final String GAME_MOVE_DOWN_REQUEST = "game.player.move.down";
 	/**
 	 * C->S<br/>
 	 * <br/>
@@ -74,7 +74,7 @@ public class GameOpcodes {
 	 * 	GAME_MOVE_DOWN_STOP when the server setted down to false on the character<br/>
 	 * 	GAME_OBJECT_COORD_UPDATE regularly updates to improve accuracy
 	 */
-	public static final String GAME_MOVE_DOWN_STOP_REQUEST = "game.player.down.right";
+	public static final String GAME_MOVE_DOWN_STOP_REQUEST = "game.player.down.stop";
 	/**
 	 * C->S<br/>
 	 * <br/>

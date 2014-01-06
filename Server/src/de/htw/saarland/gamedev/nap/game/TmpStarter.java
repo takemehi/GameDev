@@ -12,6 +12,6 @@ public class TmpStarter {
 		Array<SFSUser> userRed=new Array<SFSUser>();
 		int charactersBlue[] = {0,1};
 		int charactersRed[] = {1,0};
-		new LwjglApplication(new GameServer("map", 10, userBlue, userRed, charactersBlue, charactersRed), "Game", 480, 320, true);
+		new LwjglApplication(new DebugGameServer("map", 10, userBlue, userRed, charactersBlue, charactersRed), "Game", 480, 320, true);
 	}
 }

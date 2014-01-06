@@ -2,10 +2,11 @@ package de.htw.saarland.gamedev.nap.data;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Disposable;
 import com.smartfoxserver.v2.entities.SFSUser;
 import com.smartfoxserver.v2.entities.User;
 
-public class Player {
+public class Player implements Disposable {
 	
 	//exceptions
 	private static final String EXCEPTION_NULL_USER = "User object is missing!";	
@@ -45,6 +46,11 @@ public class Player {
 
 	public SFSUser getUser() {
 		return user;
+	}
+
+	@Override
+	public void dispose() {
+		plChar.dispose();
 	}
 
 }

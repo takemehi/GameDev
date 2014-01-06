@@ -1,37 +1,46 @@
 package de.htw.saarland.gamedev.nap.data;
 
 import de.htw.saarland.gamedev.nap.data.entities.SensorEntity;
+import de.htw.saarland.gamedev.nap.game.GameServer;
 
 public class CapturePoint {
 
-	private final static String EXCEPTION_ILLEGAL_TEAM_ID = "Team Id is not existing!";
 	private final static String EXCEPTION_NULL_ENTITY = "Entity object is null!";
-	
-	private static final int ID_TEAM_BLUE = 0;
-	private static final int ID_TEAM_RED = 1;
 
 	private SensorEntity capturePoint;
-	private int teamId;
-	boolean beingCaptured;
+	private Team team;
+	private boolean beingCaptured;
+	
+	private float stateTime;
 	
 	public CapturePoint(SensorEntity capturePoint){
 		if(capturePoint==null) throw new NullPointerException(EXCEPTION_NULL_ENTITY);	
 		this.capturePoint=capturePoint;
-		teamId=-1;
+		team = null;
+		stateTime = 0.0f;
 	}	
 	
 	//getter / setter
 	public SensorEntity getCapturePoint() {
 		return capturePoint;
 	}
-	public int getTeamId() {
-		return teamId;
+	public Team getTeam() {
+		return team;
 	}
-	public void setTeamId(int teamId){
-		if(teamId!=ID_TEAM_BLUE && teamId!=ID_TEAM_RED) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_TEAM_ID);
-		this.teamId=teamId;
+	public void setTeam(Team team){
+		this.team = team;
 	}
 	public boolean isBeingCaptured(){
 		return beingCaptured;
+	}
+	
+	public void update(float deltaTime) {
+		if (team != null) {
+			stateTime += deltaTime;
+			if (stateTime >= GameServer.INTERVAL_POINTS) {
+				team.addPoints(GameServer.POINTS_PER_INTERVAL);
+				stateTime = 0.0f;
+			}
+		}
 	}
 }
