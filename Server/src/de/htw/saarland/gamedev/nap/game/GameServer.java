@@ -20,6 +20,8 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.WorldManifold;
 import com.badlogic.gdx.utils.Array;
 import com.smartfoxserver.v2.entities.SFSUser;
+import com.smartfoxserver.v2.entities.User;
+import com.smartfoxserver.v2.entities.data.ISFSObject;
 import com.smartfoxserver.v2.entities.data.SFSObject;
 
 import de.htw.saarland.gamedev.nap.data.CapturePoint;
@@ -246,7 +248,7 @@ public class GameServer implements ApplicationListener {
 //		packetQueue.add(packet);
 //	}
 	
-	public void handlePacket(String opcode, SFSUser user, SFSObject params) {
+	public void handlePacket(String opcode, User user, ISFSObject args) {
 		switch (opcode) {
 			case GameOpcodes.GAME_MOVE_DOWN_REQUEST:
 				
