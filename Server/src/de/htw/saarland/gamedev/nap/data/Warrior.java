@@ -7,6 +7,8 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 
 import de.htw.saarland.gamedev.nap.data.shapes.WarriorShape;
 import de.htw.saarland.gamedev.nap.data.skills.Axe;
+import de.htw.saarland.gamedev.nap.data.skills.Charge;
+import de.htw.saarland.gamedev.nap.data.skills.Snare;
 
 public class Warrior extends PlayableCharacter{
 
@@ -25,5 +27,7 @@ public class Warrior extends PlayableCharacter{
 				MAXVELOCITY, MAXHEALTH, PlayableCharacter.ID_WARRIOR, teamId, id);
 		
 		attack1=new Axe();
+		attack2=new Charge();
+		attack3=new Snare();
 	}
 }

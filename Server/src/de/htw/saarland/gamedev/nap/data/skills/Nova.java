@@ -17,6 +17,7 @@ public class Nova extends Skill{
 	public static final float TRAVEL_DISTANCE = 2f;
 	public static final float FORCE = 1;
 	public static final int DAMAGE = 5;
+	public static final float DURATION_STUN = 0.4f;
 	
 	public static final String USERDATA_NOVA = "nova";
 	
@@ -24,8 +25,6 @@ public class Nova extends Skill{
 	
 	public Nova(){
 		super(COOLDOWN, CASTTIME);
-		
-		maxSwingTime=0.1f;
 	}
 
 	@Override

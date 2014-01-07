@@ -17,8 +17,8 @@ public class Pyroblast extends Skill{
 	public static final float CASTTIME = 1.5f;
 	public static final float RADIUS = 0.2f;
 	public static final float TRAVEL_DISTANCE = 3.5f;
-	public static final float FORCE = 5;
-	public static final int DAMAGE = 100;
+	public static final float VELOCITY = 5;
+	public static final int DAMAGE = 30;
 	
 	public static final String USERDATA_PYROBLAST = "pyroblast";
 	
@@ -51,7 +51,7 @@ public class Pyroblast extends Skill{
 		
 		Vector2 direction = mouseCoords.sub(character.getBody().getPosition());
 		direction = direction.nor();
-		velocityBall=direction.mul(FORCE);
+		velocityBall=direction.mul(VELOCITY);
 		ball.getBody().setLinearVelocity(velocityBall);
 		character.setMovementEnabled(true);
 		
@@ -63,7 +63,6 @@ public class Pyroblast extends Skill{
 		
 		if(isOnCooldown() && !isCasted()) {
 			character.setMovementEnabled(false);
-			character.getBody().setLinearVelocity(0, character.getBody().getLinearVelocity().y);
 		}
 		
 		if(isOnCooldown() && isCasted()){
