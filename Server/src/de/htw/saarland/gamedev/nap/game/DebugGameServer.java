@@ -15,10 +15,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.physics.box2d.WorldManifold;
 import com.badlogic.gdx.utils.Array;
 import com.smartfoxserver.v2.entities.SFSUser;
 import com.smartfoxserver.v2.entities.data.SFSObject;
@@ -29,8 +26,8 @@ import de.htw.saarland.gamedev.nap.data.NPC;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
 import de.htw.saarland.gamedev.nap.data.Player;
 import de.htw.saarland.gamedev.nap.data.SpawnPoint;
+import de.htw.saarland.gamedev.nap.data.Team;
 import de.htw.saarland.gamedev.nap.data.entities.Entity;
-import de.htw.saarland.gamedev.nap.data.entities.MoveableEntity;
 import de.htw.saarland.gamedev.nap.data.entities.StaticEntity;
 
 public class DebugGameServer implements ApplicationListener {
@@ -141,7 +138,6 @@ public class DebugGameServer implements ApplicationListener {
 	public void create() {
 		//initialize world
 		world=new World(GRAVITY, true);
-		world.setContactListener(new CustomContactListener(this));
 		//initialize gameWorld
 		gameWorld=new GameWorld(world, mapName, currentId);
 		//initialize map
@@ -162,6 +158,17 @@ public class DebugGameServer implements ApplicationListener {
 			//TODO change user
 			teamRed.add(new Player(null, world, SpawnPointRed.getSpawnPoint().getPositionOriginal(), charactersRed[i], PlayableCharacter.ID_TEAM_RED, currentId++));
 		}
+		
+		ArrayList<Player> bp = new ArrayList<>();
+		for(Player p: teamBlue) {
+			bp.add(p);
+		}
+		ArrayList<Player> rp = new ArrayList<>();
+		for(Player p: teamRed) {
+			rp.add(p);
+		}
+		world.setContactListener(new CustomContactListener(new Team(SpawnPointBlue, bp), new Team(SpawnPointRed, rp)));
+		
 		//initialize npcs
 		
 		//Test stuff

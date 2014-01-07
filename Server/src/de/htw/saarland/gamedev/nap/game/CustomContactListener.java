@@ -1,5 +1,7 @@
 package de.htw.saarland.gamedev.nap.game;
 
+import java.util.LinkedList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector2;
@@ -13,6 +15,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import de.htw.saarland.gamedev.nap.data.GameWorld;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
 import de.htw.saarland.gamedev.nap.data.Player;
+import de.htw.saarland.gamedev.nap.data.Team;
 import de.htw.saarland.gamedev.nap.data.entities.Entity;
 import de.htw.saarland.gamedev.nap.data.skills.Axe;
 import de.htw.saarland.gamedev.nap.data.skills.Fireball;
@@ -21,16 +24,23 @@ import de.htw.saarland.gamedev.nap.data.skills.Pyroblast;
 
 public class CustomContactListener implements ContactListener {
 	
-	//Exceptions
-	private static final String EXCEPTION_NULL_GAME = "The game object is null!";
 	//TODO add constants for userdata
 	
-	private DebugGameServer game;
+	private LinkedList<Player> players;
+	private Team blueTeam;
+	private Team redTeam;
 	
-	public CustomContactListener(DebugGameServer game){
-		if(game==null) throw new NullPointerException(EXCEPTION_NULL_GAME);
+	
+	public CustomContactListener(Team blueTeam, Team redTeam){
+		if(blueTeam == null || redTeam == null)
+			throw new NullPointerException();
 		
-		this.game=game;
+		this.redTeam = redTeam;
+		this.blueTeam = blueTeam;
+		
+		players = new LinkedList<Player>();
+		players.addAll(blueTeam.getMembers());
+		players.addAll(redTeam.getMembers());
 	}
 
 	@Override
@@ -38,114 +48,74 @@ public class CustomContactListener implements ContactListener {
 		Fixture fA = contact.getFixtureA();
 		Fixture fB = contact.getFixtureB();
 		
-		//Axe hitting a player
-				if(fA.getUserData()!=null && fB.getUserData()!= null){
-					if(fA.getUserData()==Axe.USERDATA_AXE && fB.getUserData()==PlayableCharacter.USERDATA_PLAYER){
-						for(Player p: game.teamBlue){
-							if(p.getPlChar().getFixture().equals(fB)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Axe.DAMAGE);
-						}
-						for(Player p: game.teamRed){
-							if(p.getPlChar().getFixture().equals(fB)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Axe.DAMAGE);
-						}
-					}
-					if(fB.getUserData()==Axe.USERDATA_AXE && fA.getUserData()==PlayableCharacter.USERDATA_PLAYER){
-						for(Player p: game.teamBlue){
-							if(p.getPlChar().getFixture().equals(fA)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Axe.DAMAGE);
-						}
-						for(Player p: game.teamRed){
-							if(p.getPlChar().getFixture().equals(fA)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Axe.DAMAGE);
-						}
+		
+		if (fA.getUserData()!=null && fB.getUserData()!= null) {
+			//Axe hitting a player
+			if ((fA.getUserData()==Axe.USERDATA_AXE && fB.getUserData()==PlayableCharacter.USERDATA_PLAYER)) {
+				for (Player p: players){
+					if(p.getPlChar().getFixture().equals(fB)) {
+						p.getPlChar().setHealth(p.getPlChar().getHealth()-Axe.DAMAGE);
+						break;
 					}
 				}
-		
-		//Fireball hitting the world
-		if(fA.getUserData()!=null && fB.getUserData()!= null){
-			if(fA.getUserData()==Fireball.USERDATA_FIREBALL && fB.getUserData()==GameWorld.USERDATA_FIXTURE_WORLD){
+			}
+			else if (fB.getUserData()==Axe.USERDATA_AXE && fA.getUserData()==PlayableCharacter.USERDATA_PLAYER) {
+				for (Player p: players){
+					if(p.getPlChar().getFixture().equals(fA)) {
+						p.getPlChar().setHealth(p.getPlChar().getHealth()-Axe.DAMAGE);
+						break;
+					}
+				}
+			}
+			//Fireball hitting the world
+			else if(fA.getUserData()==Fireball.USERDATA_FIREBALL && fB.getUserData()==GameWorld.USERDATA_FIXTURE_WORLD){
 				fA.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
 			}
-			if(fB.getUserData()==Fireball.USERDATA_FIREBALL && fA.getUserData()==GameWorld.USERDATA_FIXTURE_WORLD){
+			else if(fB.getUserData()==Fireball.USERDATA_FIREBALL && fA.getUserData()==GameWorld.USERDATA_FIXTURE_WORLD){
 				fB.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
 			}
-		}
-		
-		//Fireball hitting a player
-		if(fA.getUserData()!=null && fB.getUserData()!= null){
-			if(fA.getUserData()==Fireball.USERDATA_FIREBALL && fB.getUserData()==PlayableCharacter.USERDATA_PLAYER){
-				for(Player p: game.teamBlue){
-					if(p.getPlChar().getFixture().equals(fB)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Fireball.DAMAGE);
-					break;
-				}
-				for(Player p: game.teamRed){
+			//Fireball hitting a player
+			else if(fA.getUserData()==Fireball.USERDATA_FIREBALL && fB.getUserData()==PlayableCharacter.USERDATA_PLAYER){
+				for(Player p: players){
 					if(p.getPlChar().getFixture().equals(fB)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Fireball.DAMAGE);
 					break;
 				}
 				fA.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
 			}
-			if(fB.getUserData()==Fireball.USERDATA_FIREBALL && fA.getUserData()==PlayableCharacter.USERDATA_PLAYER){
-				for(Player p: game.teamBlue){
-					if(p.getPlChar().getFixture().equals(fA)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Fireball.DAMAGE);
-					break;
-				}
-				for(Player p: game.teamRed){
+			else if(fB.getUserData()==Fireball.USERDATA_FIREBALL && fA.getUserData()==PlayableCharacter.USERDATA_PLAYER){
+				for(Player p: players){
 					if(p.getPlChar().getFixture().equals(fA)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Fireball.DAMAGE);
 					break;
 				}
 				fB.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
 			}
-		}
-		
-		//Pyroblast hitting the world
-		if(fA.getUserData()!=null && fB.getUserData()!= null){
-			if(fA.getUserData()==Pyroblast.USERDATA_PYROBLAST && fB.getUserData()==GameWorld.USERDATA_FIXTURE_WORLD){
+			//Pyroblast hitting the world
+			else if(fA.getUserData()==Pyroblast.USERDATA_PYROBLAST && fB.getUserData()==GameWorld.USERDATA_FIXTURE_WORLD){
 				fA.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
 			}
-			if(fB.getUserData()==Pyroblast.USERDATA_PYROBLAST && fA.getUserData()==GameWorld.USERDATA_FIXTURE_WORLD){
+			else if(fB.getUserData()==Pyroblast.USERDATA_PYROBLAST && fA.getUserData()==GameWorld.USERDATA_FIXTURE_WORLD){
 				fB.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
 			}
-		}
-		
-		//Pyroblast hitting a player
-				if(fA.getUserData()!=null && fB.getUserData()!= null){
-					if(fA.getUserData()==Pyroblast.USERDATA_PYROBLAST && fB.getUserData()==PlayableCharacter.USERDATA_PLAYER){
-						for(Player p: game.teamBlue){
-							if(p.getPlChar().getFixture().equals(fB)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Pyroblast.DAMAGE);
-							break;
-						}
-						for(Player p: game.teamRed){
-							if(p.getPlChar().getFixture().equals(fB)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Pyroblast.DAMAGE);
-							break;
-						}
-						fA.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
-					}
-					if(fB.getUserData()==Pyroblast.USERDATA_PYROBLAST && fA.getUserData()==PlayableCharacter.USERDATA_PLAYER){
-						for(Player p: game.teamBlue){
-							if(p.getPlChar().getFixture().equals(fA)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Pyroblast.DAMAGE);
-							break;
-						}
-						for(Player p: game.teamRed){
-							if(p.getPlChar().getFixture().equals(fA)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Pyroblast.DAMAGE);
-							break;
-						}
-						fB.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
-					}
+			//Pyroblast hitting a player
+			else if(fA.getUserData()==Pyroblast.USERDATA_PYROBLAST && fB.getUserData()==PlayableCharacter.USERDATA_PLAYER){
+				for(Player p: players){
+					if(p.getPlChar().getFixture().equals(fB)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Pyroblast.DAMAGE);
+					break;
 				}
-		
-		//Nova hitting a player
-		if(fA.getUserData()!=null && fB.getUserData()!= null){
-			if(fA.getUserData()==Nova.USERDATA_NOVA && fB.getUserData()==PlayableCharacter.USERDATA_PLAYER){
+				fA.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
+			}
+			else if(fB.getUserData()==Pyroblast.USERDATA_PYROBLAST && fA.getUserData()==PlayableCharacter.USERDATA_PLAYER){
+				for(Player p: players){
+					if(p.getPlChar().getFixture().equals(fA)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Pyroblast.DAMAGE);
+					break;
+				}
+				fB.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
+			}
+			//Nova hitting a player
+			else if(fA.getUserData()==Nova.USERDATA_NOVA && fB.getUserData()==PlayableCharacter.USERDATA_PLAYER){
 				Vector2 direction;
 				
-				for(Player p: game.teamBlue){
-					if(p.getPlChar().getFixture().equals(fB)){
-						direction = new Vector2(p.getPlChar().getBody().getPosition().x - fA.getBody().getPosition().x
-								, p.getPlChar().getBody().getPosition().y - fA.getBody().getPosition().y);
-						direction = direction.nor();
-						direction.mul(Nova.FORCE);
-						p.getPlChar().setHealth(p.getPlChar().getHealth()-Nova.DAMAGE);
-						p.getPlChar().getBody().applyLinearImpulse(direction, p.getPlChar().getBody().getPosition(), true);
-					}
-				}
-				for(Player p: game.teamRed){
+				for(Player p: players){
 					if(p.getPlChar().getFixture().equals(fB)){
 						direction = new Vector2(p.getPlChar().getBody().getPosition().x - fA.getBody().getPosition().x
 								, p.getPlChar().getBody().getPosition().y - fA.getBody().getPosition().y);
@@ -156,20 +126,10 @@ public class CustomContactListener implements ContactListener {
 					}
 				}
 			}
-			if(fB.getUserData()==Nova.USERDATA_NOVA && fA.getUserData()==PlayableCharacter.USERDATA_PLAYER){
+			else if(fB.getUserData()==Nova.USERDATA_NOVA && fA.getUserData()==PlayableCharacter.USERDATA_PLAYER){
 				Vector2 direction;
 				
-				for(Player p: game.teamBlue){
-					if(p.getPlChar().getFixture().equals(fA)){
-						direction = new Vector2(p.getPlChar().getBody().getPosition().x - fB.getBody().getPosition().x
-								, p.getPlChar().getBody().getPosition().y - fB.getBody().getPosition().y);
-						direction = direction.nor();
-						direction.mul(Nova.FORCE);
-						p.getPlChar().setHealth(p.getPlChar().getHealth()-Nova.DAMAGE);
-						p.getPlChar().getBody().applyLinearImpulse(direction, p.getPlChar().getBody().getPosition(), true);
-					}
-				}
-				for(Player p: game.teamRed){
+				for(Player p: players){
 					if(p.getPlChar().getFixture().equals(fA)){
 						direction = new Vector2(p.getPlChar().getBody().getPosition().x - fB.getBody().getPosition().x
 								, p.getPlChar().getBody().getPosition().y - fB.getBody().getPosition().y);
@@ -181,26 +141,26 @@ public class CustomContactListener implements ContactListener {
 				}
 			}
 		}
-		
-		//spawnPoint team blue
-		if(fA.getUserData()!=null && fA.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_BLUE)){
-			for(Player p:game.teamBlue){
-				if(p.getPlChar().getFixture().equals(fB)) p.getPlChar().setAtSpawn(true);
+		else if(fA.getUserData()!=null && fA.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_BLUE)){
+			//spawnPoint team blue
+			for(Player p: blueTeam.getMembers()){
+				if(p.getPlChar().getFixture().equals(fB))
+					p.getPlChar().setAtSpawn(true);
 			}
 		}
-		if(fB.getUserData()!=null && fB.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_BLUE)){
-			for(Player p:game.teamBlue){
+		else if(fB.getUserData()!=null && fB.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_BLUE)){
+			for(Player p: blueTeam.getMembers()){
 				if(p.getPlChar().getFixture().equals(fA)) p.getPlChar().setAtSpawn(true);
 			}
 		}
-		//spawnPoint team red
-		if(fA.getUserData()!=null && fA.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_RED)){
-			for(Player p:game.teamRed){
+		else if(fA.getUserData()!=null && fA.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_RED)){
+			//spawnPoint team red
+			for(Player p: redTeam.getMembers()){
 				if(p.getPlChar().getFixture().equals(fB)) p.getPlChar().setAtSpawn(true);
 			}
 		}
-		if(fB.getUserData()!=null && fB.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_RED)){
-			for(Player p:game.teamRed){
+		else if(fB.getUserData()!=null && fB.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_RED)){
+			for(Player p: redTeam.getMembers()){
 				if(p.getPlChar().getFixture().equals(fA)) p.getPlChar().setAtSpawn(true);
 			}
 		}
@@ -212,23 +172,23 @@ public class CustomContactListener implements ContactListener {
 		Fixture fB = contact.getFixtureB();
 		
 		if(fA!=null && fA.getUserData()!=null && fA.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_BLUE)){
-			for(Player p:game.teamBlue){
+			for(Player p: blueTeam.getMembers()){
 				if(p.getPlChar().getFixture().equals(fB)) p.getPlChar().setAtSpawn(false);
 			}
 		}
-		if(fB!=null && fB.getUserData()!=null && fB.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_BLUE)){
-			for(Player p:game.teamBlue){
+		else if(fB!=null && fB.getUserData()!=null && fB.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_BLUE)){
+			for(Player p: blueTeam.getMembers()){
 				if(p.getPlChar().getFixture().equals(fA)) p.getPlChar().setAtSpawn(false);
 			}
 		}
 		//spawnPoint team red
-		if(fA!=null && fA.getUserData()!=null && fA.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_RED)){
-			for(Player p:game.teamRed){
+		else if(fA!=null && fA.getUserData()!=null && fA.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_RED)){
+			for(Player p: redTeam.getMembers()){
 				if(p.getPlChar().getFixture().equals(fB)) p.getPlChar().setAtSpawn(false);
 			}
 		}
-		if(fB!=null && fB.getUserData()!=null && fB.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_RED)){
-			for(Player p:game.teamRed){
+		else if(fB!=null && fB.getUserData()!=null && fB.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_RED)){
+			for(Player p: redTeam.getMembers()){
 				if(p.getPlChar().getFixture().equals(fA)) p.getPlChar().setAtSpawn(false);
 			}
 		}
@@ -271,12 +231,8 @@ public class CustomContactListener implements ContactListener {
 		//player dropping through a platform from above
 		if(fA.getUserData()!=null && fA.getUserData().equals(GameWorld.USERDATA_FIXTURE_PLATFORM_TWO)){
 			if((Math.abs(fB.getBody().getPosition().y+offsetB-fA.getBody().getPosition().y))<=0.1 && Gdx.input.isKeyPressed(Keys.S)){
-				for(Player p:game.teamBlue){
-					if (fB.equals(p.getPlChar().getFixture()) && p.getPlChar().getTimeOnGround()>=p.getPlChar().MIN_TIME_ON_GROUND)
-						contact.setEnabled(false);
-				}
-				for(Player p:game.teamRed){
-					if (fB.equals(p.getPlChar().getFixture()) && p.getPlChar().getTimeOnGround()>=p.getPlChar().MIN_TIME_ON_GROUND)
+				for(Player p: players){
+					if (fB.equals(p.getPlChar().getFixture()) && p.getPlChar().getTimeOnGround()>=PlayableCharacter.MIN_TIME_ON_GROUND)
 						contact.setEnabled(false);
 				}
 			}
@@ -284,12 +240,8 @@ public class CustomContactListener implements ContactListener {
 		if(fB.getUserData()!=null && fB.getUserData().equals(GameWorld.USERDATA_FIXTURE_PLATFORM_TWO)){
 			if((Math.abs(fA.getBody().getPosition().y-offsetA-fB.getBody().getPosition().y))<=0.1 && Gdx.input.isKeyPressed(Keys.S)){
 				if((Math.abs(fB.getBody().getPosition().y+offsetB-fA.getBody().getPosition().y))<=0.1 && Gdx.input.isKeyPressed(Keys.S)){
-					for(Player p:game.teamBlue){
-						if (fA.equals(p.getPlChar().getFixture()) && p.getPlChar().getTimeOnGround()>=p.getPlChar().MIN_TIME_ON_GROUND)
-							contact.setEnabled(false);
-					}
-					for(Player p:game.teamRed){
-						if (fA.equals(p.getPlChar().getFixture()) && p.getPlChar().getTimeOnGround()>=p.getPlChar().MIN_TIME_ON_GROUND)
+					for(Player p: players){
+						if (fA.equals(p.getPlChar().getFixture()) && p.getPlChar().getTimeOnGround()>=PlayableCharacter.MIN_TIME_ON_GROUND)
 							contact.setEnabled(false);
 					}
 				}
@@ -298,9 +250,7 @@ public class CustomContactListener implements ContactListener {
 	}
 
 	@Override
-	public void postSolve(Contact contact, ContactImpulse impulse) {
-		// TODO Auto-generated method stub
-		
+	public void postSolve(Contact contact, ContactImpulse impulse) {		
 	}
 
 }

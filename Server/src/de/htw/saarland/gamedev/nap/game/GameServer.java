@@ -2,27 +2,15 @@ package de.htw.saarland.gamedev.nap.game;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.badlogic.gdx.ApplicationListener;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.physics.box2d.WorldManifold;
 import com.badlogic.gdx.utils.Array;
 import com.smartfoxserver.v2.entities.SFSUser;
 import com.smartfoxserver.v2.entities.User;
 import com.smartfoxserver.v2.entities.data.ISFSObject;
-import com.smartfoxserver.v2.entities.data.SFSObject;
 
 import de.htw.saarland.gamedev.nap.data.CapturePoint;
 import de.htw.saarland.gamedev.nap.data.GameWorld;
@@ -30,8 +18,6 @@ import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
 import de.htw.saarland.gamedev.nap.data.Player;
 import de.htw.saarland.gamedev.nap.data.SpawnPoint;
 import de.htw.saarland.gamedev.nap.data.Team;
-import de.htw.saarland.gamedev.nap.data.entities.Entity;
-import de.htw.saarland.gamedev.nap.data.entities.MoveableEntity;
 import de.htw.saarland.gamedev.nap.data.entities.StaticEntity;
 import de.htw.saarland.gamedev.nap.data.network.GameOpcodes;
 import de.htw.saarland.gamedev.nap.server.DeltaTime;
@@ -140,7 +126,6 @@ public class GameServer implements ApplicationListener {
 	public void create() {
 		//initialize world
 		world = new World(GRAVITY, true);
-		world.setContactListener(new CustomContactListener(this));
 		
 		//initialize gameWorld
 		gameWorld = new GameWorld(world, mapName, currentId);
@@ -167,13 +152,15 @@ public class GameServer implements ApplicationListener {
 		}
 		redTeam = new Team(spawnPointRed, red);
 		
+		world.setContactListener(new CustomContactListener(blueTeam, redTeam));
+		
+		// TODO initialize npcs
+		
 		//free memory
 		blueMembers = null;
 		charactersBlue = null;
 		redMembers = null;
 		charactersRed = null;
-		
-		// TODO initialize npcs
 	}		
 	
 	@Override
@@ -206,6 +193,14 @@ public class GameServer implements ApplicationListener {
 	//////////////////////
 	//	public methods	//
 	//////////////////////
+	
+	public Team getBlueTeam() {
+		return blueTeam;
+	}
+	
+	public Team getRedTeam() {
+		return redTeam;
+	}
 
 //	public void addPacket(SFSObject packet){
 //		if(packet == null) throw new NullPointerException(EXCEPTION_NULL_PACKET);
