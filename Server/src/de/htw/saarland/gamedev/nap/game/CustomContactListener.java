@@ -234,7 +234,6 @@ public class CustomContactListener implements ContactListener {
 
 	@Override
 	public void preSolve(Contact contact, Manifold oldManifold) {
-		// TODO remove keypress argument
 		Fixture fA = contact.getFixtureA();
 		Fixture fB = contact.getFixtureB();
 		float offsetA = 0;
@@ -264,7 +263,7 @@ public class CustomContactListener implements ContactListener {
 				contact.setEnabled(false);
 			}
 		}
-		// player dropping through a platform from above TODO remove fucking kepress
+		// player dropping through a platform from above
 		if (fA.getUserData() != null && fA.getUserData().equals(GameWorld.USERDATA_FIXTURE_PLATFORM_TWO)) {
 			Player player = null;
 			for (Player p : players) {
