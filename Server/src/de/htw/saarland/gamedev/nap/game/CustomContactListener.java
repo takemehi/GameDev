@@ -18,6 +18,7 @@ import de.htw.saarland.gamedev.nap.data.skills.Axe;
 import de.htw.saarland.gamedev.nap.data.skills.Fireball;
 import de.htw.saarland.gamedev.nap.data.skills.Nova;
 import de.htw.saarland.gamedev.nap.data.skills.Pyroblast;
+import de.htw.saarland.gamedev.nap.data.skills.Snare;
 
 public class CustomContactListener implements ContactListener {
 	
@@ -39,24 +40,56 @@ public class CustomContactListener implements ContactListener {
 		Fixture fB = contact.getFixtureB();
 		
 		//Axe hitting a player
-				if(fA.getUserData()!=null && fB.getUserData()!= null){
-					if(fA.getUserData()==Axe.USERDATA_AXE && fB.getUserData()==PlayableCharacter.USERDATA_PLAYER){
-						for(Player p: game.teamBlue){
-							if(p.getPlChar().getFixture().equals(fB)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Axe.DAMAGE);
-						}
-						for(Player p: game.teamRed){
-							if(p.getPlChar().getFixture().equals(fB)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Axe.DAMAGE);
-						}
-					}
-					if(fB.getUserData()==Axe.USERDATA_AXE && fA.getUserData()==PlayableCharacter.USERDATA_PLAYER){
-						for(Player p: game.teamBlue){
-							if(p.getPlChar().getFixture().equals(fA)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Axe.DAMAGE);
-						}
-						for(Player p: game.teamRed){
-							if(p.getPlChar().getFixture().equals(fA)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Axe.DAMAGE);
-						}
+		if(fA.getUserData()!=null && fB.getUserData()!= null){
+			if(fA.getUserData()==Axe.USERDATA_AXE && fB.getUserData()==PlayableCharacter.USERDATA_PLAYER){
+				for(Player p: game.teamBlue){
+					if(p.getPlChar().getFixture().equals(fB)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Axe.DAMAGE);
+				}
+				for(Player p: game.teamRed){
+					if(p.getPlChar().getFixture().equals(fB)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Axe.DAMAGE);
+				}
+			}
+			if(fB.getUserData()==Axe.USERDATA_AXE && fA.getUserData()==PlayableCharacter.USERDATA_PLAYER){
+				for(Player p: game.teamBlue){
+					if(p.getPlChar().getFixture().equals(fA)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Axe.DAMAGE);
+				}
+				for(Player p: game.teamRed){
+					if(p.getPlChar().getFixture().equals(fA)) p.getPlChar().setHealth(p.getPlChar().getHealth()-Axe.DAMAGE);
+				}
+			}
+		}
+				
+		//Snare hitting a player
+		if(fA.getUserData()!=null && fB.getUserData()!= null){
+			if(fA.getUserData()==Snare.USERDATA_SNARE && fB.getUserData()==PlayableCharacter.USERDATA_PLAYER){
+				for(Player p: game.teamBlue){
+					if(p.getPlChar().getFixture().equals(fB)){
+						p.getPlChar().setHealth(p.getPlChar().getHealth()-Snare.DAMAGE);
+						p.getPlChar().setSnared(true, Snare.DURATION_SNARE);
 					}
 				}
+				for(Player p: game.teamRed){
+					if(p.getPlChar().getFixture().equals(fB)){
+						p.getPlChar().setHealth(p.getPlChar().getHealth()-Snare.DAMAGE);
+						p.getPlChar().setSnared(true, Snare.DURATION_SNARE);
+					}
+				}
+			}
+			if(fB.getUserData()==Snare.USERDATA_SNARE && fA.getUserData()==PlayableCharacter.USERDATA_PLAYER){
+				for(Player p: game.teamBlue){
+					if(p.getPlChar().getFixture().equals(fA)){
+						p.getPlChar().setHealth(p.getPlChar().getHealth()-Snare.DAMAGE);
+						p.getPlChar().setSnared(true, Snare.DURATION_SNARE);
+					}
+				}
+				for(Player p: game.teamRed){
+					if(p.getPlChar().getFixture().equals(fA)){
+						p.getPlChar().setHealth(p.getPlChar().getHealth()-Snare.DAMAGE);
+						p.getPlChar().setSnared(true, Snare.DURATION_SNARE);
+					}
+				}
+			}
+		}
 		
 		//Fireball hitting the world
 		if(fA.getUserData()!=null && fB.getUserData()!= null){
@@ -142,6 +175,7 @@ public class CustomContactListener implements ContactListener {
 						direction = direction.nor();
 						direction.mul(Nova.FORCE);
 						p.getPlChar().setHealth(p.getPlChar().getHealth()-Nova.DAMAGE);
+						p.getPlChar().setStunned(true, Nova.DURATION_STUN);
 						p.getPlChar().getBody().applyLinearImpulse(direction, p.getPlChar().getBody().getPosition(), true);
 					}
 				}
@@ -152,6 +186,7 @@ public class CustomContactListener implements ContactListener {
 						direction = direction.nor();
 						direction.mul(Nova.FORCE);
 						p.getPlChar().setHealth(p.getPlChar().getHealth()-Nova.DAMAGE);
+						p.getPlChar().setStunned(true, Nova.DURATION_STUN);
 						p.getPlChar().getBody().applyLinearImpulse(direction, p.getPlChar().getBody().getPosition(), true);
 					}
 				}
@@ -166,6 +201,7 @@ public class CustomContactListener implements ContactListener {
 						direction = direction.nor();
 						direction.mul(Nova.FORCE);
 						p.getPlChar().setHealth(p.getPlChar().getHealth()-Nova.DAMAGE);
+						p.getPlChar().setStunned(true, Nova.DURATION_STUN);
 						p.getPlChar().getBody().applyLinearImpulse(direction, p.getPlChar().getBody().getPosition(), true);
 					}
 				}
@@ -176,6 +212,7 @@ public class CustomContactListener implements ContactListener {
 						direction = direction.nor();
 						direction.mul(Nova.FORCE);
 						p.getPlChar().setHealth(p.getPlChar().getHealth()-Nova.DAMAGE);
+						p.getPlChar().setStunned(true, Nova.DURATION_STUN);
 						p.getPlChar().getBody().applyLinearImpulse(direction, p.getPlChar().getBody().getPosition(), true);
 					}
 				}

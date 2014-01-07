@@ -21,7 +21,6 @@ public abstract class Skill {
 	private boolean onCooldown;
 	private boolean casted;
 	private boolean attacking;
-	protected float maxSwingTime;
 	
 	public Skill(float cooldown, float castTime){
 		if(cooldown<0) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_COOLDOWN);
@@ -65,6 +64,11 @@ public abstract class Skill {
 	
 	protected abstract void doUpdate(World world, PlayableCharacter character, int currentId, Vector2 mouseCoords);
 	
+	public void reset(){
+		casted=true;
+		deltaTime=0;
+	}
+	
 	//getter / setter
 	
 	public boolean isAttacking(){
@@ -85,10 +89,6 @@ public abstract class Skill {
 
 	public float getCastTime() {
 		return castTime;
-	}
-	
-	public float getMaxSwingTime(){
-		return maxSwingTime;
 	}
 	
 	public boolean isOnCooldown(){

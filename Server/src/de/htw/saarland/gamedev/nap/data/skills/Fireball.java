@@ -22,7 +22,7 @@ public class Fireball extends Skill{
 	public static final float CASTTIME = 0f;
 	public static final float RADIUS = 0.1f;
 	public static final float TRAVEL_DISTANCE = 2f;
-	public static final float FORCE = 6;
+	public static final float VELOCITY = 6;
 	public static final int DAMAGE = 35;
 	
 	public static final String USERDATA_FIREBALL = "fireball";
@@ -49,7 +49,7 @@ public class Fireball extends Skill{
 		ball.getBody().setType(BodyDef.BodyType.DynamicBody);
 		Vector2 direction = mouseCoords.sub(character.getBody().getPosition());
 		direction = direction.nor();
-		Vector2 velocityBall=direction.mul(FORCE);
+		Vector2 velocityBall=direction.mul(VELOCITY);
 		ball.getBody().setLinearVelocity(velocityBall);
 		fireBalls.add(ball);
 	}
@@ -58,7 +58,6 @@ public class Fireball extends Skill{
 	protected void doUpdate(World world, PlayableCharacter character, int currentId, Vector2 mouseCoords) {		
 		
 		for(SensorEntity s: fireBalls){
-			//TODO constant for that value
 			if(s.getDistanceTraveled()>TRAVEL_DISTANCE){
 				s.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
 			}else{

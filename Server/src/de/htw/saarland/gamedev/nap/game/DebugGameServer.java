@@ -185,6 +185,8 @@ public class DebugGameServer implements ApplicationListener {
 			Vector3 mouseCoords3 = new Vector3(Gdx.input.getX(),Gdx.input.getY(),0);
 			camera.unproject(mouseCoords3);
 			Vector2 mouseCoords = new Vector2(mouseCoords3.x, mouseCoords3.y);
+			//general player update for status effect time and so on
+			plCh.update(Gdx.graphics.getDeltaTime());
 			//player orientation
 			if(mouseCoords.x > plCh.getBody().getPosition().x)
 				plCh.setOrientation(PlayableCharacter.ORIENTATION_RIGHT);			
@@ -212,7 +214,13 @@ public class DebugGameServer implements ApplicationListener {
 			if(Gdx.input.isKeyPressed(Keys.E)){
 				plCh.setAttacking3(true);
 			}
-		
+			//test buttons
+			if(Gdx.input.isKeyPressed(Keys.R)){
+				//teamBlue.get(0).getPlChar().setSnared(false, 0);
+			}
+			if(Gdx.input.isKeyPressed(Keys.F)){
+				teamBlue.get(0).getPlChar().setStunned(true, 1f);
+			}
 			
 			//update attacks
 			plCh.getAttack1().update(world, plCh, i, mouseCoords);
@@ -254,6 +262,8 @@ public class DebugGameServer implements ApplicationListener {
 		
 		for(Player p: teamRed){
 			PlayableCharacter plCh = p.getPlChar();
+			//general update
+			plCh.update(Gdx.graphics.getDeltaTime());
 			//Spawn regeneration
 			spawnRegTime+=Gdx.graphics.getDeltaTime();
 			if(plCh.isAtSpawn() && spawnRegTime>=INTERVAL_REGEN_SPAWN){
