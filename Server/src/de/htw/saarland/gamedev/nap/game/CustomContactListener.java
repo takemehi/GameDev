@@ -266,23 +266,31 @@ public class CustomContactListener implements ContactListener {
 		}
 		// player dropping through a platform from above TODO remove fucking kepress
 		if (fA.getUserData() != null && fA.getUserData().equals(GameWorld.USERDATA_FIXTURE_PLATFORM_TWO)) {
-			if ((Math.abs(fB.getBody().getPosition().y + offsetB - fA.getBody().getPosition().y)) <= 0.1 && Gdx.input.isKeyPressed(Keys.S)) {
-				for (Player p : players) {
-					if (fB.equals(p.getPlChar().getFixture()) && p.getPlChar().getTimeOnGround() >= PlayableCharacter.MIN_TIME_ON_GROUND) {
-						contact.setEnabled(false);
-						break;
-					}
+			Player player = null;
+			for (Player p : players) {
+				if (fB.equals(p.getPlChar().getFixture())) {
+					player = p;
+					break;
+				}
+			}
+			if (player != null && (Math.abs(fB.getBody().getPosition().y + offsetB - fA.getBody().getPosition().y)) <= 0.1 && player.getPlChar().getDown()) {
+				if (fB.equals(player.getPlChar().getFixture()) && player.getPlChar().getTimeOnGround() >= PlayableCharacter.MIN_TIME_ON_GROUND) {
+					contact.setEnabled(false);
 				}
 			}
 		}
 		if (fB.getUserData() != null && fB.getUserData().equals(GameWorld.USERDATA_FIXTURE_PLATFORM_TWO)) {
-			if ((Math.abs(fA.getBody().getPosition().y - offsetA - fB.getBody().getPosition().y)) <= 0.1 && Gdx.input.isKeyPressed(Keys.S)) {
-				if ((Math.abs(fB.getBody().getPosition().y + offsetB - fA.getBody().getPosition().y)) <= 0.1 && Gdx.input.isKeyPressed(Keys.S)) {
-					for (Player p : players) {
-						if (fA.equals(p.getPlChar().getFixture()) && p.getPlChar().getTimeOnGround() >= PlayableCharacter.MIN_TIME_ON_GROUND) {
-							contact.setEnabled(false);
-							break;
-						}
+			Player player = null;
+			for (Player p : players) {
+				if (fB.equals(p.getPlChar().getFixture())) {
+					player = p;
+					break;
+				}
+			}
+			if (player != null && (Math.abs(fA.getBody().getPosition().y - offsetA - fB.getBody().getPosition().y)) <= 0.1 && player.getPlChar().getDown()) {
+				if ((Math.abs(fB.getBody().getPosition().y + offsetB - fA.getBody().getPosition().y)) <= 0.1 && player.getPlChar().getDown()) {
+					if (player.getPlChar().getTimeOnGround() >= PlayableCharacter.MIN_TIME_ON_GROUND) {
+						contact.setEnabled(false);
 					}
 				}
 			}
