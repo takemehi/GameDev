@@ -18,7 +18,8 @@ public class Charge extends Skill {
 	public static final float CASTTIME = 0f;
 	public static final float VELOCITY = 10;
 	public static final float TRAVEL_DISTANCE = 20f;
-	public static final int DAMAGE = 30;
+	public static final int DAMAGE = 35;
+	public static final float DURATION_STUN = 1f;
 	
 	public static final String USERDATA_CHARGE = "charge";
 	
@@ -48,6 +49,7 @@ public class Charge extends Skill {
 		character.setMovementEnabled(false);
 		character.getBody().setLinearVelocity(velocity);
 		character.getBody().setGravityScale(0);
+		character.getFixture().setUserData(USERDATA_CHARGE);
 		positionStart= new Vector2(character.getBody().getPosition().x, character.getBody().getPosition().y);
 		traveling=true;
 	}
@@ -66,6 +68,7 @@ public class Charge extends Skill {
 						character.getBody().setGravityScale(1);
 						traveling=false;
 						distanceTraveled=0;
+						character.getFixture().setUserData(PlayableCharacter.USERDATA_PLAYER);
 					}else{
 						distanceTraveled+=((new Vector2(positionStart.x-character.getBody().getPosition().x
 								,positionStart.y-character.getBody().getPosition().y)).len());
@@ -83,6 +86,7 @@ public class Charge extends Skill {
 			character.getBody().setLinearVelocity(0,0);
 			character.setMovementEnabled(true);
 			character.getBody().setGravityScale(1);
+			character.getFixture().setUserData(PlayableCharacter.USERDATA_PLAYER);
 		}catch(Exception e){}
 		traveling=false;
 		distanceTraveled=0;

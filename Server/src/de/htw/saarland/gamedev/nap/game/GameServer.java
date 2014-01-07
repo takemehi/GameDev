@@ -147,13 +147,13 @@ public class GameServer implements ApplicationListener {
 		SpawnPoint spawnPointRed = gameWorld.getSpawnPointRed();
 		//initialize players
 		
-		ArrayList<Player> blue = new ArrayList<Player>();
+		Array<Player> blue = new Array<Player>();
 		for(int i=0; i<charactersBlue.size(); i++){
 			blue.add(new Player(blueMembers.get(i), world, spawnPointBlue.getSpawnPoint().getPositionOriginal(), charactersBlue.get(i), PlayableCharacter.ID_TEAM_BLUE, currentId++));
 		}
 		blueTeam = new Team(spawnPointBlue, blue);
 		
-		ArrayList<Player> red = new ArrayList<Player>();
+		Array<Player> red = new Array<Player>();
 		for(int i=0; i<charactersRed.size(); i++){
 			red.add(new Player(redMembers.get(i), world, spawnPointRed.getSpawnPoint().getPositionOriginal(), charactersRed.get(i), PlayableCharacter.ID_TEAM_RED, currentId++));
 		}

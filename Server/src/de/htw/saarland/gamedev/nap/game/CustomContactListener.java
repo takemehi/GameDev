@@ -1,7 +1,5 @@
 package de.htw.saarland.gamedev.nap.game;
 
-import java.util.LinkedList;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector2;
@@ -11,6 +9,7 @@ import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.utils.Array;
 
 import de.htw.saarland.gamedev.nap.data.GameWorld;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
@@ -18,6 +17,7 @@ import de.htw.saarland.gamedev.nap.data.Player;
 import de.htw.saarland.gamedev.nap.data.Team;
 import de.htw.saarland.gamedev.nap.data.entities.Entity;
 import de.htw.saarland.gamedev.nap.data.skills.Axe;
+import de.htw.saarland.gamedev.nap.data.skills.Charge;
 import de.htw.saarland.gamedev.nap.data.skills.Fireball;
 import de.htw.saarland.gamedev.nap.data.skills.Nova;
 import de.htw.saarland.gamedev.nap.data.skills.Pyroblast;
@@ -27,7 +27,7 @@ public class CustomContactListener implements ContactListener {
 
 	// TODO add constants for userdata
 
-	private LinkedList<Player> players;
+	private Array<Player> players;
 	private Team blueTeam;
 	private Team redTeam;
 
@@ -38,8 +38,8 @@ public class CustomContactListener implements ContactListener {
 		this.redTeam = redTeam;
 		this.blueTeam = blueTeam;
 
-		players = new LinkedList<Player>();
-		players.addAll(blueTeam.getMembers());
+		players = new Array<Player>();
+		players. addAll(blueTeam.getMembers());
 		players.addAll(redTeam.getMembers());
 	}
 
@@ -57,7 +57,8 @@ public class CustomContactListener implements ContactListener {
 						break;
 					}
 				}
-			} else if (fB.getUserData() == Axe.USERDATA_AXE && fA.getUserData() == PlayableCharacter.USERDATA_PLAYER) {
+			} 
+			else if (fB.getUserData() == Axe.USERDATA_AXE && fA.getUserData() == PlayableCharacter.USERDATA_PLAYER) {
 				for (Player p : players) {
 					if (p.getPlChar().getFixture().equals(fA)) {
 						p.getPlChar().setHealth(p.getPlChar().getHealth() - Axe.DAMAGE);
@@ -65,6 +66,8 @@ public class CustomContactListener implements ContactListener {
 					}
 				}
 			}
+			
+			//Snare hitting a player
 			else if (fA.getUserData() == Snare.USERDATA_SNARE && fB.getUserData() == PlayableCharacter.USERDATA_PLAYER) {
 				for (Player p : players) {
 					if (p.getPlChar().getFixture().equals(fB)) {
@@ -83,6 +86,69 @@ public class CustomContactListener implements ContactListener {
 					}
 				}
 			}
+			
+			//Charge hitting the world
+			
+			else if(fA.getUserData()==Charge.USERDATA_CHARGE && fB.getUserData()==GameWorld.USERDATA_FIXTURE_WORLD){
+				for(Player p: players){
+					if(p.getPlChar().getFixture().equals(fA)) p.getPlChar().getAttack2().reset();
+				}
+			}
+			else if(fB.getUserData()==Charge.USERDATA_CHARGE && fA.getUserData()==GameWorld.USERDATA_FIXTURE_WORLD){
+				for(Player p: players){
+					if(p.getPlChar().getFixture().equals(fB)) p.getPlChar().getAttack2().reset();
+				}
+			}
+			
+			
+			//Charge hitting a player
+			else if(fA.getUserData()==Charge.USERDATA_CHARGE && fB.getUserData()==PlayableCharacter.USERDATA_PLAYER){	
+				for(Player p: players){
+					if(p.getPlChar().getFixture().equals(fB)){
+						System.out.println("a");
+						p.getPlChar().setHealth(p.getPlChar().getHealth()-Charge.DAMAGE);
+						p.getPlChar().setStunned(true, Charge.DURATION_STUN);
+						for(Player pl: players){
+							if(pl.getPlChar().getFixture().equals(fA)) pl.getPlChar().getAttack2().reset();
+						}
+						break;
+					}
+				}
+			}	
+			else if(fB.getUserData()==Charge.USERDATA_CHARGE && fA.getUserData()==PlayableCharacter.USERDATA_PLAYER){
+				for(Player p: players){
+					if(p.getPlChar().getFixture().equals(fA)){
+						System.out.println("b");
+						p.getPlChar().setHealth(p.getPlChar().getHealth()-Charge.DAMAGE);
+						p.getPlChar().setStunned(true, Charge.DURATION_STUN);
+						for(Player pl: players){
+							if(pl.getPlChar().getFixture().equals(fB)) pl.getPlChar().getAttack2().reset();
+						}
+						break;
+					}
+				}
+			}
+			
+					
+			//Snare hitting a player
+			
+			else if(fA.getUserData()==Snare.USERDATA_SNARE && fB.getUserData()==PlayableCharacter.USERDATA_PLAYER){
+				for(Player p: players){
+					if(p.getPlChar().getFixture().equals(fB)){
+						p.getPlChar().setHealth(p.getPlChar().getHealth()-Snare.DAMAGE);
+						p.getPlChar().setSnared(true, Snare.DURATION_SNARE);
+					}
+				}
+			}
+			else if(fB.getUserData()==Snare.USERDATA_SNARE && fA.getUserData()==PlayableCharacter.USERDATA_PLAYER){
+				for(Player p: players){
+					if(p.getPlChar().getFixture().equals(fA)){
+						p.getPlChar().setHealth(p.getPlChar().getHealth()-Snare.DAMAGE);
+						p.getPlChar().setSnared(true, Snare.DURATION_SNARE);
+					}
+				}
+			}
+			
 			// Fireball hitting the world
 			else if (fA.getUserData() == Fireball.USERDATA_FIREBALL && fB.getUserData() == GameWorld.USERDATA_FIXTURE_WORLD) {
 				fA.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);

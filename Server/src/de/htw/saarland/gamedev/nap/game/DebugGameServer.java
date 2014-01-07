@@ -159,11 +159,11 @@ public class DebugGameServer implements ApplicationListener {
 			teamRed.add(new Player(null, world, SpawnPointRed.getSpawnPoint().getPositionOriginal(), charactersRed[i], PlayableCharacter.ID_TEAM_RED, currentId++));
 		}
 		
-		ArrayList<Player> bp = new ArrayList<>();
+		Array<Player> bp = new Array<>();
 		for(Player p: teamBlue) {
 			bp.add(p);
 		}
-		ArrayList<Player> rp = new ArrayList<>();
+		Array<Player> rp = new Array<>();
 		for(Player p: teamRed) {
 			rp.add(p);
 		}

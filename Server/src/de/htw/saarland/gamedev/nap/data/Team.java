@@ -1,15 +1,14 @@
 package de.htw.saarland.gamedev.nap.data;
 
-import java.util.ArrayList;
-
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
 public class Team implements Disposable {
 	private SpawnPoint spawnPoint;
-	private ArrayList<Player> members;
+	private Array<Player> members;
 	private int points;
 	
-	public Team(SpawnPoint spawnPoint, ArrayList<Player> members) {
+	public Team(SpawnPoint spawnPoint, Array<Player> members) {
 		if (members == null || spawnPoint == null) {
 			throw new NullPointerException();
 		}
@@ -23,7 +22,7 @@ public class Team implements Disposable {
 		return spawnPoint;
 	}
 
-	public ArrayList<Player> getMembers() {
+	public Array<Player> getMembers() {
 		return members;
 	}
 

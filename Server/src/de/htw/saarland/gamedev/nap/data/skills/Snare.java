@@ -13,7 +13,7 @@ public class Snare extends Skill {
 
 	public static final float COOLDOWN = 5f;
 	public static final float CASTTIME = 0f;
-	public static final int DAMAGE = 5;
+	public static final int DAMAGE = 15;
 	public static final float DURATION_SNARE = 1.5f;
 	
 	public static final String USERDATA_SNARE = "snare";
