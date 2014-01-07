@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Array;
 import com.smartfoxserver.v2.entities.SFSUser;
 import com.smartfoxserver.v2.entities.User;
 import com.smartfoxserver.v2.entities.data.ISFSObject;
+import com.smartfoxserver.v2.entities.data.SFSObject;
 
 import de.htw.saarland.gamedev.nap.data.CapturePoint;
 import de.htw.saarland.gamedev.nap.data.GameWorld;
@@ -21,6 +22,8 @@ import de.htw.saarland.gamedev.nap.data.Team;
 import de.htw.saarland.gamedev.nap.data.entities.StaticEntity;
 import de.htw.saarland.gamedev.nap.data.network.GameOpcodes;
 import de.htw.saarland.gamedev.nap.server.DeltaTime;
+import de.htw.saarland.gamedev.nap.server.ServerExtension;
+import de.htw.saarland.gamedev.nap.server.launcher.exception.PlayerNotFoundException;
 
 public class GameServer implements ApplicationListener {
 	
@@ -81,6 +84,8 @@ public class GameServer implements ApplicationListener {
 	
 	DeltaTime deltaTime;
 	
+	ServerExtension extension;
+	
 	//////////////////////
 	//	constructors	//
 	//////////////////////
@@ -90,14 +95,15 @@ public class GameServer implements ApplicationListener {
 			ArrayList<SFSUser> userRed,
 			ArrayList<Integer> charactersBlue,
 			ArrayList<Integer> charactersRed,
-			DeltaTime deltaTime){
+			DeltaTime deltaTime,
+			ServerExtension extension){
 		
 		if(mapName.trim().length()<1) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_MAP_EMPTY);
 		if(userBlue == null) throw new NullPointerException(EXCEPTION_NULL_TEAM1);
 		if(userRed == null) throw new NullPointerException(EXCEPTION_NULL_TEAM2);
 		if(!new File(FOLDER_MAPS+mapName+".tmx").exists() || !new File(FOLDER_MAPS+mapName+".json").exists())
 			throw new IllegalArgumentException(EXCEPTION_ILLEGAL_MAP);
-		if (deltaTime == null) {
+		if (deltaTime == null || extension == null) {
 			throw new NullPointerException();
 		}
 		
@@ -116,6 +122,7 @@ public class GameServer implements ApplicationListener {
 		gameEnded=false;
 		started = false;
 		this.deltaTime=deltaTime;
+		this.extension = extension;
 	}
 	
 	//////////////////////////
@@ -201,6 +208,22 @@ public class GameServer implements ApplicationListener {
 	public Team getRedTeam() {
 		return redTeam;
 	}
+	
+	public Player getPlayerBySFSUser(SFSUser user) {
+		for (Player player: blueTeam.getMembers()) {
+			if (player.getUser().equals(user)) {
+				return player;
+			}
+		}
+		
+		for (Player player: redTeam.getMembers()) {
+			if (player.getUser().equals(user)) {
+				return player;
+			}
+		}
+		
+		throw new PlayerNotFoundException();
+	}
 
 //	public void addPacket(SFSObject packet){
 //		if(packet == null) throw new NullPointerException(EXCEPTION_NULL_PACKET);
@@ -208,19 +231,47 @@ public class GameServer implements ApplicationListener {
 //	}
 	
 	public void handlePacket(String opcode, User user, ISFSObject args) {
+		Player p = getPlayerBySFSUser((SFSUser)user);
+		
+		SFSObject params;
+		
 		switch (opcode) {
 			case GameOpcodes.GAME_MOVE_DOWN_REQUEST:
-				
+				p.getPlChar().setDown(true);
+				params = new SFSObject();
+				params.putInt(GameOpcodes.ENTITY_ID_PARAM, p.getPlChar().getId());
+				extension.send(GameOpcodes.GAME_MOVE_DOWN_START, params, user);
 				break;
 			case GameOpcodes.GAME_MOVE_DOWN_STOP_REQUEST:
+				p.getPlChar().setDown(false);
+				params = new SFSObject();
+				params.putInt(GameOpcodes.ENTITY_ID_PARAM, p.getPlChar().getId());
+				extension.send(GameOpcodes.GAME_MOVE_DOWN_STOP, params, user);
 				break;
 			case GameOpcodes.GAME_MOVE_JUMP_REQUEST:
+				p.getPlChar().setJumping(true);
+				params = new SFSObject();
+				params.putInt(GameOpcodes.ENTITY_ID_PARAM, p.getPlChar().getId());
+				extension.send(GameOpcodes.GAME_MOVE_JUMP_START, params, user);
 				break;
 			case GameOpcodes.GAME_MOVE_LEFT_REQUEST:
+				p.getPlChar().setLeft(true);
+				params = new SFSObject();
+				params.putInt(GameOpcodes.ENTITY_ID_PARAM, p.getPlChar().getId());
+				extension.send(GameOpcodes.GAME_MOVE_LEFT_START, params, user);
 				break;
 			case GameOpcodes.GAME_MOVE_RIGHT_REQUEST:
+				p.getPlChar().setRight(true);
+				params = new SFSObject();
+				params.putInt(GameOpcodes.ENTITY_ID_PARAM, p.getPlChar().getId());
+				extension.send(GameOpcodes.GAME_MOVE_RIGHT_START, params, user);
 				break;
 			case GameOpcodes.GAME_MOVE_STOP_REQUEST:
+				p.getPlChar().setLeft(true);
+				p.getPlChar().setRight(false);
+				params = new SFSObject();
+				params.putInt(GameOpcodes.ENTITY_ID_PARAM, p.getPlChar().getId());
+				extension.send(GameOpcodes.GAME_MOVE_DOWN_STOP, params, user);
 				break;
 		}
 	}

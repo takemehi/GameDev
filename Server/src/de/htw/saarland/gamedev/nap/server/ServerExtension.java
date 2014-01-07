@@ -61,45 +61,46 @@ public class ServerExtension extends SFSExtension implements Runnable {
 		removeRequestHandler(LauncherOpcodes.LAUNCHER_START_GAME_REQUEST);
 		
 		// TODO implement request handlers
-		addRequestHandler(GameOpcodes.GAME_CAPTURE_START_REQUEST, GameMoveDownHandler.class);
-		addRequestHandler(GameOpcodes.GAME_CAPTURE_STOP_REQUEST, theClass);
-		addRequestHandler(GameOpcodes.GAME_GET_MAP_CHARACTER, theClass);
-		addRequestHandler(GameOpcodes.GAME_GET_MOVEABLE_ENTITIES, theClass);
-		addRequestHandler(GameOpcodes.GAME_INITIALIZED, theClass);
-		addRequestHandler(GameOpcodes.GAME_MOVE_DOWN_REQUEST, theClass);
-		addRequestHandler(GameOpcodes.GAME_MOVE_DOWN_STOP_REQUEST, theClass);
-		addRequestHandler(GameOpcodes.GAME_MOVE_JUMP_REQUEST, theClass);
-		addRequestHandler(GameOpcodes.GAME_MOVE_LEFT_REQUEST, theClass);
-		addRequestHandler(GameOpcodes.GAME_MOVE_RIGHT_REQUEST, theClass);
-		addRequestHandler(GameOpcodes.GAME_MOVE_STOP_REQUEST, theClass);
+//		addRequestHandler(GameOpcodes.GAME_CAPTURE_START_REQUEST, );
+//		addRequestHandler(GameOpcodes.GAME_CAPTURE_STOP_REQUEST, theClass);
+//		addRequestHandler(GameOpcodes.GAME_GET_MAP_CHARACTER, theClass);
+//		addRequestHandler(GameOpcodes.GAME_GET_MOVEABLE_ENTITIES, theClass);
+//		addRequestHandler(GameOpcodes.GAME_INITIALIZED, theClass);
+		addRequestHandler(GameOpcodes.GAME_MOVE_DOWN_REQUEST, GameMoveDownHandler.class);
+//		addRequestHandler(GameOpcodes.GAME_MOVE_DOWN_STOP_REQUEST, theClass);
+//		addRequestHandler(GameOpcodes.GAME_MOVE_JUMP_REQUEST, theClass);
+//		addRequestHandler(GameOpcodes.GAME_MOVE_LEFT_REQUEST, theClass);
+//		addRequestHandler(GameOpcodes.GAME_MOVE_RIGHT_REQUEST, theClass);
+//		addRequestHandler(GameOpcodes.GAME_MOVE_STOP_REQUEST, theClass);
 		
 		ArrayList<LauncherPlayer> redTeam = new ArrayList<LauncherPlayer>();
 		ArrayList<LauncherPlayer> blueTeam = new ArrayList<LauncherPlayer>();
 		launcher.getTeams(redTeam, blueTeam);
 		
-		Array<SFSUser> sfsBlue = new Array<SFSUser>();
-		int[] blueChars = new int[blueTeam.size()];
-		Array<SFSUser> sfsRed = new Array<SFSUser>();
-		int[] redChars = new int[redTeam.size()];
+		ArrayList<SFSUser> sfsBlue = new ArrayList<SFSUser>();
+		ArrayList<Integer> blueChars = new ArrayList<Integer>();
+		ArrayList<SFSUser> sfsRed = new ArrayList<SFSUser>();
+		ArrayList<Integer> redChars = new ArrayList<Integer>();
 		
 		for (int i = 0; i < blueTeam.size(); i++) {
 			sfsBlue.add((SFSUser)blueTeam.get(i).getSfsUser());
-			blueChars[i] = blueTeam.get(i).getCharacterId();
+			blueChars.add(blueTeam.get(i).getCharacterId());
 		}
 		
 		for (int i = 0; i < redTeam.size(); i++) {
 			sfsRed.add((SFSUser)redTeam.get(i).getSfsUser());
-			redChars[i] = redTeam.get(i).getCharacterId();
+			redChars.add(redTeam.get(i).getCharacterId());
 		}
 		
 		deltaTime = new DeltaTime();
 		
 		game = new GameServer((String)(getParentRoom().getVariable(LauncherOpcodes.MAP_NAME_VAR).getValue()),
-				redTeam.size() + blueTeam.size(),
 				sfsBlue,
 				sfsRed,
 				blueChars,
-				redChars);
+				redChars,
+				deltaTime,
+				this);
 		
 		Thread gameThread = new Thread(this);
 		gameThread.start();
