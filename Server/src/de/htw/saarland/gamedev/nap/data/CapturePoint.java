@@ -34,6 +34,10 @@ public class CapturePoint {
 		return beingCaptured;
 	}
 	
+	public void setBeingCaptured(boolean beingCaptured){
+		this.beingCaptured=beingCaptured;
+	}
+	
 	public void update(float deltaTime) {
 		if (team != null) {
 			stateTime += deltaTime;

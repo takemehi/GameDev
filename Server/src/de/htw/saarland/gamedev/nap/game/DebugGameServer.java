@@ -167,7 +167,7 @@ public class DebugGameServer implements ApplicationListener {
 		for(Player p: teamRed) {
 			rp.add(p);
 		}
-		world.setContactListener(new CustomContactListener(new Team(SpawnPointBlue, bp), new Team(SpawnPointRed, rp)));
+		world.setContactListener(new CustomContactListener(new Team(SpawnPointBlue, bp), new Team(SpawnPointRed, rp), capturePoints));
 		
 		//initialize npcs
 		
@@ -193,7 +193,7 @@ public class DebugGameServer implements ApplicationListener {
 			camera.unproject(mouseCoords3);
 			Vector2 mouseCoords = new Vector2(mouseCoords3.x, mouseCoords3.y);
 			//general player update for status effect time and so on
-			plCh.update(Gdx.graphics.getDeltaTime());
+			plCh.update(Gdx.graphics.getDeltaTime(), capturePoints);
 			//player orientation
 			if(mouseCoords.x > plCh.getBody().getPosition().x)
 				plCh.setOrientation(PlayableCharacter.ORIENTATION_RIGHT);			
@@ -222,11 +222,11 @@ public class DebugGameServer implements ApplicationListener {
 				plCh.setAttacking3(true);
 			}
 			//test buttons
-			if(Gdx.input.isKeyPressed(Keys.R)){
-				//teamBlue.get(0).getPlChar().setSnared(false, 0);
+			if(!Gdx.input.isKeyPressed(Keys.F)){
+				teamBlue.get(0).getPlChar().setCapturing(false);
 			}
 			if(Gdx.input.isKeyPressed(Keys.F)){
-				teamBlue.get(0).getPlChar().setStunned(true, 1f);
+				teamBlue.get(0).getPlChar().setCapturing(true);
 			}
 			
 			//update attacks
@@ -270,7 +270,7 @@ public class DebugGameServer implements ApplicationListener {
 		for(Player p: teamRed){
 			PlayableCharacter plCh = p.getPlChar();
 			//general update
-			plCh.update(Gdx.graphics.getDeltaTime());
+			plCh.update(Gdx.graphics.getDeltaTime(), capturePoints);
 			//Spawn regeneration
 			spawnRegTime+=Gdx.graphics.getDeltaTime();
 			if(plCh.isAtSpawn() && spawnRegTime>=INTERVAL_REGEN_SPAWN){

@@ -3,8 +3,7 @@ package de.htw.saarland.gamedev.nap.data;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Shape;
-
-import de.htw.saarland.gamedev.nap.data.skills.Skill;
+import com.badlogic.gdx.utils.Array;
 
 public abstract class PlayableCharacter extends GameCharacter{
 	
@@ -27,7 +26,11 @@ public abstract class PlayableCharacter extends GameCharacter{
 	
 	private int characterClass;
 	private boolean atSpawn;
+	public boolean doCapture;
+	private boolean capturing;
+	private int pointEligibleToCapture;
 	private int teamId;
+	private float timeCapturing;
 	
 	public PlayableCharacter(Shape shape, float density, float friction,
 			float restitution, Vector2 position, Vector2 baseVelocity,
@@ -44,6 +47,10 @@ public abstract class PlayableCharacter extends GameCharacter{
 			this.getFixtureDef().filter.groupIndex=PlayableCharacter.GROUP_TEAM_BLUE;
 		else
 			this.getFixtureDef().filter.groupIndex=PlayableCharacter.GROUP_TEAM_RED;
+		pointEligibleToCapture=-1;
+		capturing=false;
+		timeCapturing=0;
+		doCapture=false;
 	}
 	
 
@@ -51,6 +58,38 @@ public abstract class PlayableCharacter extends GameCharacter{
 	public void setFixture(Fixture fixture) {
 		super.setFixture(fixture);
 		getFixture().setUserData(USERDATA_PLAYER);
+	}
+	
+	@Override
+	public void update(float deltaTime, Array<CapturePoint> capturePoints){
+		super.update(deltaTime, capturePoints);
+		
+		CapturePoint point = null;
+		for(CapturePoint cp: capturePoints){
+			if(cp.getCapturePoint().getId()==getPointEligibleToCapture()){
+				point=cp;
+				break;
+			}
+		}
+		
+		if(getPointEligibleToCapture()!=-1 && doCapture && !capturing){
+			if(point!= null && !point.isBeingCaptured()){
+				capturing=true;
+				point.setBeingCaptured(true);
+			}
+		}
+		if(capturing){
+			timeCapturing+=deltaTime;
+			if(timeCapturing>=10){
+				point.setBeingCaptured(false);
+				//team change
+			}
+			if(getBody().getLinearVelocity().x!=0 || getBody().getLinearVelocity().y!=0 || hasLostHealth()
+					|| isAttacking1() || isAttacking2() || isAttacking3()){
+				capturing=false;
+				point.setBeingCaptured(false);
+			}
+		}
 	}
 	
 	//getter / setter
@@ -63,8 +102,24 @@ public abstract class PlayableCharacter extends GameCharacter{
 		this.atSpawn=atSpawn;
 	}
 	
+	public boolean isCapturing(){
+		return capturing;
+	}
+	
+	public void setCapturing(boolean doCapture){
+		this.doCapture=doCapture;
+	}
+	
 	public int getCharacterClass(){
 		return characterClass;
+	}
+	
+	public int getPointEligibleToCapture(){
+		return pointEligibleToCapture;
+	}
+	
+	public void setPointEligibleToCapture(int pointEligibleToCapture){
+		this.pointEligibleToCapture=pointEligibleToCapture;
 	}
 	
 	public int getTeamId(){

@@ -30,20 +30,9 @@ public class GameServer implements ApplicationListener {
 	//exceptions
 	private final static String EXCEPTION_ILLEGAL_MAP = "Map files are missing!";
 	private final static String EXCEPTION_ILLEGAL_MAP_EMPTY = "Map name is empty!";
-	private final static String EXCEPTION_ILLEGAL_TEAMSIZE = "Teamsize can't be less than 1!";
-	private final static String EXCEPTION_ILLEGAL_TEAM_FULL = "Team is already full!";
-	private final static String EXCEPTION_ILLEGAL_TEAM_ID = "Team Id is not existing!";
-	private final static String EXCEPTION_NULL_ENTITY = "Entity object is null!";
-	private final static String EXCEPTION_NULL_PACKET = "Packet object is null!";
-	private final static String EXCEPTION_NULL_PLAYER = "Player object is null!";
 	private final static String EXCEPTION_NULL_TEAM1 = "Team1 object is null!";
 	private final static String EXCEPTION_NULL_TEAM2 = "Team2 object is null!";
-	private final static String EXCEPTION_NULL_VECTOR = "Vector object is null!";
-	//folders
-	private final static String FOLDER_DATA = "data/";
 	private final static String FOLDER_MAPS = "data/maps/";
-	//packets processed per tick
-	private final static int PACKETS_PER_TICK = 50;
 	//world renderer constants
 	public final static float TIME_STEP = 1/60f;
 	public final static int ITERATIONS_VELOCITY = 6;
@@ -52,13 +41,9 @@ public class GameServer implements ApplicationListener {
 	public final static Vector2 GRAVITY = new Vector2(0, -20);
 	//others
 	public final static float PIXELS_TO_METERS = 1/96f;
-	private final static int MAX_POINTS = 200;
 	public final static int POINTS_PER_INTERVAL = 2;
 	public final static float INTERVAL_POINTS = 5.0f;
 	public final static int[] LAYERS_TO_RENDER = {0,1,2};
-	private static final float INTERVAL_REGEN_SPAWN = 0.5f;	
-	
-	
 	//input parameters
 	private String mapName;
 	private TiledMap map;
@@ -75,7 +60,6 @@ public class GameServer implements ApplicationListener {
 	private ArrayList<SFSUser> redMembers; //temporarily needed	
 	
 	private Array<CapturePoint> capturePoints;
-	private Array<StaticEntity> platforms;
 	
 	private int currentId;
 	
@@ -115,7 +99,6 @@ public class GameServer implements ApplicationListener {
 		this.redMembers = userRed;
 		this.charactersRed = charactersRed;
 		
-		platforms=new Array<StaticEntity>();
 		capturePoints=new Array<CapturePoint>();
 		
 		currentId=0;
@@ -159,7 +142,7 @@ public class GameServer implements ApplicationListener {
 		}
 		redTeam = new Team(spawnPointRed, red);
 		
-		world.setContactListener(new CustomContactListener(blueTeam, redTeam));
+		world.setContactListener(new CustomContactListener(blueTeam, redTeam, capturePoints));
 		
 		// TODO initialize npcs
 		
