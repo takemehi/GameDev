@@ -12,7 +12,6 @@ import com.badlogic.gdx.utils.GdxNativesLoader;
 import com.smartfoxserver.v2.entities.SFSUser;
 import com.smartfoxserver.v2.entities.User;
 import com.smartfoxserver.v2.entities.data.ISFSObject;
-import com.smartfoxserver.v2.entities.data.SFSObject;
 
 import de.htw.saarland.gamedev.nap.data.CapturePoint;
 import de.htw.saarland.gamedev.nap.data.GameWorld;
@@ -20,9 +19,7 @@ import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
 import de.htw.saarland.gamedev.nap.data.Player;
 import de.htw.saarland.gamedev.nap.data.SpawnPoint;
 import de.htw.saarland.gamedev.nap.data.Team;
-import de.htw.saarland.gamedev.nap.data.entities.StaticEntity;
 import de.htw.saarland.gamedev.nap.data.map.ServerTmxMapLoader;
-import de.htw.saarland.gamedev.nap.data.network.GameOpcodes;
 import de.htw.saarland.gamedev.nap.server.DeltaTime;
 import de.htw.saarland.gamedev.nap.server.ServerExtension;
 import de.htw.saarland.gamedev.nap.server.launcher.exception.PlayerNotFoundException;
@@ -34,7 +31,6 @@ public class GameServer implements ApplicationListener {
 	private final static String EXCEPTION_ILLEGAL_MAP_EMPTY = "Map name is empty!";
 	private final static String EXCEPTION_NULL_TEAM1 = "Team1 object is null!";
 	private final static String EXCEPTION_NULL_TEAM2 = "Team2 object is null!";
-	private final static String FOLDER_MAPS = "data/maps/";
 	//folders
 	private final static String FOLDER_DATA = "extensions/nap/data/";
 	private final static String FOLDER_MAPS = "extensions/nap/data/maps/";
