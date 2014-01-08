@@ -82,7 +82,7 @@ public abstract class PlayableCharacter extends GameCharacter{
 			timeCapturing+=deltaTime;
 			if(timeCapturing>=10){
 				point.setBeingCaptured(false);
-				//team change
+				point.setTeamId(getTeamId());
 			}
 			if(getBody().getLinearVelocity().x!=0 || getBody().getLinearVelocity().y!=0 || hasLostHealth()
 					|| isAttacking1() || isAttacking2() || isAttacking3()){

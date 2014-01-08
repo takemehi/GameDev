@@ -4,6 +4,10 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
 public class Team implements Disposable {
+	
+	public static final int ID_TEAM_BLUE = 0;
+	public static final int ID_TEAM_RED = 1;
+	
 	private SpawnPoint spawnPoint;
 	private Array<Player> members;
 	private int points;

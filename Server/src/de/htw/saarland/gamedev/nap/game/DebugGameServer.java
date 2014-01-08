@@ -74,14 +74,14 @@ public class DebugGameServer implements ApplicationListener {
 	private ConcurrentLinkedQueue<SFSObject> packetQueue;	
 	private World world;
 	private GameWorld gameWorld;
-	private SpawnPoint SpawnPointBlue;
+	private SpawnPoint spawnPointBlue;
 	private SpawnPoint SpawnPointRed;
 	private Array <SFSUser> userBlue;
 	private Array <SFSUser> userRed;
 	private int charactersBlue[];
 	private int charactersRed[];
-	protected Array<Player> teamBlue;
-	protected Array<Player> teamRed;
+	private Team teamBlue;
+	private Team teamRed;
 	private Array<CapturePoint> capturePoints;
 	private Array<StaticEntity> platforms;
 	boolean capturing = false;
@@ -118,8 +118,6 @@ public class DebugGameServer implements ApplicationListener {
 		this.userRed=userRed;
 		this.charactersBlue=charactersBlue;
 		this.charactersRed=charactersRed;
-		this.teamBlue = new Array<Player>();
-		this.teamRed =new Array<Player>();
 		//TODO remove
 		this.userBlue=new Array<SFSUser>();
 		this.userRed=new Array<SFSUser>();
@@ -140,35 +138,35 @@ public class DebugGameServer implements ApplicationListener {
 		//initialize world
 		world=new World(GRAVITY, true);
 		//initialize gameWorld
-		gameWorld=new GameWorld(world, FOLDER_MAPS + mapName, currentId, new TmxMapLoader());
+		gameWorld=new GameWorld(world, FOLDER_MAPS+mapName, currentId, new TmxMapLoader());
 		//initialize map
 		this.map=gameWorld.getTiledMap();
 		this.currentId=gameWorld.getCurrentId();
-		//initialize capturePoints
-		this.capturePoints=gameWorld.getCapturePoints();
 		//initialize spawnPoints
-		this.SpawnPointBlue=gameWorld.getSpawnPointBlue();
+		this.spawnPointBlue=gameWorld.getSpawnPointBlue();
 		this.SpawnPointRed=gameWorld.getSpawnPointRed();
 		//initialize players
-		
+		Array<Player> playersBlue = new Array<Player>();
+		Array<Player> playersRed = new Array<Player>();
 		for(int i=0; i<charactersBlue.length; i++){
 			//TODO change user
-			teamBlue.add(new Player(null, world, SpawnPointBlue.getSpawnPoint().getPositionOriginal(), charactersBlue[i], PlayableCharacter.ID_TEAM_BLUE, currentId++));
+			playersBlue.add(new Player(null, world, spawnPointBlue.getSpawnPoint().getPositionOriginal(), charactersBlue[i], PlayableCharacter.ID_TEAM_BLUE, currentId++));
 		}
+		teamBlue = new Team(spawnPointBlue, playersBlue);
 		for(int i=0; i<charactersRed.length; i++){
 			//TODO change user
-			teamRed.add(new Player(null, world, SpawnPointRed.getSpawnPoint().getPositionOriginal(), charactersRed[i], PlayableCharacter.ID_TEAM_RED, currentId++));
+			playersRed.add(new Player(null, world, SpawnPointRed.getSpawnPoint().getPositionOriginal(), charactersRed[i], PlayableCharacter.ID_TEAM_RED, currentId++));
 		}
+		teamRed = new Team(SpawnPointRed, playersRed);
 		
-		Array<Player> bp = new Array<>();
-		for(Player p: teamBlue) {
-			bp.add(p);
+		
+		//initialize capturePoints
+		this.capturePoints=gameWorld.getCapturePoints();
+		for(CapturePoint cp: capturePoints){
+			cp.setTeamBlue(teamBlue);
+			cp.setTeamRed(teamRed);
 		}
-		Array<Player> rp = new Array<>();
-		for(Player p: teamRed) {
-			rp.add(p);
-		}
-		world.setContactListener(new CustomContactListener(new Team(SpawnPointBlue, bp), new Team(SpawnPointRed, rp), capturePoints));
+		world.setContactListener(new CustomContactListener(new Team(spawnPointBlue, playersBlue), new Team(SpawnPointRed, playersRed), capturePoints));
 		
 		//initialize npcs
 		
@@ -187,7 +185,7 @@ public class DebugGameServer implements ApplicationListener {
 		//iterate through all the players
 		//for(Player p: teamBlue){
 		for(int i=0; i<1; i++){
-			PlayableCharacter plCh=teamBlue.get(i).getPlChar();
+			PlayableCharacter plCh=teamBlue.getMembers().get(i).getPlChar();
 			//PlayableCharacter plCh = p.getPlChar();
 			//get mouse position
 			Vector3 mouseCoords3 = new Vector3(Gdx.input.getX(),Gdx.input.getY(),0);
@@ -224,10 +222,10 @@ public class DebugGameServer implements ApplicationListener {
 			}
 			//test buttons
 			if(!Gdx.input.isKeyPressed(Keys.F)){
-				teamBlue.get(0).getPlChar().setCapturing(false);
+				teamBlue.getMembers().get(0).getPlChar().setCapturing(false);
 			}
 			if(Gdx.input.isKeyPressed(Keys.F)){
-				teamBlue.get(0).getPlChar().setCapturing(true);
+				teamBlue.getMembers().get(0).getPlChar().setCapturing(true);
 			}
 			
 			//update attacks
@@ -268,7 +266,7 @@ public class DebugGameServer implements ApplicationListener {
 			}
 		}
 		
-		for(Player p: teamRed){
+		for(Player p: teamRed.getMembers()){
 			PlayableCharacter plCh = p.getPlChar();
 			//general update
 			plCh.update(Gdx.graphics.getDeltaTime(), capturePoints);
@@ -282,6 +280,11 @@ public class DebugGameServer implements ApplicationListener {
 			if(p.getPlChar().getHealth()<=0) p.getPlChar().getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
 		}
 		
+		//update score
+		for(CapturePoint cp: capturePoints){
+			cp.update(Gdx.graphics.getDeltaTime());
+		}
+		
 		//rendering
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -292,27 +295,27 @@ public class DebugGameServer implements ApplicationListener {
 		
 		//delete entities
 
-		for(int i=0; i<teamBlue.size; i++){
+		for(int i=0; i<teamBlue.getMembers().size; i++){
 			PlayableCharacter character;
-			character = teamBlue.get(i).getPlChar();
+			character = teamBlue.getMembers().get(i).getPlChar();
 			if(character.getBody().getUserData()!=null && character.getBody().getUserData().equals(Entity.USERDATA_BODY_FLAG_DELETE)){
-				teamBlue.removeIndex(i);
+				teamBlue.getMembers().removeIndex(i);
 				world.destroyBody(character.getBody());
 			}
 			character.getAttack1().cleanUp(world);	
 			character.getAttack2().cleanUp(world);
 			character.getAttack3().cleanUp(world);
 		}
-		for(int i=0; i<teamRed.size; i++){
+		for(int i=0; i<teamRed.getMembers().size; i++){
 			PlayableCharacter character;
-			character = teamRed.get(i).getPlChar();
+			character = teamRed.getMembers().get(i).getPlChar();
 			if(character.getBody().getUserData()!=null && character.getBody().getUserData().equals(Entity.USERDATA_BODY_FLAG_DELETE)){
-				teamRed.removeIndex(i);
+				teamRed.getMembers().removeIndex(i);
 				world.destroyBody(character.getBody());
 			}
 			character.getAttack1().cleanUp(world);
 		}
-		
+		System.out.println(capturePoints.get(0).isBeingCaptured()+"\t"+capturePoints.get(0).getTeamId()+"\t"+teamBlue.getPoints());
 	}
 	
 	@Override

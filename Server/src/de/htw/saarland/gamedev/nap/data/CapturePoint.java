@@ -1,5 +1,7 @@
 package de.htw.saarland.gamedev.nap.data;
 
+import com.badlogic.gdx.utils.Array;
+
 import de.htw.saarland.gamedev.nap.data.entities.SensorEntity;
 import de.htw.saarland.gamedev.nap.game.GameServer;
 
@@ -8,7 +10,9 @@ public class CapturePoint {
 	private final static String EXCEPTION_NULL_ENTITY = "Entity object is null!";
 
 	private SensorEntity capturePoint;
-	private Team team;
+	private int teamId;
+	private Team teamBlue;
+	private Team teamRed;
 	private boolean beingCaptured;
 	
 	private float stateTime;
@@ -16,7 +20,7 @@ public class CapturePoint {
 	public CapturePoint(SensorEntity capturePoint){
 		if(capturePoint==null) throw new NullPointerException(EXCEPTION_NULL_ENTITY);	
 		this.capturePoint=capturePoint;
-		team = null;
+		teamId = -1;
 		stateTime = 0.0f;
 	}	
 	
@@ -24,11 +28,23 @@ public class CapturePoint {
 	public SensorEntity getCapturePoint() {
 		return capturePoint;
 	}
-	public Team getTeam() {
-		return team;
+	public int getTeamId() {
+		return teamId;
 	}
-	public void setTeam(Team team){
-		this.team = team;
+	public void setTeamId(int teamId){
+		this.teamId = teamId;
+	}
+	public Team getTeamBlue(){
+		return teamBlue;
+	}
+	public void setTeamBlue(Team teamBlue){
+		this.teamBlue=teamBlue;
+	}
+	public Team getTeamRed(){
+		return teamRed;
+	}
+	public void setTeamRed(Team teamRed){
+		this.teamRed=teamRed;
 	}
 	public boolean isBeingCaptured(){
 		return beingCaptured;
@@ -39,10 +55,14 @@ public class CapturePoint {
 	}
 	
 	public void update(float deltaTime) {
-		if (team != null) {
+		//TODO global timer
+		if (teamId != -1) {
 			stateTime += deltaTime;
 			if (stateTime >= GameServer.INTERVAL_POINTS) {
-				team.addPoints(GameServer.POINTS_PER_INTERVAL);
+				if(teamId==Team.ID_TEAM_BLUE)
+					teamBlue.addPoints(GameServer.POINTS_PER_INTERVAL);
+				else
+					teamRed.addPoints(GameServer.POINTS_PER_INTERVAL);
 				stateTime = 0.0f;
 			}
 		}
