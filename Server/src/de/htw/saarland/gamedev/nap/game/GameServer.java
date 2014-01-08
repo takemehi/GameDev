@@ -8,6 +8,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.GdxNativesLoader;
 import com.smartfoxserver.v2.entities.SFSUser;
 import com.smartfoxserver.v2.entities.User;
 import com.smartfoxserver.v2.entities.data.ISFSObject;
@@ -20,6 +21,7 @@ import de.htw.saarland.gamedev.nap.data.Player;
 import de.htw.saarland.gamedev.nap.data.SpawnPoint;
 import de.htw.saarland.gamedev.nap.data.Team;
 import de.htw.saarland.gamedev.nap.data.entities.StaticEntity;
+import de.htw.saarland.gamedev.nap.data.map.ServerTmxMapLoader;
 import de.htw.saarland.gamedev.nap.data.network.GameOpcodes;
 import de.htw.saarland.gamedev.nap.server.DeltaTime;
 import de.htw.saarland.gamedev.nap.server.ServerExtension;
@@ -40,8 +42,8 @@ public class GameServer implements ApplicationListener {
 	private final static String EXCEPTION_NULL_TEAM2 = "Team2 object is null!";
 	private final static String EXCEPTION_NULL_VECTOR = "Vector object is null!";
 	//folders
-	private final static String FOLDER_DATA = "data/";
-	private final static String FOLDER_MAPS = "data/maps/";
+	private final static String FOLDER_DATA = "extensions/nap/data/";
+	private final static String FOLDER_MAPS = "extensions/nap/data/maps/";
 	//packets processed per tick
 	private final static int PACKETS_PER_TICK = 50;
 	//world renderer constants
@@ -132,10 +134,10 @@ public class GameServer implements ApplicationListener {
 	@Override
 	public void create() {
 		//initialize world
+		GdxNativesLoader.load();
 		world = new World(GRAVITY, true);
-		
 		//initialize gameWorld
-		gameWorld = new GameWorld(world, mapName, currentId);
+		gameWorld = new GameWorld(world, FOLDER_MAPS + mapName, currentId, new ServerTmxMapLoader());
 		
 		//initialize map
 		this.map = gameWorld.getTiledMap();
@@ -209,6 +211,10 @@ public class GameServer implements ApplicationListener {
 		return redTeam;
 	}
 	
+	public String getMapName() {
+		return mapName;
+	}
+	
 	public Player getPlayerBySFSUser(SFSUser user) {
 		for (Player player: blueTeam.getMembers()) {
 			if (player.getUser().equals(user)) {
@@ -224,6 +230,10 @@ public class GameServer implements ApplicationListener {
 		
 		throw new PlayerNotFoundException();
 	}
+	
+	public void startGame() {
+		this.started = true;
+	}
 
 //	public void addPacket(SFSObject packet){
 //		if(packet == null) throw new NullPointerException(EXCEPTION_NULL_PACKET);
@@ -231,49 +241,7 @@ public class GameServer implements ApplicationListener {
 //	}
 	
 	public void handlePacket(String opcode, User user, ISFSObject args) {
-		Player p = getPlayerBySFSUser((SFSUser)user);
 		
-		SFSObject params;
-		
-		switch (opcode) {
-			case GameOpcodes.GAME_MOVE_DOWN_REQUEST:
-				p.getPlChar().setDown(true);
-				params = new SFSObject();
-				params.putInt(GameOpcodes.ENTITY_ID_PARAM, p.getPlChar().getId());
-				extension.send(GameOpcodes.GAME_MOVE_DOWN_START, params, user);
-				break;
-			case GameOpcodes.GAME_MOVE_DOWN_STOP_REQUEST:
-				p.getPlChar().setDown(false);
-				params = new SFSObject();
-				params.putInt(GameOpcodes.ENTITY_ID_PARAM, p.getPlChar().getId());
-				extension.send(GameOpcodes.GAME_MOVE_DOWN_STOP, params, user);
-				break;
-			case GameOpcodes.GAME_MOVE_JUMP_REQUEST:
-				p.getPlChar().setJumping(true);
-				params = new SFSObject();
-				params.putInt(GameOpcodes.ENTITY_ID_PARAM, p.getPlChar().getId());
-				extension.send(GameOpcodes.GAME_MOVE_JUMP_START, params, user);
-				break;
-			case GameOpcodes.GAME_MOVE_LEFT_REQUEST:
-				p.getPlChar().setLeft(true);
-				params = new SFSObject();
-				params.putInt(GameOpcodes.ENTITY_ID_PARAM, p.getPlChar().getId());
-				extension.send(GameOpcodes.GAME_MOVE_LEFT_START, params, user);
-				break;
-			case GameOpcodes.GAME_MOVE_RIGHT_REQUEST:
-				p.getPlChar().setRight(true);
-				params = new SFSObject();
-				params.putInt(GameOpcodes.ENTITY_ID_PARAM, p.getPlChar().getId());
-				extension.send(GameOpcodes.GAME_MOVE_RIGHT_START, params, user);
-				break;
-			case GameOpcodes.GAME_MOVE_STOP_REQUEST:
-				p.getPlChar().setLeft(true);
-				p.getPlChar().setRight(false);
-				params = new SFSObject();
-				params.putInt(GameOpcodes.ENTITY_ID_PARAM, p.getPlChar().getId());
-				extension.send(GameOpcodes.GAME_MOVE_DOWN_STOP, params, user);
-				break;
-		}
 	}
 	
 	public boolean isGameEnd() {

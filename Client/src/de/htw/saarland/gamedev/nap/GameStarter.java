@@ -41,7 +41,7 @@ public class GameStarter implements IGameStart, ILauncherStart {
         
         launcher.dispose();
         
-        new LwjglApplication(new GameClient(sfClient, sfClient.getLastJoinedRoom()), "Nap - Not another platformer", 1280, 1024, true);
+        new LwjglApplication(new GameClient(sfClient, sfClient.getLastJoinedRoom()), "Nap - Not another platformer", 480, 320, true);
     }
 
     @Override

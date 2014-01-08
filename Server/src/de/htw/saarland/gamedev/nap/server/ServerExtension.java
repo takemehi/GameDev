@@ -2,14 +2,19 @@ package de.htw.saarland.gamedev.nap.server;
 
 import java.util.ArrayList;
 
-import com.badlogic.gdx.utils.Array;
 import com.smartfoxserver.v2.core.SFSEventType;
 import com.smartfoxserver.v2.entities.SFSUser;
 import com.smartfoxserver.v2.extensions.SFSExtension;
 
 import de.htw.saarland.gamedev.nap.data.network.GameOpcodes;
 import de.htw.saarland.gamedev.nap.game.GameServer;
-import de.htw.saarland.gamedev.nap.server.handler.GameMoveDownHandler;
+import de.htw.saarland.gamedev.nap.server.game.handler.ClientInitializedHandler;
+import de.htw.saarland.gamedev.nap.server.game.handler.GameGetMapCharacterHandler;
+import de.htw.saarland.gamedev.nap.server.game.handler.GameMoveDownHandler;
+import de.htw.saarland.gamedev.nap.server.game.handler.GameMoveLeftHandler;
+import de.htw.saarland.gamedev.nap.server.game.handler.GameMoveRightHandler;
+import de.htw.saarland.gamedev.nap.server.game.handler.GameMoveStopHandler;
+import de.htw.saarland.gamedev.nap.server.game.handler.GetMoveableEntitiesHandler;
 import de.htw.saarland.gamedev.nap.server.launcher.Launcher;
 import de.htw.saarland.gamedev.nap.server.launcher.LauncherOpcodes;
 import de.htw.saarland.gamedev.nap.server.launcher.LauncherPlayer;
@@ -26,6 +31,8 @@ public class ServerExtension extends SFSExtension implements Runnable {
 	private Launcher launcher;
 	private GameServer game;
 	private DeltaTime deltaTime;
+	
+	private byte initializedCounter;
 	
 	@Override
 	public void init() {
@@ -49,6 +56,14 @@ public class ServerExtension extends SFSExtension implements Runnable {
 		return game;
 	}
 	
+	public void clientInitialized() {
+		initializedCounter++;
+	}
+	
+	public boolean isClientInitDone() {
+		return (initializedCounter == (game.getBlueTeam().getMembers().size + game.getRedTeam().getMembers().size));
+	}
+	
 	public void startGame() {
 		//clean up and start game logic
 		removeEventHandler(SFSEventType.USER_DISCONNECT);
@@ -60,18 +75,19 @@ public class ServerExtension extends SFSExtension implements Runnable {
 		removeRequestHandler(LauncherOpcodes.LAUNCHER_CHANGE_READY_REQUEST);
 		removeRequestHandler(LauncherOpcodes.LAUNCHER_START_GAME_REQUEST);
 		
-		// TODO implement request handlers
+		initializedCounter = 0;
+		
 //		addRequestHandler(GameOpcodes.GAME_CAPTURE_START_REQUEST, );
 //		addRequestHandler(GameOpcodes.GAME_CAPTURE_STOP_REQUEST, theClass);
-//		addRequestHandler(GameOpcodes.GAME_GET_MAP_CHARACTER, theClass);
-//		addRequestHandler(GameOpcodes.GAME_GET_MOVEABLE_ENTITIES, theClass);
-//		addRequestHandler(GameOpcodes.GAME_INITIALIZED, theClass);
+		addRequestHandler(GameOpcodes.GAME_GET_MAP_CHARACTER, GameGetMapCharacterHandler.class);
+		addRequestHandler(GameOpcodes.GAME_GET_MOVEABLE_ENTITIES, GetMoveableEntitiesHandler.class);
+		addRequestHandler(GameOpcodes.GAME_INITIALIZED, ClientInitializedHandler.class);
 		addRequestHandler(GameOpcodes.GAME_MOVE_DOWN_REQUEST, GameMoveDownHandler.class);
 //		addRequestHandler(GameOpcodes.GAME_MOVE_DOWN_STOP_REQUEST, theClass);
 //		addRequestHandler(GameOpcodes.GAME_MOVE_JUMP_REQUEST, theClass);
-//		addRequestHandler(GameOpcodes.GAME_MOVE_LEFT_REQUEST, theClass);
-//		addRequestHandler(GameOpcodes.GAME_MOVE_RIGHT_REQUEST, theClass);
-//		addRequestHandler(GameOpcodes.GAME_MOVE_STOP_REQUEST, theClass);
+		addRequestHandler(GameOpcodes.GAME_MOVE_LEFT_REQUEST, GameMoveLeftHandler.class);
+		addRequestHandler(GameOpcodes.GAME_MOVE_RIGHT_REQUEST, GameMoveRightHandler.class);
+		addRequestHandler(GameOpcodes.GAME_MOVE_STOP_REQUEST, GameMoveStopHandler.class);
 		
 		ArrayList<LauncherPlayer> redTeam = new ArrayList<LauncherPlayer>();
 		ArrayList<LauncherPlayer> blueTeam = new ArrayList<LauncherPlayer>();
@@ -117,6 +133,8 @@ public class ServerExtension extends SFSExtension implements Runnable {
 		
 		deltaTime.update();
 		game.create();
+		
+		send(LauncherOpcodes.LAUNCHER_GAME_STARTS, null, getParentRoom().getPlayersList());
 		
 		while (!game.isGameEnd()) {
 			deltaTime.update();

@@ -92,7 +92,7 @@ public class PanelCreateGame extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         add(jLabel4, gridBagConstraints);
 
-        comboBoxMap.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "TODO", "load", "from file" }));
+        comboBoxMap.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "map" }));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;

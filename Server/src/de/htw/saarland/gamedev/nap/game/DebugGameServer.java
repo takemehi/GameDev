@@ -11,6 +11,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -139,7 +140,7 @@ public class DebugGameServer implements ApplicationListener {
 		//initialize world
 		world=new World(GRAVITY, true);
 		//initialize gameWorld
-		gameWorld=new GameWorld(world, mapName, currentId);
+		gameWorld=new GameWorld(world, FOLDER_MAPS + mapName, currentId, new TmxMapLoader());
 		//initialize map
 		this.map=gameWorld.getTiledMap();
 		this.currentId=gameWorld.getCurrentId();

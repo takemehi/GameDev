@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Stack;
 
 import sfs2x.client.SmartFox;
 import sfs2x.client.core.BaseEvent;
@@ -19,6 +20,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.smartfoxserver.v2.entities.data.SFSObject;
 import com.smartfoxserver.v2.exceptions.SFSException;
@@ -48,6 +50,7 @@ import de.htw.saarland.gamedev.nap.game.GameServer;
 public class GameClient implements ApplicationListener, IEventListener {
 
 	public final static String FOLDER_CONFIG = "data/config/";
+	public static final String FOLDER_MAPS = "data/maps/";
 	
 	private SmartFox sfClient;
 	private Room gameRoom;
@@ -66,6 +69,11 @@ public class GameClient implements ApplicationListener, IEventListener {
 	private List<ClientPlayer> players;
 	private List<ClientNPC> npcs;
 	
+	private List<BaseEvent> initPackets;
+	
+	//TODO remove
+	private Box2DDebugRenderer debugRenderer;
+	
 	public GameClient(SmartFox sfClient, Room gameRoom) {
 		if (sfClient == null || gameRoom == null) {
 			throw new NullPointerException();
@@ -76,6 +84,7 @@ public class GameClient implements ApplicationListener, IEventListener {
 		this.isInitialized = false;
 		this.gameStarted = false;
 		this.allObjectsReceived = false;
+		this.initPackets = Collections.synchronizedList(new ArrayList<BaseEvent>());
 		
 		sfClient.addEventListener(SFSEvent.PING_PONG, this);
 		sfClient.addEventListener(SFSEvent.EXTENSION_RESPONSE, this);
@@ -122,10 +131,15 @@ public class GameClient implements ApplicationListener, IEventListener {
 		npcs = Collections.synchronizedList(new ArrayList<ClientNPC>());
 		
 		//TODO is viewport ok?
-		camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		camera = new OrthographicCamera(Gdx.graphics.getWidth() / 20, Gdx.graphics.getHeight() / 20);
+		camera.position.set(Gdx.graphics.getWidth()/40-2, Gdx.graphics.getHeight()/40-2, 0);
+		camera.update();
 		
 		sfClient.send(new ExtensionRequest(GameOpcodes.GAME_GET_MAP_CHARACTER, null, gameRoom));
 		sfClient.send(new ExtensionRequest(GameOpcodes.GAME_GET_MOVEABLE_ENTITIES, null, gameRoom));
+		
+		//TODO remove
+		debugRenderer = new Box2DDebugRenderer();
 	}
 
 	@Override
@@ -134,11 +148,22 @@ public class GameClient implements ApplicationListener, IEventListener {
 
 	@Override
 	public void render() {
+		if (initPackets.size() > 0) {
+			synchronized (initPackets) {
+				for (BaseEvent be: initPackets) {
+					dispatchExtensionResponse(be);
+				}
+				initPackets.clear();
+			}
+		}
+		
 		if (!gameStarted)
 			return;
 		
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		
+		batch.begin();
 		
 		inputProcessor.process();
 		player.render(batch);
@@ -156,6 +181,12 @@ public class GameClient implements ApplicationListener, IEventListener {
 		}
 		
 		gameWorld.render(batch);
+		
+		//TODO remove
+		debugRenderer.render(world, camera.combined);
+		
+		batch.end();
+		
 		world.step(GameServer.TIME_STEP, GameServer.ITERATIONS_VELOCITY, GameServer.ITERATIONS_POSITION);
 	}
 	
@@ -183,7 +214,12 @@ public class GameClient implements ApplicationListener, IEventListener {
 			case SFSEvent.PING_PONG:
 				break;
 			case SFSEvent.EXTENSION_RESPONSE:
-				dispatchExtensionResponse(be);
+				if (!isInitialized) {
+					initPackets.add(be);
+				}
+				else {
+					dispatchExtensionResponse(be);
+				}
 				break;
 			default:
 				System.out.println("Unknown packet received! : " + be.getType());
@@ -200,11 +236,12 @@ public class GameClient implements ApplicationListener, IEventListener {
 				gameStarted = true; //lets go!
 				break;
 			case GameOpcodes.GAME_CURRENT_MAP:
-				gameWorld = new RenderableGameWorld(world, params.getUtfString(GameOpcodes.CURRENT_MAP_PARAM), 0, camera); // TODO is there a concurrency problem?
+				gameWorld = new RenderableGameWorld(world, FOLDER_MAPS + params.getUtfString(GameOpcodes.CURRENT_MAP_PARAM), 0, camera); // TODO is there a concurrency problem?
 				checkInitialized();
 				break;
 			case GameOpcodes.GAME_SPAWN_PLAYER:
 			case GameOpcodes.GAME_OWN_CHARACTER:
+				System.out.println(cmd);
 				PlayableCharacter character = null;
 				
 				int charid = params.getInt(GameOpcodes.CHARACTER_ID_PARAM);
@@ -224,6 +261,9 @@ public class GameClient implements ApplicationListener, IEventListener {
 						System.out.println("This character id does not exist! " + charid);
 						break;
 				}
+				
+				character.setBody(world.createBody(character.getBodyDef()));
+				character.setFixture(character.getBody().createFixture(character.getFixtureDef()));
 				
 				if (cmd.equals(GameOpcodes.GAME_OWN_CHARACTER)) {
 					player = new MeClientPlayer(character, teamid, inputProcessor, sfClient, gameRoom);

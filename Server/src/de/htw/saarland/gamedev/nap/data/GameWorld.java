@@ -1,7 +1,5 @@
 package de.htw.saarland.gamedev.nap.data;
 
-import java.util.ArrayList;
-
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -19,11 +17,9 @@ import com.badlogic.gdx.utils.Array;
 import de.htw.saarland.gamedev.nap.box2d.editor.BodyEditorLoader;
 import de.htw.saarland.gamedev.nap.data.entities.SensorEntity;
 import de.htw.saarland.gamedev.nap.data.entities.StaticEntity;
-import de.htw.saarland.gamedev.nap.game.GameServer;
 
 public class GameWorld {
 	
-	private final static String FOLDER_MAPS = "data/maps/";
 	private final static float PIXELS_TO_METERS = 1/96f;
 	//tile ids
 	private final static int ID_TILE_PLATFORM_ONE = -1;
@@ -55,7 +51,7 @@ public class GameWorld {
 	private int currentId;
 	private boolean idReturned;
 	
-	public GameWorld(World world, String mapName, int currentId){
+	public GameWorld(World world, String mapPath, int currentId, TmxMapLoader loader){
 		this.world=world;
 		this.currentId=currentId;
 		this.idReturned=false;
@@ -63,7 +59,7 @@ public class GameWorld {
 		platforms = new Array<StaticEntity>();
 		capturePoints = new Array<CapturePoint>();
 		
-		initMap(mapName);
+		initMap(mapPath, loader);
 	}
 	
 	private void initCapturePoint(Vector2 position){
@@ -82,12 +78,10 @@ public class GameWorld {
 		initCapturePoint(new Vector2(x,y));
 	}
 	
-	private void initMap(String mapName){
+	private void initMap(String mapName, TmxMapLoader loader){
 			
 		int mapWidth;
-		tiledMap = new TiledMap();
-		TmxMapLoader loader = new TmxMapLoader();
-		tiledMap = loader.load(FOLDER_MAPS+mapName+".tmx");
+		tiledMap = loader.load(mapName+".tmx");
 		mapWidth=tiledMap.getProperties().get("width", Integer.class)
 				* tiledMap.getProperties().get("tilewidth", Integer.class);
 		//create bodyDef
@@ -101,7 +95,7 @@ public class GameWorld {
 		//create world body
 		mapBody = world.createBody(bodyDef);
 		//create world fixture
-		BodyEditorLoader bLoader = new BodyEditorLoader(new FileHandle(FOLDER_MAPS+mapName+".json"));
+		BodyEditorLoader bLoader = new BodyEditorLoader(new FileHandle(mapName+".json"));
 		bLoader.attachFixture(mapBody, "map", fDef
 				,mapWidth*PIXELS_TO_METERS);
 		for(Fixture f: mapBody.getFixtureList())

@@ -2,6 +2,7 @@ package de.htw.saarland.gamedev.nap.client.world;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Disposable;
@@ -15,7 +16,7 @@ public class RenderableGameWorld extends GameWorld implements IRender, Disposabl
 	OrthogonalTiledMapRenderer renderer;
 	
 	public RenderableGameWorld(World world, String mapName, int currentId, OrthographicCamera camera) {
-		super(world, mapName, currentId);
+		super(world, mapName, currentId, new TmxMapLoader());
 		
 		if (camera == null) {
 			throw new NullPointerException();
