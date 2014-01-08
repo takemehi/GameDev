@@ -122,7 +122,7 @@ public class GameCharacter extends MoveableEntity{
 			if(left){
 				movingRight=false;
 				getBody().setLinearVelocity(-getBaseVelocity().x, getBody().getLinearVelocity().y);
-			}else{
+			}else if (!left && !movingRight){
 				getBody().setLinearVelocity(0, getBody().getLinearVelocity().y);
 			}
 		}
@@ -134,7 +134,7 @@ public class GameCharacter extends MoveableEntity{
 			if(right){
 				movingLeft=false;
 				getBody().setLinearVelocity(getBaseVelocity().x, getBody().getLinearVelocity().y);
-			}else{
+			}else if (!right && !movingLeft){
 				getBody().setLinearVelocity(0, getBody().getLinearVelocity().y);
 			}
 		}
