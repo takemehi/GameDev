@@ -88,6 +88,14 @@ public class GameCharacter extends MoveableEntity{
 		if(lastHealth>health) lostHealth=true;
 		else lostHealth=false;
 		lastHealth=health;
+		
+		setUp(movingUp);
+		setDown(movingDown);
+		setLeft(movingLeft);
+		setRight(movingRight);
+		setAttacking1(attacking1);
+		setAttacking2(attacking2);
+		setAttacking3(attacking3);
 	}
 	
 	//methods that get used by the network
