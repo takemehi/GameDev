@@ -75,6 +75,11 @@ public class ClientNPC implements IRender, IMoveable, Disposable {
 	public void startJump() {
 		npc.setJumping(true);
 	}
+	
+	@Override
+	public void stopJump() {
+		npc.setJumping(false);
+	}
 
 	@Override
 	public void stopMove() {

@@ -166,6 +166,13 @@ public class GameServer implements ApplicationListener {
 		if (!started)
 			return;
 		
+		Array<Player> players = new Array<>(blueTeam.getMembers());
+		players.addAll(redTeam.getMembers());
+		for (Player player: players) {
+			player.getPlChar().update(deltaTime.getDeltaTime(), capturePoints);
+		}
+		
+		
 		for (CapturePoint cp: capturePoints) {
 			cp.update(deltaTime.getDeltaTime());
 		}

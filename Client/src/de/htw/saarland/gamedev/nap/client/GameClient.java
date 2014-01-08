@@ -166,10 +166,12 @@ public class GameClient implements ApplicationListener, IEventListener {
 		batch.begin();
 		
 		inputProcessor.process();
+		player.getPlayableCharacter().update(Gdx.graphics.getDeltaTime(), gameWorld.getCapturePoints());
 		player.render(batch);
 		
 		synchronized (players) {
 			for (ClientPlayer player: players) {
+				player.getPlayableCharacter().update(Gdx.graphics.getDeltaTime(), gameWorld.getCapturePoints());
 				player.render(batch);
 			}
 		}
@@ -305,6 +307,9 @@ public class GameClient implements ApplicationListener, IEventListener {
 			case GameOpcodes.GAME_MOVE_DOWN_STOP:
 				moveEntity(Direction.STOP_DOWN, params.getInt(GameOpcodes.ENTITY_ID_PARAM));
 				break;
+			case GameOpcodes.GAME_MOVE_JUMP_STOP:
+				moveEntity(Direction.STOP_JUMP, params.getInt(GameOpcodes.ENTITY_ID_PARAM));
+				break;
 			default:
 				System.out.println("Unknown packet received! : " + cmd);
 				break;
@@ -371,20 +376,31 @@ public class GameClient implements ApplicationListener, IEventListener {
 		
 		switch (direction) {
 			case LEFT:
+				System.out.println("left");
 				entity.moveLeft();
 				break;
 			case RIGHT:
+				System.out.println("right");
 				entity.moveRight();
 				break;
 			case DOWN:
+				System.out.println("down");
 				entity.moveDown();
+				break;
 			case JUMP:
+				System.out.println("jump");
 				entity.startJump();
 				break;
+			case STOP_JUMP:
+				System.out.println("stop jump");
+				entity.stopJump();
+				break;
 			case STOP:
+				System.out.println("stop");
 				entity.stopMove();
 				break;
 			case STOP_DOWN:
+				System.out.println("stop down");
 				entity.stopDown();
 				break;
 		}
@@ -405,7 +421,8 @@ public class GameClient implements ApplicationListener, IEventListener {
 		DOWN,
 		JUMP,
 		STOP,
-		STOP_DOWN
+		STOP_DOWN,
+		STOP_JUMP
 	}
 	
 }

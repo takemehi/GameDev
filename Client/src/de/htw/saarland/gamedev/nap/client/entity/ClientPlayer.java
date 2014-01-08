@@ -63,6 +63,10 @@ public class ClientPlayer implements IRender, IMoveable, Disposable {
 		return CharacterStates.IDLE;
 	}
 	
+	public PlayableCharacter getPlayableCharacter() {
+		return character;
+	}
+	
 	public int getEntityId() {
 		return character.getId();
 	}
@@ -85,6 +89,11 @@ public class ClientPlayer implements IRender, IMoveable, Disposable {
 	@Override
 	public void startJump() {
 		character.setUp(true);
+	}
+	
+	@Override
+	public void stopJump() {
+		character.setUp(false);
 	}
 
 	@Override

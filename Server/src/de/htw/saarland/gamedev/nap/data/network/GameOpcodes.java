@@ -85,6 +85,16 @@ public class GameOpcodes {
 	 * 	GAME_OBJECT_COORD_UPDATE regularly updates to improve accuracy
 	 */
 	public static final String GAME_MOVE_JUMP_REQUEST = "game.player.move.jump";
+	/**
+	 * C->S<br/>
+	 * <br/>
+	 * Opcode to request that the player would like to jump<br/>
+	 * <br/>
+	 * returns:<br/>
+	 * 	GAME_MOVE_JUMP_START when the server accepted the move and the character started to jump<br/>
+	 * 	GAME_OBJECT_COORD_UPDATE regularly updates to improve accuracy
+	 */
+	public static final String GAME_MOVE_JUMP_STOP_REQUEST = "game.player.move.jump.stop";
 	
 	/**
 	 * S->C<br/>
@@ -131,6 +141,15 @@ public class GameOpcodes {
 	 * 	int ENTITY_ID_PARAM the id of the entity that starts to jump
 	 */
 	public static final String GAME_MOVE_JUMP_START = "game.player.move.jump.start";
+	/**
+	 * S->C<br/>
+	 * <br/>
+	 * Opcode that indicates that a request to jump succeeded and the character should start jumping right now<br/>
+	 * <br/>
+	 * params:<br/>
+	 * 	int ENTITY_ID_PARAM the id of the entity that starts to jump
+	 */
+	public static final String GAME_MOVE_JUMP_STOP = "game.player.move.jump.stop";
 	/**
 	 * S->C<br/>
 	 * <br/>

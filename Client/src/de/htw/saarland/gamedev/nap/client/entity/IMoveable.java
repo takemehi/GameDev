@@ -8,6 +8,7 @@ public interface IMoveable {
 	public void moveRight();
 	public void moveDown();
 	public void startJump();
+	public void stopJump();
 	public void stopMove();
 	public void stopDown();
 }
