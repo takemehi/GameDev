@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.GdxNativesLoader;
 import com.smartfoxserver.v2.entities.SFSUser;
 import com.smartfoxserver.v2.entities.User;
 import com.smartfoxserver.v2.entities.data.ISFSObject;
+import com.smartfoxserver.v2.entities.data.SFSObject;
 
 import de.htw.saarland.gamedev.nap.data.CapturePoint;
 import de.htw.saarland.gamedev.nap.data.GameWorld;
@@ -20,6 +21,7 @@ import de.htw.saarland.gamedev.nap.data.Player;
 import de.htw.saarland.gamedev.nap.data.SpawnPoint;
 import de.htw.saarland.gamedev.nap.data.Team;
 import de.htw.saarland.gamedev.nap.data.map.ServerTmxMapLoader;
+import de.htw.saarland.gamedev.nap.data.network.GameOpcodes;
 import de.htw.saarland.gamedev.nap.server.DeltaTime;
 import de.htw.saarland.gamedev.nap.server.ServerExtension;
 import de.htw.saarland.gamedev.nap.server.launcher.exception.PlayerNotFoundException;
@@ -116,7 +118,12 @@ public class GameServer implements ApplicationListener {
 	@Override
 	public void create() {
 		//initialize world
-		GdxNativesLoader.load();
+		try {
+			GdxNativesLoader.load();
+		}
+		catch (UnsatisfiedLinkError e) {
+			//libs are already loaded
+		}
 		world = new World(GRAVITY, true);
 		//initialize gameWorld
 		gameWorld = new GameWorld(world, FOLDER_MAPS + mapName, currentId, new ServerTmxMapLoader());
@@ -195,6 +202,10 @@ public class GameServer implements ApplicationListener {
 	
 	public String getMapName() {
 		return mapName;
+	}
+	
+	public World getWorld() {
+		return world;
 	}
 	
 	public Player getPlayerBySFSUser(SFSUser user) {

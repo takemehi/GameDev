@@ -11,6 +11,7 @@ import de.htw.saarland.gamedev.nap.game.GameServer;
 import de.htw.saarland.gamedev.nap.server.game.handler.ClientInitializedHandler;
 import de.htw.saarland.gamedev.nap.server.game.handler.GameGetMapCharacterHandler;
 import de.htw.saarland.gamedev.nap.server.game.handler.GameMoveDownHandler;
+import de.htw.saarland.gamedev.nap.server.game.handler.GameMoveJumpHandler;
 import de.htw.saarland.gamedev.nap.server.game.handler.GameMoveLeftHandler;
 import de.htw.saarland.gamedev.nap.server.game.handler.GameMoveRightHandler;
 import de.htw.saarland.gamedev.nap.server.game.handler.GameMoveStopHandler;
@@ -84,7 +85,7 @@ public class ServerExtension extends SFSExtension implements Runnable {
 		addRequestHandler(GameOpcodes.GAME_INITIALIZED, ClientInitializedHandler.class);
 		addRequestHandler(GameOpcodes.GAME_MOVE_DOWN_REQUEST, GameMoveDownHandler.class);
 //		addRequestHandler(GameOpcodes.GAME_MOVE_DOWN_STOP_REQUEST, theClass);
-//		addRequestHandler(GameOpcodes.GAME_MOVE_JUMP_REQUEST, theClass);
+		addRequestHandler(GameOpcodes.GAME_MOVE_JUMP_REQUEST, GameMoveJumpHandler.class);
 		addRequestHandler(GameOpcodes.GAME_MOVE_LEFT_REQUEST, GameMoveLeftHandler.class);
 		addRequestHandler(GameOpcodes.GAME_MOVE_RIGHT_REQUEST, GameMoveRightHandler.class);
 		addRequestHandler(GameOpcodes.GAME_MOVE_STOP_REQUEST, GameMoveStopHandler.class);

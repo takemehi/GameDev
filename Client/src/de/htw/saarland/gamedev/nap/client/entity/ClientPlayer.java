@@ -84,7 +84,7 @@ public class ClientPlayer implements IRender, IMoveable, Disposable {
 
 	@Override
 	public void startJump() {
-		character.setJumping(true);
+		character.setUp(true);
 	}
 
 	@Override

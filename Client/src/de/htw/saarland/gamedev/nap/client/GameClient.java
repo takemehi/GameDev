@@ -241,7 +241,6 @@ public class GameClient implements ApplicationListener, IEventListener {
 				break;
 			case GameOpcodes.GAME_SPAWN_PLAYER:
 			case GameOpcodes.GAME_OWN_CHARACTER:
-				System.out.println(cmd);
 				PlayableCharacter character = null;
 				
 				int charid = params.getInt(GameOpcodes.CHARACTER_ID_PARAM);
