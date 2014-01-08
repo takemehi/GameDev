@@ -2,6 +2,7 @@ package de.htw.saarland.gamedev.nap.data;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Shape;
+import com.badlogic.gdx.utils.Array;
 
 import de.htw.saarland.gamedev.nap.data.entities.MoveableEntity;
 import de.htw.saarland.gamedev.nap.data.skills.Skill;
@@ -33,6 +34,8 @@ public class GameCharacter extends MoveableEntity{
 	private float stunDuration;
 	private float timeStunned;
 	private float timeSnared;
+	private int lastHealth;
+	private boolean lostHealth;
 	
 	protected Skill attack1;
 	protected Skill attack2;
@@ -50,6 +53,7 @@ public class GameCharacter extends MoveableEntity{
 		if(maxHealth <= 0) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_HEALTH_MAX);
 		this.maxHealth=maxHealth;
 		this.health=maxHealth;
+		lastHealth=health;
 		jumping=false;
 		timeOnGround=0;
 		orientation=1;
@@ -59,9 +63,10 @@ public class GameCharacter extends MoveableEntity{
 		stunDuration=0;
 		timeSnared=0;
 		timeStunned=0;
+		lostHealth=false;
 	}
 	
-	public void update(float deltaTime){
+	public void update(float deltaTime, Array<CapturePoint> capturepoints){
 		if (stunned){
 			timeStunned+=deltaTime;
 			if(timeStunned>=stunDuration){
@@ -79,6 +84,10 @@ public class GameCharacter extends MoveableEntity{
 				snareDuration=0;
 			}
 		}
+		
+		if(lastHealth>health) lostHealth=true;
+		else lostHealth=false;
+		lastHealth=health;
 	}
 	
 	//methods that get used by the network
@@ -152,12 +161,17 @@ public class GameCharacter extends MoveableEntity{
 
 	public void setAttacking1(boolean attacking1) {
 		if(attackEnabled){
-			if(attacking1 && attack2.isCasted() && attack3.isCasted()){
-				this.attacking1 = attacking1;
-				attack1.setAttacking(attacking1);
-			}else
+			if(attacking1){
+				if(attack2.isCasted() && attack3.isCasted()){
+					this.attacking1 = attacking1;
+					attack1.setAttacking(attacking1);
+				}
+			}else{
+				this.attacking1=false;
 				attack1.setAttacking(false);
-		}
+			}
+		}else
+			this.attacking1=false;
 	}
 
 
@@ -168,12 +182,17 @@ public class GameCharacter extends MoveableEntity{
 
 	public void setAttacking2(boolean attacking2) {
 		if(attackEnabled){
-			if(attacking2 && attack1.isCasted() && attack3.isCasted()){
-				this.attacking2 = attacking2;
-				attack2.setAttacking(attacking2);
-			}else
+			if(attacking2){
+				if(attack1.isCasted() && attack3.isCasted()){
+					this.attacking2 = attacking2;
+					attack2.setAttacking(attacking2);
+				}
+			}else{
+				this.attacking2=false;
 				attack2.setAttacking(false);
-		}
+			}
+		}else
+			this.attacking2=false;
 	}
 
 
@@ -184,12 +203,17 @@ public class GameCharacter extends MoveableEntity{
 
 	public void setAttacking3(boolean attacking3) {
 		if(attackEnabled){
-			if(attacking3 && attack1.isCasted() && attack2.isCasted()){
-				this.attacking3 = attacking3;
-				attack3.setAttacking(attacking3);
-			}else
+			if(attacking3){
+				if(attack1.isCasted() && attack2.isCasted()){
+					this.attacking3 = attacking3;
+					attack3.setAttacking(attacking3);
+				}
+			}else{
+				this.attacking3=false;
 				attack3.setAttacking(false);
-		}
+			}
+		}else
+			this.attacking3=false;
 	}
 
 
@@ -234,6 +258,10 @@ public class GameCharacter extends MoveableEntity{
 	
 	public void setJumping(boolean jumping){
 		this.jumping=jumping;
+	}
+	
+	public boolean hasLostHealth(){
+		return lostHealth;
 	}
 	
 	public boolean isMovementEnabled(){
