@@ -14,7 +14,7 @@ public class Player {
 	//exceptions
 	private static final String EXCEPTION_NULL_USER = "User object is missing!";
 	
-	private static final int MOVEMENT_UPDATE_TRESHOLD = 300; // 300 ms
+	private static final float MOVEMENT_UPDATE_TRESHOLD = 0.300f;
 	
 	private PlayableCharacter plChar;
 	private SFSUser user;
@@ -68,6 +68,7 @@ public class Player {
 				moveParams.putFloat(GameOpcodes.COORD_X_PARAM, plChar.getBody().getPosition().x);
 				moveParams.putFloat(GameOpcodes.COORD_Y_PARAM, plChar.getBody().getPosition().y);
 				extension.send(GameOpcodes.GAME_OBJECT_COORD_UPDATE, moveParams, extension.getParentRoom().getPlayersList());
+				stateTime = 0;
 			}
 		}
 		

@@ -61,6 +61,7 @@ public class GameClient implements ApplicationListener, IEventListener {
 	private boolean gameStarted;
 	
 	private World world;
+	private float worldTime;
 	private RenderableGameWorld gameWorld;
 	private OrthographicCamera camera;
 	private SpriteBatch batch;
@@ -68,7 +69,7 @@ public class GameClient implements ApplicationListener, IEventListener {
 	private List<ClientPlayer> players;
 	private List<ClientNPC> npcs;
 	
-	private List<BaseEvent> initPackets;
+	private List<BaseEvent> gameloopPackets;
 	
 	//TODO remove
 	private Box2DDebugRenderer debugRenderer;
@@ -83,7 +84,8 @@ public class GameClient implements ApplicationListener, IEventListener {
 		this.isInitialized = false;
 		this.gameStarted = false;
 		this.allObjectsReceived = false;
-		this.initPackets = Collections.synchronizedList(new ArrayList<BaseEvent>());
+		this.worldTime = 0.0f;
+		this.gameloopPackets = Collections.synchronizedList(new ArrayList<BaseEvent>());
 		
 		sfClient.addEventListener(SFSEvent.PING_PONG, this);
 		sfClient.addEventListener(SFSEvent.EXTENSION_RESPONSE, this);
@@ -147,12 +149,12 @@ public class GameClient implements ApplicationListener, IEventListener {
 
 	@Override
 	public void render() {
-		if (initPackets.size() > 0) {
-			synchronized (initPackets) {
-				for (BaseEvent be: initPackets) {
+		if (gameloopPackets.size() > 0) {
+			synchronized (gameloopPackets) {
+				for (BaseEvent be: gameloopPackets) {
 					dispatchExtensionResponse(be);
 				}
-				initPackets.clear();
+				gameloopPackets.clear();
 			}
 		}
 		
@@ -188,7 +190,11 @@ public class GameClient implements ApplicationListener, IEventListener {
 		
 		batch.end();
 		
-		world.step(GameServer.TIME_STEP, GameServer.ITERATIONS_VELOCITY, GameServer.ITERATIONS_POSITION);
+		worldTime += Gdx.graphics.getDeltaTime();
+		if (worldTime > 0.01) {
+			world.step(GameServer.TIME_STEP, GameServer.ITERATIONS_VELOCITY, GameServer.ITERATIONS_POSITION);
+			worldTime = 0;
+		}
 	}
 	
 	@Override
@@ -216,10 +222,14 @@ public class GameClient implements ApplicationListener, IEventListener {
 				break;
 			case SFSEvent.EXTENSION_RESPONSE:
 				if (!isInitialized) {
-					initPackets.add(be);
+					gameloopPackets.add(be);
 				}
 				else {
-					dispatchExtensionResponse(be);
+					if (be.getArguments().get(NetworkConstants.CMD_KEY).equals(GameOpcodes.GAME_OBJECT_COORD_UPDATE)) {
+						gameloopPackets.add(be);
+					} else {
+						dispatchExtensionResponse(be);
+					}
 				}
 				break;
 			default:
@@ -237,7 +247,7 @@ public class GameClient implements ApplicationListener, IEventListener {
 				gameStarted = true; //lets go!
 				break;
 			case GameOpcodes.GAME_CURRENT_MAP:
-				gameWorld = new RenderableGameWorld(world, FOLDER_MAPS + params.getUtfString(GameOpcodes.CURRENT_MAP_PARAM), 0, camera); // TODO is there a concurrency problem?
+				gameWorld = new RenderableGameWorld(world, FOLDER_MAPS + params.getUtfString(GameOpcodes.CURRENT_MAP_PARAM), 0, camera);
 				checkInitialized();
 				break;
 			case GameOpcodes.GAME_SPAWN_PLAYER:
@@ -284,6 +294,7 @@ public class GameClient implements ApplicationListener, IEventListener {
 			//Init opcodes end
 			
 			case GameOpcodes.GAME_OBJECT_COORD_UPDATE:
+				System.out.println("Coord update");
 				updateCoordsOfObject(params.getInt(GameOpcodes.ENTITY_ID_PARAM),
 						params.getFloat(GameOpcodes.COORD_X_PARAM),
 						params.getFloat(GameOpcodes.COORD_Y_PARAM));

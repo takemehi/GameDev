@@ -54,6 +54,7 @@ public class GameServer implements ApplicationListener {
 	
 	private World world;
 	private GameWorld gameWorld;
+	private float worldTime;
 	
 	private ArrayList<Integer> charactersBlue; //temporarily needed
 	private ArrayList<SFSUser> blueMembers; //temporarily needed
@@ -103,6 +104,7 @@ public class GameServer implements ApplicationListener {
 		capturePoints=new Array<CapturePoint>();
 		
 		currentId=0;
+		worldTime = 0;
 		gameEnded=false;
 		started = false;
 		this.deltaTime=deltaTime;
@@ -167,7 +169,7 @@ public class GameServer implements ApplicationListener {
 		Array<Player> players = new Array<>(blueTeam.getMembers());
 		players.addAll(redTeam.getMembers());
 		for (Player player: players) {
-			player.getPlChar().update(deltaTime.getDeltaTime(), capturePoints);
+			player.update(deltaTime.getDeltaTime(), capturePoints);
 		}
 		
 		
@@ -175,7 +177,11 @@ public class GameServer implements ApplicationListener {
 			cp.update(deltaTime.getDeltaTime());
 		}
 		
-		world.step(TIME_STEP, ITERATIONS_VELOCITY, ITERATIONS_POSITION);
+		worldTime += deltaTime.getDeltaTime();
+		if (worldTime > 0.01) {
+			world.step(TIME_STEP, ITERATIONS_VELOCITY, ITERATIONS_POSITION);
+			worldTime = 0;
+		}
 	}
 	
 	@Override
