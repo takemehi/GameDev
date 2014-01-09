@@ -315,7 +315,7 @@ public class DebugGameServer implements ApplicationListener {
 			}
 			character.getAttack1().cleanUp(world);
 		}
-		System.out.println(teamBlue.getMembers().get(0).getPlChar().getUp());
+		//System.out.println(teamBlue.getMembers().get(0).getPlChar().getUp());
 	}
 	
 	@Override

@@ -97,6 +97,11 @@ public class GameCharacter extends MoveableEntity{
 		setAttacking1(attacking1);
 		setAttacking2(attacking2);
 		setAttacking3(attacking3);
+		
+		if(!movingUp && isGrounded()){
+			setUp(false);
+			jumping=false;
+		}
 	}
 	
 	//methods that get used by the network
@@ -142,15 +147,13 @@ public class GameCharacter extends MoveableEntity{
 	}
 	
 	public void setUp(boolean up){
-		if(up || (!up && isGrounded()))
-			this.movingUp=up;
+		this.movingUp=up;
 		if(movementEnabled){
 			if(movingUp && !jumping){
 				getBody().setAwake(true);
 				getBody().setLinearVelocity(getBody().getLinearVelocity().x, getBaseVelocity().y);
 				jumping=true;
 			}
-			if(!movingUp) jumping=false;
 		}
 	}
 	
