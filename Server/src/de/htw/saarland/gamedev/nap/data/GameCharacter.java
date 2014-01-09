@@ -142,7 +142,7 @@ public class GameCharacter extends MoveableEntity{
 	}
 	
 	public void setUp(boolean up){
-		if(up || (!up && isGrounded(getWorld())))
+		if(up || (!up && isGrounded()))
 			this.movingUp=up;
 		if(movementEnabled){
 			if(movingUp && !jumping){
@@ -264,10 +264,6 @@ public class GameCharacter extends MoveableEntity{
 	
 	public boolean isJumping(){
 		return jumping;
-	}
-	
-	public void setJumping(boolean jumping){
-		this.jumping=jumping;
 	}
 	
 	public boolean hasLostHealth(){

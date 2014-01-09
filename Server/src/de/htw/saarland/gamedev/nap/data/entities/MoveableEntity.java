@@ -23,7 +23,6 @@ public class MoveableEntity extends Entity{
 	
 	private Vector2 baseVelocity;
 	private Vector2 maxVelocity;
-	private boolean grounded;
 	
 	public MoveableEntity(World world, Shape shape, float density,
 			float friction, float restitution, Vector2 position, Vector2 baseVelocity, Vector2 maxVelocity, int id) {
@@ -39,7 +38,6 @@ public class MoveableEntity extends Entity{
 		getFixtureDef().density=density;
 		getFixtureDef().friction=friction;
 		getFixtureDef().restitution=restitution;
-		grounded=false;
 	}
 
 	public MoveableEntity(World world, Shape shape, float density,
@@ -55,32 +53,34 @@ public class MoveableEntity extends Entity{
 		return maxVelocity;
 	}
 	
-	public boolean isGrounded(World world){
+	public boolean isGrounded(){
 		if(isInitialized()){
-			//calculate y offset
-			Vector2 tmpVector = new Vector2();
-			PolygonShape tmpShape= (PolygonShape) getFixture().getShape();
-			tmpShape.getVertex(0, tmpVector);
-			
-			for(Contact c: world.getContactList()){
-				if(c.isTouching()
-						&& (c.getFixtureA()==getFixture()
-						|| c.getFixtureB()==getFixture())){
-					Vector2 pos = getBody().getPosition();
-					WorldManifold manifold = c.getWorldManifold();
-					boolean below = false;
-					if(Math.abs(c.getWorldManifold().getNormal().x)<Math.abs(c.getWorldManifold().getNormal().y)){
-						below=true;
-						for(int j = 0; j < manifold.getNumberOfContactPoints(); j++) {
-							below &= (manifold.getPoints()[j].y < pos.y - Math.abs(tmpVector.y));
+			if(getBody().getLinearVelocity().y<=0){
+				//calculate y offset
+				Vector2 tmpVector = new Vector2();
+				PolygonShape tmpShape= (PolygonShape) getFixture().getShape();
+				tmpShape.getVertex(0, tmpVector);
+				
+				for(Contact c: getWorld().getContactList()){
+					if(c.isTouching()
+							&& (c.getFixtureA()==getFixture()
+							|| c.getFixtureB()==getFixture())){
+						Vector2 pos = getBody().getPosition();
+						WorldManifold manifold = c.getWorldManifold();
+						boolean below = false;
+						if(Math.abs(c.getWorldManifold().getNormal().x)<Math.abs(c.getWorldManifold().getNormal().y)){
+							below=true;
+							for(int j = 0; j < manifold.getNumberOfContactPoints(); j++) {
+								below &= (manifold.getPoints()[j].y < pos.y - Math.abs(tmpVector.y));
+							}
+							if((c.getFixtureA()==getFixture() 
+									&& c.getFixtureB().getUserData()!=null && c.getFixtureB().getUserData().equals(PlayableCharacter.USERDATA_PLAYER)))
+								below=false;
+							if((c.getFixtureB()==getFixture() 
+									&& c.getFixtureA().getUserData()!=null && c.getFixtureA().getUserData().equals(PlayableCharacter.USERDATA_PLAYER)))
+								below=false;
+							if(below) return true;
 						}
-						if((c.getFixtureA()==getFixture() 
-								&& c.getFixtureB().getUserData()!=null && c.getFixtureB().getUserData().equals(PlayableCharacter.USERDATA_PLAYER)))
-							below=false;
-						if((c.getFixtureB()==getFixture() 
-								&& c.getFixtureA().getUserData()!=null && c.getFixtureA().getUserData().equals(PlayableCharacter.USERDATA_PLAYER)))
-							below=false;
-						if(below) return true;
 					}
 				}
 			}

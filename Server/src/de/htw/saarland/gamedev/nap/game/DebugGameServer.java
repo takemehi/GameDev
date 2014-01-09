@@ -234,7 +234,7 @@ public class DebugGameServer implements ApplicationListener {
 			plCh.getAttack3().update(world, plCh, i, mouseCoords);
 			
 			//Movement			
-			if(!plCh.isGrounded(world)) plCh.setTimeonGround(0);
+			if(!plCh.isGrounded()) plCh.setTimeonGround(0);
 			else plCh.setTimeonGround(plCh.getTimeOnGround()+Gdx.graphics.getDeltaTime());
 			if(plCh.isMovementEnabled()){
 				if(!Gdx.input.isKeyPressed(Keys.A))
@@ -315,7 +315,7 @@ public class DebugGameServer implements ApplicationListener {
 			}
 			character.getAttack1().cleanUp(world);
 		}
-		//System.out.println(teamBlue.getMembers().get(0).getPlChar().getTimeOnGround());
+		System.out.println(teamBlue.getMembers().get(0).getPlChar().getUp());
 	}
 	
 	@Override
