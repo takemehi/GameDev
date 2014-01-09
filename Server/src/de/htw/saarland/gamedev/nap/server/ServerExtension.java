@@ -2,6 +2,7 @@ package de.htw.saarland.gamedev.nap.server;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.smartfoxserver.v2.core.SFSEventType;
 import com.smartfoxserver.v2.entities.SFSUser;
 import com.smartfoxserver.v2.extensions.SFSExtension;

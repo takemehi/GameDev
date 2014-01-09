@@ -59,18 +59,18 @@ public class Player {
 	}
 	
 	public void update(float deltaTime, Array<CapturePoint> capturePoints) {
-		if (plChar.isMoving()) {
-			stateTime += deltaTime;
-			
-			if (stateTime > MOVEMENT_UPDATE_TRESHOLD) {
-				SFSObject moveParams = new SFSObject();
-				moveParams.putInt(GameOpcodes.ENTITY_ID_PARAM, plChar.getId());
-				moveParams.putFloat(GameOpcodes.COORD_X_PARAM, plChar.getBody().getPosition().x);
-				moveParams.putFloat(GameOpcodes.COORD_Y_PARAM, plChar.getBody().getPosition().y);
-				extension.send(GameOpcodes.GAME_OBJECT_COORD_UPDATE, moveParams, extension.getParentRoom().getPlayersList());
-				stateTime = 0;
-			}
-		}
+//		if (plChar.isMoving()) {
+//			stateTime += deltaTime;
+//			
+//			if (stateTime > MOVEMENT_UPDATE_TRESHOLD) {
+//				SFSObject moveParams = new SFSObject();
+//				moveParams.putInt(GameOpcodes.ENTITY_ID_PARAM, plChar.getId());
+//				moveParams.putFloat(GameOpcodes.COORD_X_PARAM, plChar.getBody().getPosition().x);
+//				moveParams.putFloat(GameOpcodes.COORD_Y_PARAM, plChar.getBody().getPosition().y);
+//				extension.send(GameOpcodes.GAME_OBJECT_COORD_UPDATE, moveParams, extension.getParentRoom().getPlayersList());
+//				stateTime = 0;
+//			}
+//		}
 		
 		plChar.update(deltaTime, capturePoints);
 	}

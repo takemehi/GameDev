@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.ApplicationListener;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
@@ -178,7 +179,7 @@ public class GameServer implements ApplicationListener {
 		}
 		
 		worldTime += deltaTime.getDeltaTime();
-		if (worldTime > 0.01) {
+		if (worldTime > TIME_STEP) {
 			world.step(TIME_STEP, ITERATIONS_VELOCITY, ITERATIONS_POSITION);
 			worldTime = 0;
 		}
