@@ -1,12 +1,16 @@
 package de.htw.saarland.gamedev.nap.data.skills;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.utils.Array;
 
+import de.htw.saarland.gamedev.nap.data.GameWorld;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
+import de.htw.saarland.gamedev.nap.data.Player;
 import de.htw.saarland.gamedev.nap.data.entities.Entity;
 import de.htw.saarland.gamedev.nap.data.entities.SensorEntity;
 
@@ -90,6 +94,45 @@ public class Charge extends Skill {
 		}catch(Exception e){}
 		traveling=false;
 		distanceTraveled=0;
+	}
+	
+	public static void handleContact(Fixture fA, Fixture fB, Array<Player> players){
+		//Charge hitting the world
+		if(fA.getUserData()==Charge.USERDATA_CHARGE && fB.getUserData()==GameWorld.USERDATA_FIXTURE_WORLD){
+			for(Player p: players){
+				if(p.getPlChar().getFixture().equals(fA)) p.getPlChar().getAttack2().reset();
+			}
+		}
+		else if(fB.getUserData()==Charge.USERDATA_CHARGE && fA.getUserData()==GameWorld.USERDATA_FIXTURE_WORLD){
+			for(Player p: players){
+				if(p.getPlChar().getFixture().equals(fB)) p.getPlChar().getAttack2().reset();
+			}
+		}
+		//Charge hitting a player
+		else if(fA.getUserData()==Charge.USERDATA_CHARGE && fB.getUserData()==PlayableCharacter.USERDATA_PLAYER){	
+			for(Player p: players){
+				if(p.getPlChar().getFixture().equals(fB)){
+					p.getPlChar().setHealth(p.getPlChar().getHealth()-Charge.DAMAGE);
+					p.getPlChar().setStunned(true, Charge.DURATION_STUN);
+					for(Player pl: players){
+						if(pl.getPlChar().getFixture().equals(fA)) pl.getPlChar().getAttack2().reset();
+					}
+					break;
+				}
+			}
+		}
+		else if(fB.getUserData()==Charge.USERDATA_CHARGE && fA.getUserData()==PlayableCharacter.USERDATA_PLAYER){
+			for(Player p: players){
+				if(p.getPlChar().getFixture().equals(fA)){
+					p.getPlChar().setHealth(p.getPlChar().getHealth()-Charge.DAMAGE);
+					p.getPlChar().setStunned(true, Charge.DURATION_STUN);
+					for(Player pl: players){
+						if(pl.getPlChar().getFixture().equals(fB)) pl.getPlChar().getAttack2().reset();
+					}
+					break;
+				}
+			}
+		}
 	}
 
 }

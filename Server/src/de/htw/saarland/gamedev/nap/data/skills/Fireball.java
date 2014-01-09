@@ -2,15 +2,17 @@ package de.htw.saarland.gamedev.nap.data.skills;
 
 import java.util.Iterator;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 
+import de.htw.saarland.gamedev.nap.data.GameWorld;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
+import de.htw.saarland.gamedev.nap.data.Player;
 import de.htw.saarland.gamedev.nap.data.entities.Entity;
 import de.htw.saarland.gamedev.nap.data.entities.SensorEntity;
 
@@ -76,6 +78,33 @@ public class Fireball extends Skill{
 				fireBalls.removeValue(s, true);
 				world.destroyBody(s.getBody());
 			}
+		}
+	}
+	
+	public static void handleContact(Fixture fA, Fixture fB, Array<Player> players){
+		// Fireball hitting the world
+		if (fA.getUserData() == Fireball.USERDATA_FIREBALL && fB.getUserData() == GameWorld.USERDATA_FIXTURE_WORLD) {
+			fA.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
+		} else if (fB.getUserData() == Fireball.USERDATA_FIREBALL && fA.getUserData() == GameWorld.USERDATA_FIXTURE_WORLD) {
+			fB.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
+		}
+		// Fireball hitting a player
+		else if (fA.getUserData() == Fireball.USERDATA_FIREBALL && fB.getUserData() == PlayableCharacter.USERDATA_PLAYER) {
+			for (Player p : players) {
+				if (p.getPlChar().getFixture().equals(fB)) {
+					p.getPlChar().setHealth(p.getPlChar().getHealth() - Fireball.DAMAGE);
+					break;
+				}
+			}
+			fA.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
+		} else if (fB.getUserData() == Fireball.USERDATA_FIREBALL && fA.getUserData() == PlayableCharacter.USERDATA_PLAYER) {
+			for (Player p : players) {
+				if (p.getPlChar().getFixture().equals(fA)) {
+					p.getPlChar().setHealth(p.getPlChar().getHealth() - Fireball.DAMAGE);
+					break;
+				}
+			}
+			fB.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
 		}
 	}
 	

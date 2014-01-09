@@ -1,5 +1,6 @@
 package de.htw.saarland.gamedev.nap.data;
 
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.utils.Array;
 
 import de.htw.saarland.gamedev.nap.data.entities.SensorEntity;
@@ -65,6 +66,58 @@ public class CapturePoint {
 					teamRed.addPoints(GameServer.POINTS_PER_INTERVAL);
 				stateTime = 0.0f;
 			}
+		}
+	}
+	
+	public static void handleContactBegin(Fixture fA, Fixture fB, Array<Player> players, Array<CapturePoint> capturePoints){
+		//Capture point permission
+		if(fA.getUserData().equals(GameWorld.USERDATA_FIXTURE_CAPTUREPOINT)
+				&& fB.getUserData().equals(PlayableCharacter.USERDATA_PLAYER)){
+			for(CapturePoint c: capturePoints){
+				if(c.getCapturePoint().getFixture().equals(fA)){
+					for(Player p: players){
+						if(p.getPlChar().getFixture().equals(fB)){
+							p.getPlChar().setPointEligibleToCapture(c.getCapturePoint().getId());
+							break;
+						}
+					}
+				}
+			}
+		}
+		else if(fB.getUserData().equals(GameWorld.USERDATA_FIXTURE_CAPTUREPOINT)
+				&& fA.getUserData().equals(PlayableCharacter.USERDATA_PLAYER)){
+			for(CapturePoint c: capturePoints){
+				if(c.getCapturePoint().getFixture().equals(fB)){
+					for(Player p: players){
+						if(p.getPlChar().getFixture().equals(fA)){
+							p.getPlChar().setPointEligibleToCapture(c.getCapturePoint().getId());
+							break;
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	public static void handleContactEnd(Fixture fA, Fixture fB, Array<Player> players, Array<CapturePoint> capturePoints){
+		//Capture point permission
+		if(fA.getUserData()!=null && fA.getUserData().equals(GameWorld.USERDATA_FIXTURE_CAPTUREPOINT)
+				&& fB.getUserData()!=null && fB.getUserData().equals(PlayableCharacter.USERDATA_PLAYER)){
+			for(Player p: players){
+				if(p.getPlChar().getFixture().equals(fB)){
+					p.getPlChar().setPointEligibleToCapture(-1);
+					break;
+				}
+			}
+		}
+		else if(fB.getUserData()!=null && fB.getUserData().equals(GameWorld.USERDATA_FIXTURE_CAPTUREPOINT)
+				&& fA.getUserData()!=null && fA.getUserData().equals(PlayableCharacter.USERDATA_PLAYER)){
+			for(Player p: players){
+				if(p.getPlChar().getFixture().equals(fA)){
+					p.getPlChar().setPointEligibleToCapture(-1);
+					break;
+				}
+			}			
 		}
 	}
 }

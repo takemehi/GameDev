@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.utils.Array;
 
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
 import de.htw.saarland.gamedev.nap.data.Player;
@@ -65,6 +66,26 @@ public class Axe extends Skill{
 		if(axe!= null && axe.getBody().getUserData()!=null && axe.getBody().getUserData().equals(Entity.USERDATA_BODY_FLAG_DELETE) && !world.isLocked()){
 			world.destroyBody(axe.getBody());
 			axe=null;
+		}
+	}
+	
+	public static void handleContact(Fixture fA, Fixture fB, Array<Player> players){
+		//Axe hitting a player
+		if ((fA.getUserData() == Axe.USERDATA_AXE && fB.getUserData() == PlayableCharacter.USERDATA_PLAYER)) {
+			for (Player p : players) {
+				if (p.getPlChar().getFixture().equals(fB)) {
+					p.getPlChar().setHealth(p.getPlChar().getHealth() - Axe.DAMAGE);
+					break;
+				}
+			}
+		} 
+		else if (fB.getUserData() == Axe.USERDATA_AXE && fA.getUserData() == PlayableCharacter.USERDATA_PLAYER) {
+			for (Player p : players) {
+				if (p.getPlChar().getFixture().equals(fA)) {
+					p.getPlChar().setHealth(p.getPlChar().getHealth() - Axe.DAMAGE);
+					break;
+				}
+			}
 		}
 	}
 

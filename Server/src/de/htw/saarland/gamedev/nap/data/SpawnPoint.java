@@ -1,5 +1,8 @@
 package de.htw.saarland.gamedev.nap.data;
 
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.utils.Array;
+
 import de.htw.saarland.gamedev.nap.data.entities.SensorEntity;
 
 public class SpawnPoint {
@@ -30,5 +33,75 @@ public class SpawnPoint {
 	}
 	public int getTeamId() {
 		return teamId;
+	}
+	
+	public static void handleContactBegin(Fixture fA, Fixture fB, Team blueTeam, Team redTeam){
+		//Spawn point regeneration
+		if (fA.getUserData() != null && fA.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_BLUE)) {
+			// spawnPoint team blue
+			for (Player p : blueTeam.getMembers()) {
+				if (p.getPlChar().getFixture().equals(fB)) {
+					p.getPlChar().setAtSpawn(true);
+					break;
+				}
+			}
+		} else if (fB.getUserData() != null && fB.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_BLUE)) {
+			for (Player p : blueTeam.getMembers()) {
+				if (p.getPlChar().getFixture().equals(fA)) {
+					p.getPlChar().setAtSpawn(true);
+					break;
+				}
+			}
+		} else if (fA.getUserData() != null && fA.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_RED)) {
+			// spawnPoint team red
+			for (Player p : redTeam.getMembers()) {
+				if (p.getPlChar().getFixture().equals(fB)) {
+					p.getPlChar().setAtSpawn(true);
+					break;
+				}
+			}
+		} else if (fB.getUserData() != null && fB.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_RED)) {
+			for (Player p : redTeam.getMembers()) {
+				if (p.getPlChar().getFixture().equals(fA)) {
+					p.getPlChar().setAtSpawn(true);
+					break;
+				}
+			}				
+		}
+	}
+	
+	public static void handleContactEnd(Fixture fA, Fixture fB, Team blueTeam, Team redTeam){
+		//Spawn point team blue
+		if (fA != null && fA.getUserData() != null && fA.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_BLUE)) {
+			for (Player p : blueTeam.getMembers()) {
+				if (p.getPlChar().getFixture().equals(fB)) {
+					p.getPlChar().setAtSpawn(false);
+					break;
+				}
+			}
+		} else if (fB != null && fB.getUserData() != null && fB.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_BLUE)) {
+			for (Player p : blueTeam.getMembers()) {
+				if (p.getPlChar().getFixture().equals(fA)) {
+					p.getPlChar().setAtSpawn(false);
+					break;
+				}
+			}
+		}
+		//Spawn point team red
+		else if (fA != null && fA.getUserData() != null && fA.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_RED)) {
+			for (Player p : redTeam.getMembers()) {
+				if (p.getPlChar().getFixture().equals(fB)) {
+					p.getPlChar().setAtSpawn(false);
+					break;
+				}
+			}
+		} else if (fB != null && fB.getUserData() != null && fB.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_RED)) {
+			for (Player p : redTeam.getMembers()) {
+				if (p.getPlChar().getFixture().equals(fA)) {
+					p.getPlChar().setAtSpawn(false);
+					break;
+				}
+			}
+		}
 	}
 }

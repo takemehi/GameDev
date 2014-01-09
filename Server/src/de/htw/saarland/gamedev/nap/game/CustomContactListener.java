@@ -7,13 +7,13 @@ import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.WorldManifold;
 import com.badlogic.gdx.utils.Array;
 
 import de.htw.saarland.gamedev.nap.data.CapturePoint;
 import de.htw.saarland.gamedev.nap.data.GameWorld;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
 import de.htw.saarland.gamedev.nap.data.Player;
+import de.htw.saarland.gamedev.nap.data.SpawnPoint;
 import de.htw.saarland.gamedev.nap.data.Team;
 import de.htw.saarland.gamedev.nap.data.entities.Entity;
 import de.htw.saarland.gamedev.nap.data.skills.Axe;
@@ -49,243 +49,17 @@ public class CustomContactListener implements ContactListener {
 		Fixture fB = contact.getFixtureB();
 
 		if (fA.getUserData() != null && fB.getUserData() != null) {
+			//Character abilities
+			Axe.handleContact(fA, fB, players);
+			Snare.handleContact(fA, fB, players);
+			Charge.handleContact(fA, fB, players);
+			Fireball.handleContact(fA, fB, players);
+			Pyroblast.handleContact(fA, fB, players);
+			Nova.handleContact(fA, fB, players);
 			
-			// Axe hitting a player
-			if ((fA.getUserData() == Axe.USERDATA_AXE && fB.getUserData() == PlayableCharacter.USERDATA_PLAYER)) {
-				for (Player p : players) {
-					if (p.getPlChar().getFixture().equals(fB)) {
-						p.getPlChar().setHealth(p.getPlChar().getHealth() - Axe.DAMAGE);
-						break;
-					}
-				}
-			} 
-			else if (fB.getUserData() == Axe.USERDATA_AXE && fA.getUserData() == PlayableCharacter.USERDATA_PLAYER) {
-				for (Player p : players) {
-					if (p.getPlChar().getFixture().equals(fA)) {
-						p.getPlChar().setHealth(p.getPlChar().getHealth() - Axe.DAMAGE);
-						break;
-					}
-				}
-			}
-			
-			//Snare hitting a player
-			else if (fA.getUserData() == Snare.USERDATA_SNARE && fB.getUserData() == PlayableCharacter.USERDATA_PLAYER) {
-				for (Player p : players) {
-					if (p.getPlChar().getFixture().equals(fB)) {
-						p.getPlChar().setHealth(p.getPlChar().getHealth() - Snare.DAMAGE);
-						p.getPlChar().setSnared(true, Snare.DURATION_SNARE);
-						break;
-					}
-				}
-			}
-			else if (fB.getUserData() == Snare.USERDATA_SNARE && fA.getUserData() == PlayableCharacter.USERDATA_PLAYER) {
-				for (Player p : players) {
-					if (p.getPlChar().getFixture().equals(fA)) {
-						p.getPlChar().setHealth(p.getPlChar().getHealth() - Snare.DAMAGE);
-						p.getPlChar().setSnared(true, Snare.DURATION_SNARE);
-						break;
-					}
-				}
-			}
-			
-			//Charge hitting the world
-			
-			else if(fA.getUserData()==Charge.USERDATA_CHARGE && fB.getUserData()==GameWorld.USERDATA_FIXTURE_WORLD){
-				for(Player p: players){
-					if(p.getPlChar().getFixture().equals(fA)) p.getPlChar().getAttack2().reset();
-				}
-			}
-			else if(fB.getUserData()==Charge.USERDATA_CHARGE && fA.getUserData()==GameWorld.USERDATA_FIXTURE_WORLD){
-				for(Player p: players){
-					if(p.getPlChar().getFixture().equals(fB)) p.getPlChar().getAttack2().reset();
-				}
-			}
-			
-			//Charge hitting a player
-			else if(fA.getUserData()==Charge.USERDATA_CHARGE && fB.getUserData()==PlayableCharacter.USERDATA_PLAYER){	
-				for(Player p: players){
-					if(p.getPlChar().getFixture().equals(fB)){
-						p.getPlChar().setHealth(p.getPlChar().getHealth()-Charge.DAMAGE);
-						p.getPlChar().setStunned(true, Charge.DURATION_STUN);
-						for(Player pl: players){
-							if(pl.getPlChar().getFixture().equals(fA)) pl.getPlChar().getAttack2().reset();
-						}
-						break;
-					}
-				}
-			}	
-			else if(fB.getUserData()==Charge.USERDATA_CHARGE && fA.getUserData()==PlayableCharacter.USERDATA_PLAYER){
-				for(Player p: players){
-					if(p.getPlChar().getFixture().equals(fA)){
-						p.getPlChar().setHealth(p.getPlChar().getHealth()-Charge.DAMAGE);
-						p.getPlChar().setStunned(true, Charge.DURATION_STUN);
-						for(Player pl: players){
-							if(pl.getPlChar().getFixture().equals(fB)) pl.getPlChar().getAttack2().reset();
-						}
-						break;
-					}
-				}
-			}
-			
-					
-			//Snare hitting a player
-			
-			else if(fA.getUserData()==Snare.USERDATA_SNARE && fB.getUserData()==PlayableCharacter.USERDATA_PLAYER){
-				for(Player p: players){
-					if(p.getPlChar().getFixture().equals(fB)){
-						p.getPlChar().setHealth(p.getPlChar().getHealth()-Snare.DAMAGE);
-						p.getPlChar().setSnared(true, Snare.DURATION_SNARE);
-					}
-				}
-			}
-			else if(fB.getUserData()==Snare.USERDATA_SNARE && fA.getUserData()==PlayableCharacter.USERDATA_PLAYER){
-				for(Player p: players){
-					if(p.getPlChar().getFixture().equals(fA)){
-						p.getPlChar().setHealth(p.getPlChar().getHealth()-Snare.DAMAGE);
-						p.getPlChar().setSnared(true, Snare.DURATION_SNARE);
-					}
-				}
-			}
-			
-			// Fireball hitting the world
-			else if (fA.getUserData() == Fireball.USERDATA_FIREBALL && fB.getUserData() == GameWorld.USERDATA_FIXTURE_WORLD) {
-				fA.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
-			} else if (fB.getUserData() == Fireball.USERDATA_FIREBALL && fA.getUserData() == GameWorld.USERDATA_FIXTURE_WORLD) {
-				fB.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
-			}
-			// Fireball hitting a player
-			else if (fA.getUserData() == Fireball.USERDATA_FIREBALL && fB.getUserData() == PlayableCharacter.USERDATA_PLAYER) {
-				for (Player p : players) {
-					if (p.getPlChar().getFixture().equals(fB)) {
-						p.getPlChar().setHealth(p.getPlChar().getHealth() - Fireball.DAMAGE);
-						break;
-					}
-				}
-				fA.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
-			} else if (fB.getUserData() == Fireball.USERDATA_FIREBALL && fA.getUserData() == PlayableCharacter.USERDATA_PLAYER) {
-				for (Player p : players) {
-					if (p.getPlChar().getFixture().equals(fA)) {
-						p.getPlChar().setHealth(p.getPlChar().getHealth() - Fireball.DAMAGE);
-						break;
-					}
-				}
-				fB.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
-			}
-			// Pyroblast hitting the world
-			else if (fA.getUserData() == Pyroblast.USERDATA_PYROBLAST && fB.getUserData() == GameWorld.USERDATA_FIXTURE_WORLD) {
-				fA.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
-			} else if (fB.getUserData() == Pyroblast.USERDATA_PYROBLAST && fA.getUserData() == GameWorld.USERDATA_FIXTURE_WORLD) {
-				fB.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
-			}
-			// Pyroblast hitting a player
-			else if (fA.getUserData() == Pyroblast.USERDATA_PYROBLAST && fB.getUserData() == PlayableCharacter.USERDATA_PLAYER) {
-				for (Player p : players) {
-					if (p.getPlChar().getFixture().equals(fB)) {
-						p.getPlChar().setHealth(p.getPlChar().getHealth() - Pyroblast.DAMAGE);
-						break;
-					}
-				}
-				fA.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
-			} else if (fB.getUserData() == Pyroblast.USERDATA_PYROBLAST && fA.getUserData() == PlayableCharacter.USERDATA_PLAYER) {
-				for (Player p : players) {
-					if (p.getPlChar().getFixture().equals(fA)) {
-						p.getPlChar().setHealth(p.getPlChar().getHealth() - Pyroblast.DAMAGE);
-						break;
-					}
-				}
-				fB.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
-			}
-			// Nova hitting a player
-			else if (fA.getUserData() == Nova.USERDATA_NOVA && fB.getUserData() == PlayableCharacter.USERDATA_PLAYER) {
-				Vector2 direction;
-
-				for (Player p : players) {
-					if (p.getPlChar().getFixture().equals(fB)) {
-						direction = new Vector2(p.getPlChar().getBody().getPosition().x - fA.getBody().getPosition().x, p.getPlChar().getBody().getPosition().y - fA.getBody().getPosition().y);
-						direction = direction.nor();
-						direction.mul(Nova.FORCE);
-						p.getPlChar().setHealth(p.getPlChar().getHealth() - Nova.DAMAGE);
-						p.getPlChar().setStunned(true, Nova.DURATION_STUN);
-						p.getPlChar().getBody().applyLinearImpulse(direction, p.getPlChar().getBody().getPosition(), true);
-						break;
-					}
-				}
-			} 
-			else if (fB.getUserData() == Nova.USERDATA_NOVA && fA.getUserData() == PlayableCharacter.USERDATA_PLAYER) {
-				Vector2 direction;
-
-				for (Player p : players) {
-					if (p.getPlChar().getFixture().equals(fA)) {
-						direction = new Vector2(p.getPlChar().getBody().getPosition().x - fB.getBody().getPosition().x, p.getPlChar().getBody().getPosition().y - fB.getBody().getPosition().y);
-						direction = direction.nor();
-						direction.mul(Nova.FORCE);
-						p.getPlChar().setHealth(p.getPlChar().getHealth() - Nova.DAMAGE);
-						p.getPlChar().setStunned(true, Nova.DURATION_STUN);
-						p.getPlChar().getBody().applyLinearImpulse(direction, p.getPlChar().getBody().getPosition(), true);
-						break;
-					}
-				}
-			}
-			
-			//Capture point permission
-			else if(fA.getUserData().equals(GameWorld.USERDATA_FIXTURE_CAPTUREPOINT)
-					&& fB.getUserData().equals(PlayableCharacter.USERDATA_PLAYER)){
-				for(CapturePoint c: capturePoints){
-					if(c.getCapturePoint().getFixture().equals(fA)){
-						for(Player p: players){
-							if(p.getPlChar().getFixture().equals(fB)){
-								p.getPlChar().setPointEligibleToCapture(c.getCapturePoint().getId());
-								break;
-							}
-						}
-					}
-				}
-			}
-			else if(fB.getUserData().equals(GameWorld.USERDATA_FIXTURE_CAPTUREPOINT)
-					&& fA.getUserData().equals(PlayableCharacter.USERDATA_PLAYER)){
-				for(CapturePoint c: capturePoints){
-					if(c.getCapturePoint().getFixture().equals(fB)){
-						for(Player p: players){
-							if(p.getPlChar().getFixture().equals(fA)){
-								p.getPlChar().setPointEligibleToCapture(c.getCapturePoint().getId());
-								break;
-							}
-						}
-					}
-				}
-			}
-		}
-		//Spawn point regeneration
-		else if (fA.getUserData() != null && fA.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_BLUE)) {
-			// spawnPoint team blue
-			for (Player p : blueTeam.getMembers()) {
-				if (p.getPlChar().getFixture().equals(fB)) {
-					p.getPlChar().setAtSpawn(true);
-					break;
-				}
-			}
-		} else if (fB.getUserData() != null && fB.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_BLUE)) {
-			for (Player p : blueTeam.getMembers()) {
-				if (p.getPlChar().getFixture().equals(fA)) {
-					p.getPlChar().setAtSpawn(true);
-					break;
-				}
-			}
-		} else if (fA.getUserData() != null && fA.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_RED)) {
-			// spawnPoint team red
-			for (Player p : redTeam.getMembers()) {
-				if (p.getPlChar().getFixture().equals(fB)) {
-					p.getPlChar().setAtSpawn(true);
-					break;
-				}
-			}
-		} else if (fB.getUserData() != null && fB.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_RED)) {
-			for (Player p : redTeam.getMembers()) {
-				if (p.getPlChar().getFixture().equals(fA)) {
-					p.getPlChar().setAtSpawn(true);
-					break;
-				}
-			}				
+			//Capture- and spawn point
+			CapturePoint.handleContactBegin(fA, fB, players, capturePoints);
+			SpawnPoint.handleContactBegin(fA, fB, blueTeam, redTeam);
 		}
 		
 	}
@@ -296,58 +70,8 @@ public class CustomContactListener implements ContactListener {
 		Fixture fB = contact.getFixtureB();
 		
 		if(fA!=null && fB!=null){
-			//Capture point permission
-			if(fA.getUserData()!=null && fA.getUserData().equals(GameWorld.USERDATA_FIXTURE_CAPTUREPOINT)
-					&& fB.getUserData()!=null && fB.getUserData().equals(PlayableCharacter.USERDATA_PLAYER)){
-				for(Player p: players){
-					if(p.getPlChar().getFixture().equals(fB)){
-						p.getPlChar().setPointEligibleToCapture(-1);
-						break;
-					}
-				}
-			}
-			else if(fB.getUserData()!=null && fB.getUserData().equals(GameWorld.USERDATA_FIXTURE_CAPTUREPOINT)
-					&& fA.getUserData()!=null && fA.getUserData().equals(PlayableCharacter.USERDATA_PLAYER)){
-				for(Player p: players){
-					if(p.getPlChar().getFixture().equals(fA)){
-						p.getPlChar().setPointEligibleToCapture(-1);
-						break;
-					}
-				}			
-			}
-			
-			//Spawn point team blue
-			if (fA != null && fA.getUserData() != null && fA.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_BLUE)) {
-				for (Player p : blueTeam.getMembers()) {
-					if (p.getPlChar().getFixture().equals(fB)) {
-						p.getPlChar().setAtSpawn(false);
-						break;
-					}
-				}
-			} else if (fB != null && fB.getUserData() != null && fB.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_BLUE)) {
-				for (Player p : blueTeam.getMembers()) {
-					if (p.getPlChar().getFixture().equals(fA)) {
-						p.getPlChar().setAtSpawn(false);
-						break;
-					}
-				}
-			}
-			//Spawn point team red
-			else if (fA != null && fA.getUserData() != null && fA.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_RED)) {
-				for (Player p : redTeam.getMembers()) {
-					if (p.getPlChar().getFixture().equals(fB)) {
-						p.getPlChar().setAtSpawn(false);
-						break;
-					}
-				}
-			} else if (fB != null && fB.getUserData() != null && fB.getUserData().equals(GameWorld.USERDATA_FIXTURE_SPAWNPOINT_RED)) {
-				for (Player p : redTeam.getMembers()) {
-					if (p.getPlChar().getFixture().equals(fA)) {
-						p.getPlChar().setAtSpawn(false);
-						break;
-					}
-				}
-			}
+			CapturePoint.handleContactEnd(fA, fB, players, capturePoints);
+			SpawnPoint.handleContactEnd(fA, fB, blueTeam, redTeam);
 		}
 	}
 

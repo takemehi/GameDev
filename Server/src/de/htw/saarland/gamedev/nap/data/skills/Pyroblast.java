@@ -3,9 +3,13 @@ package de.htw.saarland.gamedev.nap.data.skills;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 
+import de.htw.saarland.gamedev.nap.data.GameWorld;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
+import de.htw.saarland.gamedev.nap.data.Player;
 import de.htw.saarland.gamedev.nap.data.entities.Entity;
 import de.htw.saarland.gamedev.nap.data.entities.SensorEntity;
 
@@ -82,5 +86,32 @@ public class Pyroblast extends Skill{
 			world.destroyBody(ball.getBody());
 			ball=null;
 		}			
+	}
+	
+	public static void handleContact(Fixture fA, Fixture fB, Array<Player> players){
+		// Pyroblast hitting the world
+		if (fA.getUserData() == Pyroblast.USERDATA_PYROBLAST && fB.getUserData() == GameWorld.USERDATA_FIXTURE_WORLD) {
+			fA.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
+		} else if (fB.getUserData() == Pyroblast.USERDATA_PYROBLAST && fA.getUserData() == GameWorld.USERDATA_FIXTURE_WORLD) {
+			fB.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
+		}
+		// Pyroblast hitting a player
+		else if (fA.getUserData() == Pyroblast.USERDATA_PYROBLAST && fB.getUserData() == PlayableCharacter.USERDATA_PLAYER) {
+			for (Player p : players) {
+				if (p.getPlChar().getFixture().equals(fB)) {
+					p.getPlChar().setHealth(p.getPlChar().getHealth() - Pyroblast.DAMAGE);
+					break;
+				}
+			}
+			fA.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
+		} else if (fB.getUserData() == Pyroblast.USERDATA_PYROBLAST && fA.getUserData() == PlayableCharacter.USERDATA_PLAYER) {
+			for (Player p : players) {
+				if (p.getPlChar().getFixture().equals(fA)) {
+					p.getPlChar().setHealth(p.getPlChar().getHealth() - Pyroblast.DAMAGE);
+					break;
+				}
+			}
+			fB.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
+		}
 	}
 }
