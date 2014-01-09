@@ -73,12 +73,12 @@ public class ClientNPC implements IRender, IMoveable, Disposable {
 
 	@Override
 	public void startJump() {
-		npc.setJumping(true);
+		npc.setUp(true);
 	}
 	
 	@Override
 	public void stopJump() {
-		npc.setJumping(false);
+		npc.setUp(false);
 	}
 
 	@Override
@@ -99,7 +99,6 @@ public class ClientNPC implements IRender, IMoveable, Disposable {
 
 	@Override
 	public void dispose() {
-		npc.dispose();
 		animation.dispose();
 	}
 }

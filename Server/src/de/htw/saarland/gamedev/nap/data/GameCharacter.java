@@ -331,5 +331,9 @@ public class GameCharacter extends MoveableEntity{
 		if(timeOnGround<0) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_GROUNDTIME);
 		this.timeOnGround=timeOnGround;
 	}
+	
+	public boolean isMoving() {
+		return movementEnabled && (movingLeft || movingRight || movingUp || movingDown);
+	}
 
 }

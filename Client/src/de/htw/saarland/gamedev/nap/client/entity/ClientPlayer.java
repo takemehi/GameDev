@@ -11,6 +11,7 @@ import de.htw.saarland.gamedev.nap.client.render.EntityAnimation.CharacterStates
 import de.htw.saarland.gamedev.nap.client.render.character.MageAnimation;
 import de.htw.saarland.gamedev.nap.client.render.character.WarriorAnimation;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
+import de.htw.saarland.gamedev.nap.game.GameServer;
 
 public class ClientPlayer implements IRender, IMoveable, Disposable {
 
@@ -42,7 +43,7 @@ public class ClientPlayer implements IRender, IMoveable, Disposable {
 		stateTime += Gdx.graphics.getDeltaTime();
 		
 		Vector2 pos = character.getBody().getPosition();
-		batch.draw(animations.getAnimationFrame(getCharacterState(), stateTime), pos.x, pos.y);
+		batch.draw(animations.getAnimationFrame(getCharacterState(), stateTime), pos.x * 96, pos.y * 96);
 		
 		// TODO render healthbar & name
 	}
@@ -114,7 +115,6 @@ public class ClientPlayer implements IRender, IMoveable, Disposable {
 
 	@Override
 	public void dispose() {
-		character.dispose();
 		animations.dispose();
 	}
 

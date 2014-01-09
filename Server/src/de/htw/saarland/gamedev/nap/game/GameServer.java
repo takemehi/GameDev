@@ -140,13 +140,13 @@ public class GameServer implements ApplicationListener {
 		
 		Array<Player> blue = new Array<Player>();
 		for(int i=0; i<charactersBlue.size(); i++){
-			blue.add(new Player(blueMembers.get(i), world, spawnPointBlue.getSpawnPoint().getPositionOriginal(), charactersBlue.get(i), PlayableCharacter.ID_TEAM_BLUE, currentId++));
+			blue.add(new Player(blueMembers.get(i), world, spawnPointBlue.getSpawnPoint().getPositionOriginal(), charactersBlue.get(i), PlayableCharacter.ID_TEAM_BLUE, currentId++, extension));
 		}
 		blueTeam = new Team(spawnPointBlue, blue);
 		
 		Array<Player> red = new Array<Player>();
 		for(int i=0; i<charactersRed.size(); i++){
-			red.add(new Player(redMembers.get(i), world, spawnPointRed.getSpawnPoint().getPositionOriginal(), charactersRed.get(i), PlayableCharacter.ID_TEAM_RED, currentId++));
+			red.add(new Player(redMembers.get(i), world, spawnPointRed.getSpawnPoint().getPositionOriginal(), charactersRed.get(i), PlayableCharacter.ID_TEAM_RED, currentId++, extension));
 		}
 		redTeam = new Team(spawnPointRed, red);
 		
@@ -182,8 +182,6 @@ public class GameServer implements ApplicationListener {
 	
 	@Override
 	public void dispose() {
-		blueTeam.dispose();
-		redTeam.dispose();
 		world.dispose();
 		map.dispose();
 	}

@@ -3,7 +3,7 @@ package de.htw.saarland.gamedev.nap.data;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
-public class Team implements Disposable {
+public class Team {
 	
 	public static final int ID_TEAM_BLUE = 0;
 	public static final int ID_TEAM_RED = 1;
@@ -36,12 +36,5 @@ public class Team implements Disposable {
 
 	public void addPoints(int points) {
 		this.points += points;
-	}
-
-	@Override
-	public void dispose() {
-		for (Player player: members) {
-			player.dispose();
-		}
 	}
 }

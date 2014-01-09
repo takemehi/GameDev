@@ -65,10 +65,6 @@ public abstract class Entity {
 		fixtureDef.shape=shape;
 	}
 	
-	public void dispose(){
-		fixtureDef.shape.dispose();
-	}
-	
 	//getter / setter
 	
 	public BodyDef getBodyDef() {
@@ -102,7 +98,7 @@ public abstract class Entity {
 		if(fixture==null) throw new NullPointerException(EXCEPTION_NULL_FIXTURE);
 		this.fixture=fixture;
 		if(this.body!=null && this.fixture!=null) initialized=true;
-		dispose();
+		fixtureDef.shape.dispose();
 	}
 	
 	public Fixture getFixture(){

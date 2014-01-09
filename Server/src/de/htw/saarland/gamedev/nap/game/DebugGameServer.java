@@ -150,12 +150,12 @@ public class DebugGameServer implements ApplicationListener {
 		Array<Player> playersRed = new Array<Player>();
 		for(int i=0; i<charactersBlue.length; i++){
 			//TODO change user
-			playersBlue.add(new Player(null, world, spawnPointBlue.getSpawnPoint().getPositionOriginal(), charactersBlue[i], PlayableCharacter.ID_TEAM_BLUE, currentId++));
+			playersBlue.add(new Player(null, world, spawnPointBlue.getSpawnPoint().getPositionOriginal(), charactersBlue[i], PlayableCharacter.ID_TEAM_BLUE, currentId++, null));
 		}
 		teamBlue = new Team(spawnPointBlue, playersBlue);
 		for(int i=0; i<charactersRed.length; i++){
 			//TODO change user
-			playersRed.add(new Player(null, world, SpawnPointRed.getSpawnPoint().getPositionOriginal(), charactersRed[i], PlayableCharacter.ID_TEAM_RED, currentId++));
+			playersRed.add(new Player(null, world, SpawnPointRed.getSpawnPoint().getPositionOriginal(), charactersRed[i], PlayableCharacter.ID_TEAM_RED, currentId++, null));
 		}
 		teamRed = new Team(SpawnPointRed, playersRed);
 		

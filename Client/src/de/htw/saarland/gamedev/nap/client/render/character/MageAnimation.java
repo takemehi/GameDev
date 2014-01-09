@@ -13,9 +13,9 @@ public class MageAnimation extends EntityAnimation {
 
 private static final String ANIMATIONSHEET_FILEPATH = "data/gfx/mageSheet.png";
 	
-	private static final int SPRITE_WIDTH = 115;
-	private static final int SPRITE_HEIGHT = 115;
-	private static final float FRAME_DURATION = 0.025f;
+	private static final int SPRITE_WIDTH = 96;
+	private static final int SPRITE_HEIGHT = 96;
+	private static final float FRAME_DURATION = 0.1f;
 	private static final int WALK_FRAMES = 6;
 	private static final int SKILL1_FRAMES = 6;
 	private static final int SKILL3_FRAMES = 6;

@@ -39,6 +39,7 @@ import de.htw.saarland.gamedev.nap.data.Mage;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
 import de.htw.saarland.gamedev.nap.data.Warrior;
 import de.htw.saarland.gamedev.nap.data.network.GameOpcodes;
+import de.htw.saarland.gamedev.nap.game.CustomContactListener;
 import de.htw.saarland.gamedev.nap.game.GameServer;
 
 /**
@@ -323,6 +324,7 @@ public class GameClient implements ApplicationListener, IEventListener {
 		isInitialized = gameWorld != null && world != null && player != null && allObjectsReceived;
 		
 		if (isInitialized) {
+			//TODO init contact listener
 			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_INITIALIZED, null, gameRoom));
 		}
 	}
