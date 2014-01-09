@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Stack;
 
 import sfs2x.client.SmartFox;
 import sfs2x.client.core.BaseEvent;
@@ -39,7 +38,6 @@ import de.htw.saarland.gamedev.nap.data.Mage;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
 import de.htw.saarland.gamedev.nap.data.Warrior;
 import de.htw.saarland.gamedev.nap.data.network.GameOpcodes;
-import de.htw.saarland.gamedev.nap.game.CustomContactListener;
 import de.htw.saarland.gamedev.nap.game.GameServer;
 
 /**
@@ -302,8 +300,11 @@ public class GameClient implements ApplicationListener, IEventListener {
 			case GameOpcodes.GAME_MOVE_JUMP_START:
 				moveEntity(Direction.JUMP, params.getInt(GameOpcodes.ENTITY_ID_PARAM));
 				break;
-			case GameOpcodes.GAME_MOVE_STOP:
-				moveEntity(Direction.STOP, params.getInt(GameOpcodes.ENTITY_ID_PARAM));
+			case GameOpcodes.GAME_MOVE_STOP_LEFT:
+				moveEntity(Direction.STOP_LEFT, params.getInt(GameOpcodes.ENTITY_ID_PARAM));
+				break;
+			case GameOpcodes.GAME_MOVE_STOP_RIGHT:
+				moveEntity(Direction.STOP_RIGHT, params.getInt(GameOpcodes.ENTITY_ID_PARAM));
 				break;
 			case GameOpcodes.GAME_MOVE_DOWN_STOP:
 				moveEntity(Direction.STOP_DOWN, params.getInt(GameOpcodes.ENTITY_ID_PARAM));
@@ -397,9 +398,13 @@ public class GameClient implements ApplicationListener, IEventListener {
 				System.out.println("stop jump");
 				entity.stopJump();
 				break;
-			case STOP:
-				System.out.println("stop");
-				entity.stopMove();
+			case STOP_LEFT:
+				System.out.println("stop left");
+				entity.stopMoveLeft();
+				break;
+			case STOP_RIGHT:
+				System.out.println("stop right");
+				entity.stopMoveRight();
 				break;
 			case STOP_DOWN:
 				System.out.println("stop down");
@@ -422,7 +427,8 @@ public class GameClient implements ApplicationListener, IEventListener {
 		RIGHT,
 		DOWN,
 		JUMP,
-		STOP,
+		STOP_LEFT,
+		STOP_RIGHT,
 		STOP_DOWN,
 		STOP_JUMP
 	}

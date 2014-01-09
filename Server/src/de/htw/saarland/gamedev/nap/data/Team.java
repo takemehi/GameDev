@@ -1,7 +1,6 @@
 package de.htw.saarland.gamedev.nap.data;
 
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Disposable;
 
 public class Team {
 	

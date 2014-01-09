@@ -5,13 +5,12 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 
-import de.htw.saarland.gamedev.nap.client.render.IRender;
 import de.htw.saarland.gamedev.nap.client.render.EntityAnimation;
 import de.htw.saarland.gamedev.nap.client.render.EntityAnimation.CharacterStates;
+import de.htw.saarland.gamedev.nap.client.render.IRender;
 import de.htw.saarland.gamedev.nap.client.render.character.MageAnimation;
 import de.htw.saarland.gamedev.nap.client.render.character.WarriorAnimation;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
-import de.htw.saarland.gamedev.nap.game.GameServer;
 
 public class ClientPlayer implements IRender, IMoveable, Disposable {
 
@@ -98,8 +97,12 @@ public class ClientPlayer implements IRender, IMoveable, Disposable {
 	}
 
 	@Override
-	public void stopMove() {
+	public void stopMoveLeft() {
 		character.setLeft(false);
+	}
+	
+	@Override
+	public void stopMoveRight() {
 		character.setRight(false);
 	}
 

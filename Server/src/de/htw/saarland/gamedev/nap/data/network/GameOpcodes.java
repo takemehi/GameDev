@@ -43,7 +43,16 @@ public class GameOpcodes {
 	 * returns:<br/>
 	 * 	GAME_MOVE_STOP when the character stopped moving
 	 */
-	public static final String GAME_MOVE_STOP_REQUEST = "game.player.move.stop.request";
+	public static final String GAME_MOVE_STOP_RIGHT_REQUEST = "game.player.move.stop.right.request";
+	/**
+	 * C->S<br/>
+	 * <br/>
+	 * Opcode to request that the player would like stop moving<br/>
+	 * <br/>
+	 * returns:<br/>
+	 * 	GAME_MOVE_STOP when the character stopped moving
+	 */
+	public static final String GAME_MOVE_STOP_LEFT_REQUEST = "game.player.move.stop.left.request";
 	/**
 	 * C->S<br/>
 	 * <br/>
@@ -159,7 +168,17 @@ public class GameOpcodes {
 	 * params:<br/>
 	 * 	int ENTITY_ID_PARAM the id of the entity that stopped moving
 	 */
-	public static final String GAME_MOVE_STOP = "game.player.move.stop";
+	public static final String GAME_MOVE_STOP_RIGHT = "game.player.move.stop.right";
+	/**
+	 * S->C<br/>
+	 * <br/>
+	 * Opcode that indicates that the character should stop moving, this can happen<br/>
+	 * because of a collision with something or because the player stopped to press a move key<br/>
+	 * <br/>
+	 * params:<br/>
+	 * 	int ENTITY_ID_PARAM the id of the entity that stopped moving
+	 */
+	public static final String GAME_MOVE_STOP_LEFT = "game.player.move.stop.left";
 	
 	/**
 	 * S->C<br/>

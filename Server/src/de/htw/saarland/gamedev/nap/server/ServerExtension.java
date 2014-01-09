@@ -16,7 +16,8 @@ import de.htw.saarland.gamedev.nap.server.game.handler.GameMoveJumpHandler;
 import de.htw.saarland.gamedev.nap.server.game.handler.GameMoveJumpStopHandler;
 import de.htw.saarland.gamedev.nap.server.game.handler.GameMoveLeftHandler;
 import de.htw.saarland.gamedev.nap.server.game.handler.GameMoveRightHandler;
-import de.htw.saarland.gamedev.nap.server.game.handler.GameMoveStopHandler;
+import de.htw.saarland.gamedev.nap.server.game.handler.GameMoveStopLeftHandler;
+import de.htw.saarland.gamedev.nap.server.game.handler.GameMoveStopRightHandler;
 import de.htw.saarland.gamedev.nap.server.game.handler.GetMoveableEntitiesHandler;
 import de.htw.saarland.gamedev.nap.server.launcher.Launcher;
 import de.htw.saarland.gamedev.nap.server.launcher.LauncherOpcodes;
@@ -91,7 +92,8 @@ public class ServerExtension extends SFSExtension implements Runnable {
 		addRequestHandler(GameOpcodes.GAME_MOVE_JUMP_STOP_REQUEST, GameMoveJumpStopHandler.class);
 		addRequestHandler(GameOpcodes.GAME_MOVE_LEFT_REQUEST, GameMoveLeftHandler.class);
 		addRequestHandler(GameOpcodes.GAME_MOVE_RIGHT_REQUEST, GameMoveRightHandler.class);
-		addRequestHandler(GameOpcodes.GAME_MOVE_STOP_REQUEST, GameMoveStopHandler.class);
+		addRequestHandler(GameOpcodes.GAME_MOVE_STOP_LEFT_REQUEST, GameMoveStopLeftHandler.class);
+		addRequestHandler(GameOpcodes.GAME_MOVE_STOP_RIGHT_REQUEST, GameMoveStopRightHandler.class);
 		
 		ArrayList<LauncherPlayer> redTeam = new ArrayList<LauncherPlayer>();
 		ArrayList<LauncherPlayer> blueTeam = new ArrayList<LauncherPlayer>();

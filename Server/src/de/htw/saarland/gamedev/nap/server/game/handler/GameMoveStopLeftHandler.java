@@ -11,7 +11,7 @@ import de.htw.saarland.gamedev.nap.data.network.GameOpcodes;
 import de.htw.saarland.gamedev.nap.game.GameServer;
 import de.htw.saarland.gamedev.nap.server.ServerExtension;
 
-public class GameMoveStopHandler extends BaseClientRequestHandler {
+public class GameMoveStopLeftHandler extends BaseClientRequestHandler {
 
 	@Override
 	public void handleClientRequest(User user, ISFSObject args) {
@@ -20,10 +20,9 @@ public class GameMoveStopHandler extends BaseClientRequestHandler {
 		Player player = game.getPlayerBySFSUser((SFSUser)user);
 		
 		player.getPlChar().setLeft(false);
-		player.getPlChar().setRight(false);
 		SFSObject params = new SFSObject();
 		params.putInt(GameOpcodes.ENTITY_ID_PARAM, player.getPlChar().getId());
-		send(GameOpcodes.GAME_MOVE_STOP, params, getParentExtension().getParentRoom().getPlayersList());
+		send(GameOpcodes.GAME_MOVE_STOP_LEFT, params, getParentExtension().getParentRoom().getPlayersList());
 	}
 
 }
