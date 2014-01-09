@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.WorldManifold;
 import com.badlogic.gdx.utils.Array;
 
 import de.htw.saarland.gamedev.nap.data.CapturePoint;
@@ -48,6 +49,7 @@ public class CustomContactListener implements ContactListener {
 		Fixture fB = contact.getFixtureB();
 
 		if (fA.getUserData() != null && fB.getUserData() != null) {
+			
 			// Axe hitting a player
 			if ((fA.getUserData() == Axe.USERDATA_AXE && fB.getUserData() == PlayableCharacter.USERDATA_PLAYER)) {
 				for (Player p : players) {
@@ -357,7 +359,7 @@ public class CustomContactListener implements ContactListener {
 		float offsetB = 0;
 		PolygonShape playerShape;
 		Vector2 tmpVector = new Vector2();
-
+		
 		// calculate y offset
 		if (fA.getUserData() == PlayableCharacter.USERDATA_PLAYER || fA.getUserData() == Charge.USERDATA_CHARGE) {
 			playerShape = (PolygonShape) fA.getShape();

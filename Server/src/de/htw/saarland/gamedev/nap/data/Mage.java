@@ -1,6 +1,7 @@
 package de.htw.saarland.gamedev.nap.data;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.World;
 
 import de.htw.saarland.gamedev.nap.data.shapes.MageShape;
 import de.htw.saarland.gamedev.nap.data.skills.Fireball;
@@ -17,8 +18,8 @@ public class Mage extends PlayableCharacter{
 	private static final int MAXHEALTH = 100;
 	public static final float VELOCITY_FIREBALL = 1f;
 	
-	public Mage(Vector2 position, int teamId, int id) {
-		super(new MageShape(), DENSITY, FRICTION, RESTITUTION, position, BASEVELOCITY,
+	public Mage(World world, Vector2 position, int teamId, int id) {
+		super(world, new MageShape(), DENSITY, FRICTION, RESTITUTION, position, BASEVELOCITY,
 				MAXVELOCITY, MAXHEALTH, PlayableCharacter.ID_MAGE, teamId, id);
 		
 		attack1 = new Fireball();

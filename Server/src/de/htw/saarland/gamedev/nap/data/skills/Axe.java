@@ -41,7 +41,7 @@ public class Axe extends Skill{
 			position.x=character.getBody().getPosition().x-0.8f;
 		else
 			position.x=character.getBody().getPosition().x+0.0f;
-		axe = new SensorEntity(shape, position, currentId);
+		axe = new SensorEntity(world, shape, position, currentId);
 		axe.setBody(world.createBody(axe.getBodyDef()));
 		axe.getBody().setType(BodyType.DynamicBody);
 		axe.getFixtureDef().filter.groupIndex=character.getFixture().getFilterData().groupIndex;

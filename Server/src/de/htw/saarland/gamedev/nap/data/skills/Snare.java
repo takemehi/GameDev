@@ -45,7 +45,7 @@ public class Snare extends Skill {
 			position.x=character.getBody().getPosition().x-0.8f;
 		else
 			position.x=character.getBody().getPosition().x+0.0f;
-		snare = new SensorEntity(shape, position, currentId);
+		snare = new SensorEntity(world, shape, position, currentId);
 		snare.setBody(world.createBody(snare.getBodyDef()));
 		snare.getBody().setType(BodyType.DynamicBody);
 		snare.getFixtureDef().filter.groupIndex=character.getFixture().getFilterData().groupIndex;

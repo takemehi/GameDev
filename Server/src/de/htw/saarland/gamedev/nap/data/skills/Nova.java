@@ -33,7 +33,7 @@ public class Nova extends Skill{
 		CircleShape circle = new CircleShape();
 		circle.setRadius(RADIUS);
 				
-		nova = new SensorEntity(circle, character.getBody().getPosition(), currentId);
+		nova = new SensorEntity(world, circle, character.getBody().getPosition(), currentId);
 		nova.setBody(world.createBody(nova.getBodyDef()));
 		nova.getBody().setType(BodyType.DynamicBody);
 		nova.getFixtureDef().filter.groupIndex=character.getFixture().getFilterData().groupIndex;

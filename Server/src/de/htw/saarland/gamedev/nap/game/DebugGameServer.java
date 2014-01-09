@@ -246,7 +246,7 @@ public class DebugGameServer implements ApplicationListener {
 				if(Gdx.input.isKeyPressed(Keys.D))
 					plCh.setRight(true);
 				//TODO consider putting a world reference into the entity class
-				if(!Gdx.input.isKeyPressed(Keys.SPACE) && plCh.isGrounded(world))
+				if(!Gdx.input.isKeyPressed(Keys.SPACE))
 					plCh.setUp(false);
 				if(Gdx.input. isKeyPressed(Keys.SPACE))
 					plCh.setUp(true);
@@ -315,7 +315,7 @@ public class DebugGameServer implements ApplicationListener {
 			}
 			character.getAttack1().cleanUp(world);
 		}
-		System.out.println(capturePoints.get(0).isBeingCaptured()+"\t"+capturePoints.get(0).getTeamId()+"\t"+teamBlue.getPoints());
+		//System.out.println(teamBlue.getMembers().get(0).getPlChar().getTimeOnGround());
 	}
 	
 	@Override

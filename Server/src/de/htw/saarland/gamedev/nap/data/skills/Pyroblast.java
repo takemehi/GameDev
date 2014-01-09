@@ -42,7 +42,7 @@ public class Pyroblast extends Skill{
 			position.x=character.getBody().getPosition().x-0.2f;
 		else
 			position.x=character.getBody().getPosition().x+0.2f;
-		ball = new SensorEntity(shape, position, currentId);
+		ball = new SensorEntity(world, shape, position, currentId);
 		ball.setBody(world.createBody(ball.getBodyDef()));
 		ball.getFixtureDef().filter.groupIndex=character.getFixture().getFilterData().groupIndex;
 		ball.setFixture(ball.getBody().createFixture(ball.getFixtureDef()));

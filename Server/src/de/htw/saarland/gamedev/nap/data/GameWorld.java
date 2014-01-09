@@ -66,7 +66,7 @@ public class GameWorld {
 		if(position==null) throw new NullPointerException(EXCEPTION_NULL_VECTOR);
 		PolygonShape captureShape = new PolygonShape();
 		captureShape.setAsBox(.5f, .5f);
-		SensorEntity capturePoint = new SensorEntity(captureShape, position.x+.5f, position.y+.5f, currentId++);
+		SensorEntity capturePoint = new SensorEntity(world, captureShape, position.x+.5f, position.y+.5f, currentId++);
 		capturePoint.setBody(world.createBody(capturePoint.getBodyDef()));
 		capturePoint.setFixture(capturePoint.getBody().createFixture(capturePoint.getFixtureDef()));
 		capturePoint.getFixture().setUserData(USERDATA_FIXTURE_CAPTUREPOINT);
@@ -157,7 +157,7 @@ public class GameWorld {
 		ChainShape platformShape = new ChainShape();
 		StaticEntity platform;
 		platformShape.createChain(new Vector2[]{new Vector2(0,0), new Vector2(1,0)});
-		platform = new StaticEntity(platformShape, 1f, position, currentId++);
+		platform = new StaticEntity(world, platformShape, 1f, position, currentId++);
 		platform.setBody(world.createBody(platform.getBodyDef()));
 		platform.setFixture(platform.getBody().createFixture(platform.getFixtureDef()));
 		if(type==ID_TILE_PLATFORM_ONE) platform.getFixture().setUserData(USERDATA_FIXTURE_PLATFORM_ONE);
@@ -177,13 +177,13 @@ public class GameWorld {
 		SensorEntity entity;
 		//TODO position
 		if(team==PlayableCharacter.ID_TEAM_BLUE){
-			entity = new SensorEntity(spawnShape, position.x+.5f, position.y+.5f, currentId++);
+			entity = new SensorEntity(world, spawnShape, position.x+.5f, position.y+.5f, currentId++);
 			entity.setBody(world.createBody(entity.getBodyDef()));
 			entity.setFixture(entity.getBody().createFixture(entity.getFixtureDef()));
 			entity.getFixture().setUserData(USERDATA_FIXTURE_SPAWNPOINT_BLUE);
 			spawnPointBlue= new SpawnPoint(entity, PlayableCharacter.ID_TEAM_BLUE);
 		}else{
-			entity = new SensorEntity(spawnShape, position.x+.5f, position.y+.5f, currentId++);
+			entity = new SensorEntity(world, spawnShape, position.x+.5f, position.y+.5f, currentId++);
 			entity.setBody(world.createBody(entity.getBodyDef()));
 			entity.setFixture(entity.getBody().createFixture(entity.getFixtureDef()));
 			entity.getFixture().setUserData(USERDATA_FIXTURE_SPAWNPOINT_RED);

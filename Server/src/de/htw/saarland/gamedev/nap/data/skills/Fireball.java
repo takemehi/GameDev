@@ -23,7 +23,7 @@ public class Fireball extends Skill{
 	public static final float RADIUS = 0.1f;
 	public static final float TRAVEL_DISTANCE = 2f;
 	public static final float VELOCITY = 6;
-	public static final int DAMAGE = 35;
+	public static final int DAMAGE = 5;
 	
 	public static final String USERDATA_FIREBALL = "fireball";
 
@@ -41,7 +41,7 @@ public class Fireball extends Skill{
 		SensorEntity ball;
 		CircleShape shape = new CircleShape();
 		shape.setRadius(RADIUS);
-		ball = new SensorEntity(shape, character.getBody().getPosition().x, character.getBody().getPosition().y, currentId);
+		ball = new SensorEntity(world, shape, character.getBody().getPosition().x, character.getBody().getPosition().y, currentId);
 		ball.setBody(world.createBody(ball.getBodyDef()));
 		ball.getFixtureDef().filter.groupIndex=character.getFixture().getFilterData().groupIndex;
 		ball.setFixture(ball.getBody().createFixture(ball.getFixtureDef()));

@@ -1,9 +1,7 @@
 package de.htw.saarland.gamedev.nap.data;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
 
 import de.htw.saarland.gamedev.nap.data.shapes.WarriorShape;
 import de.htw.saarland.gamedev.nap.data.skills.Axe;
@@ -22,8 +20,8 @@ public class Warrior extends PlayableCharacter{
 	
 	public static final String USERDATA_AXE = "axe";
 	
-	public Warrior(Vector2 position, int teamId,  int id) {
-		super(new WarriorShape(), DENSITY, FRICTION, RESTITUTION, position, BASEVELOCITY,
+	public Warrior(World world, Vector2 position, int teamId,  int id) {
+		super(world, new WarriorShape(), DENSITY, FRICTION, RESTITUTION, position, BASEVELOCITY,
 				MAXVELOCITY, MAXHEALTH, PlayableCharacter.ID_WARRIOR, teamId, id);
 		
 		attack1=new Axe();

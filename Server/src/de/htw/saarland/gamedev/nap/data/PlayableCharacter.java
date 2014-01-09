@@ -3,6 +3,7 @@ package de.htw.saarland.gamedev.nap.data;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Shape;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 
 public abstract class PlayableCharacter extends GameCharacter{
@@ -32,10 +33,10 @@ public abstract class PlayableCharacter extends GameCharacter{
 	private int teamId;
 	private float timeCapturing;
 	
-	public PlayableCharacter(Shape shape, float density, float friction,
+	public PlayableCharacter(World world, Shape shape, float density, float friction,
 			float restitution, Vector2 position, Vector2 baseVelocity,
 			Vector2 maxVelocity, int maxHealth, int characterClass, int teamId, int id) {
-		super(shape, density, friction, restitution, position, baseVelocity,
+		super(world, shape, density, friction, restitution, position, baseVelocity,
 				maxVelocity, maxHealth, id);
 		
 		if(teamId!=ID_TEAM_BLUE && teamId!=ID_TEAM_RED) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_ID_TEAM);

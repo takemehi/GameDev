@@ -24,12 +24,12 @@ public class Player implements Disposable {
 	private void initPlayableCharacter(World world, Vector2 position, int characterId, int teamId, int id){
 		switch(characterId){
 		case PlayableCharacter.ID_MAGE:
-			this.plChar=new Mage(position, teamId, id);
+			this.plChar=new Mage(world, position, teamId, id);
 			plChar.setBody(world.createBody(plChar.getBodyDef()));
 			plChar.setFixture(plChar.getBody().createFixture(plChar.getFixtureDef()));
 			break;
 		case PlayableCharacter.ID_WARRIOR:
-			this.plChar=new Warrior(position, teamId, id);
+			this.plChar=new Warrior(world, position, teamId, id);
 			plChar.setBody(world.createBody(plChar.getBodyDef()));
 			plChar.setFixture(plChar.getBody().createFixture(plChar.getFixtureDef()));
 			break;

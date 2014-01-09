@@ -22,6 +22,7 @@ public abstract class Entity {
 	private static final String EXCEPTION_NULL_FIXTURE = "Fixture object is null!";
 	private static final String EXCEPTION_NULL_SHAPE = "Shape object is null!";
 	private static final String EXCEPTION_NULL_POSITION = "Position object is null!";
+	private static final String EXCEPTION_NULL_WORLD = "World object is null!";
 	//Userdata
 	public static final String USERDATA_BODY_FLAG_DELETE = "delete";
 
@@ -34,12 +35,15 @@ public abstract class Entity {
 	private float distanceTraveled;
 	private Vector2 positionOriginal;
 	private boolean initialized;
+	private World world;
 	
-	public Entity(Shape shape, Vector2 position, int id){
+	public Entity(World world, Shape shape, Vector2 position, int id){
+		if(world==null) throw new NullPointerException();
 		if(shape==null) throw new NullPointerException(EXCEPTION_NULL_SHAPE);
 		if(position==null) throw new NullPointerException(EXCEPTION_NULL_POSITION);
 		initBodyDef(position);
 		initFixtureDef(shape);
+		this.world=world;
 		this.id = id;
 		timeLiving=0;
 		distanceTraveled=0;
@@ -47,8 +51,8 @@ public abstract class Entity {
 		initialized=false;
 	}
 	
-	public Entity(Shape shape, float x, float y, int id){
-		this(shape, new Vector2(x,y), id);
+	public Entity(World world, Shape shape, float x, float y, int id){
+		this(world, shape, new Vector2(x,y), id);
 	}
 	
 	private void initBodyDef(Vector2 position){
@@ -104,6 +108,10 @@ public abstract class Entity {
 	public Fixture getFixture(){
 		return fixture;
 	}
+	
+	public boolean isInitialized(){
+		return initialized;
+	}
 
 	public int getId() {
 		return id;
@@ -122,36 +130,8 @@ public abstract class Entity {
 		this.timeLiving=timeLiving;
 	}
 	
-	public boolean isGrounded(World world){
-		if(initialized){
-			//calculate y offset
-			Vector2 tmpVector = new Vector2();
-			PolygonShape tmpShape= (PolygonShape) getFixture().getShape();
-			tmpShape.getVertex(0, tmpVector);
-			
-			for(Contact c: world.getContactList()){
-				if(c.isTouching()
-						&& (c.getFixtureA()==getFixture()
-						|| c.getFixtureB()==getFixture())){
-					Vector2 pos = getBody().getPosition();
-					WorldManifold manifold = c.getWorldManifold();
-					boolean below = false;
-					if(Math.abs(c.getWorldManifold().getNormal().x)<Math.abs(c.getWorldManifold().getNormal().y)){
-						below=true;
-						for(int j = 0; j < manifold.getNumberOfContactPoints(); j++) {
-							below &= (manifold.getPoints()[j].y < pos.y - Math.abs(tmpVector.y));
-						}
-						if((c.getFixtureA()==getFixture() 
-								&& c.getFixtureB().getUserData()!=null && c.getFixtureB().getUserData().equals(PlayableCharacter.USERDATA_PLAYER)))
-							below=false;
-						if((c.getFixtureB()==getFixture() 
-								&& c.getFixtureA().getUserData()!=null && c.getFixtureA().getUserData().equals(PlayableCharacter.USERDATA_PLAYER)))
-							below=false;
-						if(below) return true;
-					}
-				}
-			}
-		}
-		return false;
+	public World getWorld(){
+		return world;
 	}
+	
 }
