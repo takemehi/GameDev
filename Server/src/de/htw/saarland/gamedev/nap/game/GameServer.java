@@ -36,7 +36,7 @@ public class GameServer implements ApplicationListener {
 	private final static String FOLDER_DATA = "extensions/nap/data/";
 	private final static String FOLDER_MAPS = "extensions/nap/data/maps/";
 	//world renderer constants
-	public final static float TIME_STEP = 1/60f;
+	public final static float TIME_STEP = 1/30f;
 	public final static int ITERATIONS_VELOCITY = 6;
 	public final static int ITERATIONS_POSITION = 2;
 	//world constants
