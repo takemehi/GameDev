@@ -309,6 +309,7 @@ public class GameClient implements ApplicationListener, IEventListener {
 				break;
 			//Init opcodes end
 			
+			//Movement
 			case GameOpcodes.GAME_OBJECT_COORD_UPDATE:
 				System.out.println("Coord update");
 				updateCoordsOfObject(params.getInt(GameOpcodes.ENTITY_ID_PARAM),
@@ -339,6 +340,29 @@ public class GameClient implements ApplicationListener, IEventListener {
 			case GameOpcodes.GAME_MOVE_JUMP_STOP:
 				moveEntity(Direction.STOP_JUMP, params.getInt(GameOpcodes.ENTITY_ID_PARAM));
 				break;
+			//Movement end
+			
+			//Skills
+			case GameOpcodes.GAME_SKILL1_START:
+				doSkill(Skills.SKILL1, params.getInt(GameOpcodes.ENTITY_ID_PARAM), true);
+				break;
+			case GameOpcodes.GAME_SKILL1_STOP:
+				doSkill(Skills.SKILL1, params.getInt(GameOpcodes.ENTITY_ID_PARAM), false);
+				break;
+			case GameOpcodes.GAME_SKILL2_START:
+				doSkill(Skills.SKILL2, params.getInt(GameOpcodes.ENTITY_ID_PARAM), true);
+				break;
+			case GameOpcodes.GAME_SKILL2_STOP:
+				doSkill(Skills.SKILL2, params.getInt(GameOpcodes.ENTITY_ID_PARAM), false);
+				break;
+			case GameOpcodes.GAME_SKILL3_START:
+				doSkill(Skills.SKILL3, params.getInt(GameOpcodes.ENTITY_ID_PARAM), true);
+				break;
+			case GameOpcodes.GAME_SKILL3_STOP:
+				doSkill(Skills.SKILL3, params.getInt(GameOpcodes.ENTITY_ID_PARAM), false);
+				break;
+			//Skills end
+			
 			default:
 				System.out.println("Unknown packet received! : " + cmd);
 				break;
@@ -401,6 +425,30 @@ public class GameClient implements ApplicationListener, IEventListener {
 		entity.setPosition(pos);
 	}
 	
+	private void doSkill(Skills skill, int entityId, boolean start) {
+		ClientPlayer player = getPlayerById(entityId);
+		
+		if (player == null) {
+			System.out.println("Player not found!!");
+		}
+		else {
+			switch (skill) {
+				case SKILL1:
+					System.out.println("Attack 1");
+					player.getPlayableCharacter().setAttacking1(start);
+					break;
+				case SKILL2:
+					System.out.println("Attack 2");
+					player.getPlayableCharacter().setAttacking2(start);
+					break;
+				case SKILL3:
+					System.out.println("Attack 3");
+					player.getPlayableCharacter().setAttacking3(start);
+					break;
+			}
+		}
+	}
+	
 	private void moveEntity(Direction direction, int entityId) {
 		IMoveable entity = getMoveableEntityById(entityId);
 		
@@ -458,6 +506,12 @@ public class GameClient implements ApplicationListener, IEventListener {
 		STOP_RIGHT,
 		STOP_DOWN,
 		STOP_JUMP
+	}
+	
+	public enum Skills {
+		SKILL1,
+		SKILL2,
+		SKILL3
 	}
 	
 }

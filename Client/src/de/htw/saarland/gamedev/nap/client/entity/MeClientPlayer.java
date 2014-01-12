@@ -69,7 +69,26 @@ public class MeClientPlayer extends ClientPlayer {
 			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_CAPTURE_STOP_REQUEST, null, gameRoom));
 		}
 		
-		// TODO skills
+		if (inputProcessor.isSkill1Down() && !inputProcessor.wasSkill1Down()) {
+			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_SKILL1_START_REQUEST, null, gameRoom));
+		}
+		else if (!inputProcessor.isSkill1Down() && inputProcessor.wasSkill1Down()) {
+			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_SKILL1_STOP_REQUEST, null, gameRoom));
+		}
+		
+		if (inputProcessor.isSkill2Down() && !inputProcessor.wasSkill2Down()) {
+			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_SKILL2_START_REQUEST, null, gameRoom));
+		}
+		else if (!inputProcessor.isSkill2Down() && inputProcessor.wasSkill2Down()) {
+			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_SKILL2_STOP_REQUEST, null, gameRoom));
+		}
+		
+		if (inputProcessor.isSkill3Down() && !inputProcessor.wasSkill3Down()) {
+			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_SKILL3_START_REQUEST, null, gameRoom));
+		}
+		else if (!inputProcessor.isSkill3Down() && inputProcessor.wasSkill3Down()) {
+			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_SKILL3_STOP_REQUEST, null, gameRoom));
+		}
 	}
 
 }

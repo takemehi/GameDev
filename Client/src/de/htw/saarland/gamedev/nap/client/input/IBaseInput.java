@@ -20,14 +20,17 @@ public interface IBaseInput {
 	 * Whether skill1 key is pressed
 	 */
 	public boolean isSkill1Down();
+	public boolean wasSkill1Down();
 	/**
 	 * Whether skill2 key is pressed
 	 */
 	public boolean isSkill2Down();
+	public boolean wasSkill2Down();
 	/**
 	 * Whether skill3 key is pressed
 	 */
 	public boolean isSkill3Down();
+	public boolean wasSkill3Down();
 	
 	/**
 	 * Whether jump key is pressed

@@ -228,6 +228,91 @@ public class GameOpcodes {
 	public static final String GAME_CAPTURE_STOPPED = "game.player.capture.stopped";
 	
 	///////////////////////////////////////////////////////////////////////////////
+	// Skills																	 //
+	///////////////////////////////////////////////////////////////////////////////
+	
+	/**
+	 * C->S<br/>
+	 * Request to cast Skill1 (Skill1 key is being pressed)
+	 */
+	public static final String GAME_SKILL1_START_REQUEST = "game.player.skill1.start.request";
+	/**
+	 * C->S<br/>
+	 * Request to stop casting skill1 (Skill1 key is not pressed anymore) 
+	 */
+	public static final String GAME_SKILL1_STOP_REQUEST = "game.player.skill1.stop.request";
+	/**
+	 * S->C<br/>
+	 * Cast Skill1 succeeded<br/>
+	 * <br/>
+	 * params:<br/>
+	 * 	int ENTITY_ID_PARAM the id of the casting entity
+	 */
+	public static final String GAME_SKILL1_START = "game.player.skill1.start";
+	/**
+	 * S->C<br/>
+	 * Skill1 not casting anymore<br/>
+	 * <br/>
+	 * params:<br/>
+	 * 	int ENTITY_ID_PARAM the id of the casting entity
+	 */
+	public static final String GAME_SKILL1_STOP = "game.player.skill1.stop";
+	
+	/**
+	 * C->S<br/>
+	 * Request to cast Skill2 (Skill2 key is being pressed)
+	 */
+	public static final String GAME_SKILL2_START_REQUEST = "game.player.skill2.start.request";
+	/**
+	 * C->S<br/>
+	 * Request to stop casting skill2 (Skill2 key is not pressed anymore) 
+	 */
+	public static final String GAME_SKILL2_STOP_REQUEST = "game.player.skill2.stop.request";
+	/**
+	 * S->C<br/>
+	 * Cast Skill2 succeeded<br/>
+	 * <br/>
+	 * params:<br/>
+	 * 	int ENTITY_ID_PARAM the id of the casting entity
+	 */
+	public static final String GAME_SKILL2_START = "game.player.skill2.start";
+	/**
+	 * S->C<br/>
+	 * Skill2 not casting anymore<br/>
+	 * <br/>
+	 * params:<br/>
+	 * 	int ENTITY_ID_PARAM the id of the casting entity
+	 */
+	public static final String GAME_SKILL2_STOP = "game.player.skill2.stop";
+	
+	/**
+	 * C->S<br/>
+	 * Request to cast Skill3 (Skill3 key is being pressed)
+	 */
+	public static final String GAME_SKILL3_START_REQUEST = "game.player.skill3.start.request";
+	/**
+	 * C->S<br/>
+	 * Request to stop casting skill3 (Skill3 key is not pressed anymore) 
+	 */
+	public static final String GAME_SKILL3_STOP_REQUEST = "game.player.skill3.stop.request";
+	/**
+	 * S->C<br/>
+	 * Cast Skill3 succeeded<br/>
+	 * <br/>
+	 * params:<br/>
+	 * 	int ENTITY_ID_PARAM the id of the casting entity
+	 */
+	public static final String GAME_SKILL3_START = "game.player.skill3.start";
+	/**
+	 * S->C<br/>
+	 * Skill3 not casting anymore<br/>
+	 * <br/>
+	 * params:<br/>
+	 * 	int ENTITY_ID_PARAM the id of the casting entity
+	 */
+	public static final String GAME_SKILL3_STOP = "game.player.skill3.stop";
+	
+	///////////////////////////////////////////////////////////////////////////////
 	// Game Objects / Initialization											 //
 	///////////////////////////////////////////////////////////////////////////////
 	
