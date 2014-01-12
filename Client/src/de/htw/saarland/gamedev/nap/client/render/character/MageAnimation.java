@@ -7,11 +7,15 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+import de.htw.saarland.gamedev.nap.client.GameClient;
 import de.htw.saarland.gamedev.nap.client.render.EntityAnimation;
 
 public class MageAnimation extends EntityAnimation {
 
-private static final String ANIMATIONSHEET_FILEPATH = "data/gfx/mageSheet.png";
+	private static final String ANIMATIONSHEET_FILEPATH = GameClient.FOLDER_GFX + "mageSheet.png";
+	
+	private static final float X_OFFSET = 12;
+	private static final float Y_OFFSET = 10;
 	
 	private static final int SPRITE_WIDTH = 96;
 	private static final int SPRITE_HEIGHT = 96;
@@ -68,5 +72,15 @@ private static final String ANIMATIONSHEET_FILEPATH = "data/gfx/mageSheet.png";
 	@Override
 	public void dispose() {
 		animationSheet.dispose();
+	}
+
+	@Override
+	public float getXOffset(float unitScale) {
+		return X_OFFSET * unitScale;
+	}
+
+	@Override
+	public float getYOffset(float unitScale) {
+		return Y_OFFSET * unitScale;
 	}
 }

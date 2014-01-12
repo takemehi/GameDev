@@ -15,8 +15,10 @@ import sfs2x.client.requests.ExtensionRequest;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -50,6 +52,7 @@ public class GameClient implements ApplicationListener, IEventListener {
 
 	public final static String FOLDER_CONFIG = "data/config/";
 	public static final String FOLDER_MAPS = "data/maps/";
+	public static final String FOLDER_GFX = "data/gfx/";
 	
 	private SmartFox sfClient;
 	private Room gameRoom;
@@ -65,6 +68,7 @@ public class GameClient implements ApplicationListener, IEventListener {
 	private RenderableGameWorld gameWorld;
 	private OrthographicCamera camera;
 	private SpriteBatch batch;
+	private Texture background;
 	
 	private List<ClientPlayer> players;
 	private List<ClientNPC> npcs;
@@ -125,6 +129,9 @@ public class GameClient implements ApplicationListener, IEventListener {
 				icf.getDownKey(),
 				icf.getCaptureKey());
 		
+		background = new Texture(new FileHandle(new File(FOLDER_GFX + "background.png")));
+		background.bind();
+		
 		batch = new SpriteBatch();
 		world = new World(GameServer.GRAVITY, true);
 		
@@ -135,6 +142,7 @@ public class GameClient implements ApplicationListener, IEventListener {
 		camera = new OrthographicCamera(Gdx.graphics.getWidth() / 20, Gdx.graphics.getHeight() / 20);
 		camera.position.set(Gdx.graphics.getWidth()/40-2, Gdx.graphics.getHeight()/40-2, 0);
 		camera.update();
+		batch.setProjectionMatrix(camera.combined);
 		
 		sfClient.send(new ExtensionRequest(GameOpcodes.GAME_GET_MAP_CHARACTER, null, gameRoom));
 		sfClient.send(new ExtensionRequest(GameOpcodes.GAME_GET_MOVEABLE_ENTITIES, null, gameRoom));
@@ -164,9 +172,16 @@ public class GameClient implements ApplicationListener, IEventListener {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
+		inputProcessor.process();
+		
+		batch.begin();
+		batch.draw(background, 0 - camera.position.x, 0 - camera.position.y, background.getWidth(), background.getHeight());
+		batch.end();
+		
+		gameWorld.render(batch);
+		
 		batch.begin();
 		
-		inputProcessor.process();
 		player.getPlayableCharacter().update(Gdx.graphics.getDeltaTime(), gameWorld.getCapturePoints());
 		player.render(batch);
 		
@@ -183,12 +198,12 @@ public class GameClient implements ApplicationListener, IEventListener {
 			}
 		}
 		
-		gameWorld.render(batch);
-		
-		//TODO remove
-		debugRenderer.render(world, camera.combined);
 		
 		batch.end();
+		
+		
+		debugRenderer.render(world, camera.combined);
+		
 		
 		worldTime += Gdx.graphics.getDeltaTime();
 		if (worldTime > GameServer.TIME_STEP) {
@@ -199,6 +214,7 @@ public class GameClient implements ApplicationListener, IEventListener {
 	
 	@Override
 	public void dispose() {
+		background.dispose();
 		gameWorld.dispose();
 		world.dispose();
 		player.dispose();
@@ -247,7 +263,7 @@ public class GameClient implements ApplicationListener, IEventListener {
 				gameStarted = true; //lets go!
 				break;
 			case GameOpcodes.GAME_CURRENT_MAP:
-				gameWorld = new RenderableGameWorld(world, FOLDER_MAPS + params.getUtfString(GameOpcodes.CURRENT_MAP_PARAM), 0, camera);
+				gameWorld = new RenderableGameWorld(world, FOLDER_MAPS + params.getUtfString(GameOpcodes.CURRENT_MAP_PARAM), 0, batch, camera);
 				checkInitialized();
 				break;
 			case GameOpcodes.GAME_SPAWN_PLAYER:

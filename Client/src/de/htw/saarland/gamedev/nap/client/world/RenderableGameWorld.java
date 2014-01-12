@@ -15,18 +15,14 @@ public class RenderableGameWorld extends GameWorld implements IRender, Disposabl
 
 	OrthogonalTiledMapRenderer renderer;
 	
-	public RenderableGameWorld(World world, String mapName, int currentId, OrthographicCamera camera) {
+	public RenderableGameWorld(World world, String mapName, int currentId, SpriteBatch batch, OrthographicCamera camera) {
 		super(world, mapName, currentId, new TmxMapLoader());
 		
-		if (camera == null) {
+		if (batch == null || camera == null) {
 			throw new NullPointerException();
 		}
 		
-		renderer = new OrthogonalTiledMapRenderer(getTiledMap(), GameServer.PIXELS_TO_METERS);
-		renderer.setView(camera);
-	}
-	
-	public void update(OrthographicCamera camera) {
+		renderer = new OrthogonalTiledMapRenderer(getTiledMap(), GameServer.PIXELS_TO_METERS, batch);
 		renderer.setView(camera);
 	}
 

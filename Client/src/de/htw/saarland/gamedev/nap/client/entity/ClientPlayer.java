@@ -2,6 +2,7 @@ package de.htw.saarland.gamedev.nap.client.entity;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 
@@ -11,6 +12,7 @@ import de.htw.saarland.gamedev.nap.client.render.IRender;
 import de.htw.saarland.gamedev.nap.client.render.character.MageAnimation;
 import de.htw.saarland.gamedev.nap.client.render.character.WarriorAnimation;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
+import de.htw.saarland.gamedev.nap.game.GameServer;
 
 public class ClientPlayer implements IRender, IMoveable, Disposable {
 
@@ -19,6 +21,7 @@ public class ClientPlayer implements IRender, IMoveable, Disposable {
 	
 	private EntityAnimation animations;
 	private float stateTime;
+	private boolean flip;
 	
 	public ClientPlayer(PlayableCharacter character, int team) {
 		if (character == null) {
@@ -27,6 +30,7 @@ public class ClientPlayer implements IRender, IMoveable, Disposable {
 		
 		this.character = character;
 		this.team = team;
+		this.flip = true;
 		
 		switch (character.getCharacterClass()) {
 			case PlayableCharacter.ID_MAGE:
@@ -42,20 +46,35 @@ public class ClientPlayer implements IRender, IMoveable, Disposable {
 		stateTime += Gdx.graphics.getDeltaTime();
 		
 		Vector2 pos = character.getBody().getPosition();
-		batch.draw(animations.getAnimationFrame(getCharacterState(), stateTime), pos.x * 96, pos.y * 96);
+		TextureRegion region = animations.getAnimationFrame(getCharacterState(), stateTime);
+		float width = (region.getRegionWidth() * GameServer.PIXELS_TO_METERS);
+		float height = (region.getRegionHeight() * GameServer.PIXELS_TO_METERS);
+		
+		if (region.isFlipX() == flip) {
+			region.flip(true, false);
+		}
+		
+		float x = pos.x - (width / 2);
+		x = flip ? x + animations.getXOffset(GameServer.PIXELS_TO_METERS) : x - animations.getXOffset(GameServer.PIXELS_TO_METERS);
+		
+		batch.draw(region,
+				x,
+				pos.y - (height / 2) + animations.getYOffset(GameServer.PIXELS_TO_METERS),
+				width,
+				height);
 		
 		// TODO render healthbar & name
 	}
 
 	protected CharacterStates getCharacterState() {
-		if (character.isJumping()) {
+		if (character.getHealth() <= 0) {
+			return CharacterStates.DEAD;
+		}
+		else if (character.isJumping()) {
 			return CharacterStates.JUMPING;
 		}
 		else if (character.getLeft() || character.getRight()) {
 			return CharacterStates.WALKING;
-		}
-		else if (character.getHealth() <= 0) {
-			return CharacterStates.DEAD;
 		}
 		
 		// TODO skills?, capturing
@@ -79,11 +98,13 @@ public class ClientPlayer implements IRender, IMoveable, Disposable {
 	@Override
 	public void moveLeft() {
 		character.setLeft(true);
+		flip = false;
 	}
 
 	@Override
 	public void moveRight() {
 		character.setRight(true);
+		flip = true;
 	}
 
 	@Override
