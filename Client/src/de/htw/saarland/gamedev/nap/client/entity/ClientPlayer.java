@@ -70,6 +70,15 @@ public class ClientPlayer implements IRender, IMoveable, Disposable {
 		if (character.getHealth() <= 0) {
 			return CharacterStates.DEAD;
 		}
+		else if (character.isAttacking1()) {
+			return CharacterStates.SKILL1;
+		}
+		else if (character.isAttacking2()) {
+			return CharacterStates.SKILL2;
+		}
+		else if (character.isAttacking3()) {
+			return CharacterStates.SKILL3;
+		}
 		else if (character.isJumping()) {
 			return CharacterStates.JUMPING;
 		}

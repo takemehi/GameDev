@@ -21,6 +21,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.smartfoxserver.v2.entities.data.SFSObject;
@@ -182,7 +183,16 @@ public class GameClient implements ApplicationListener, IEventListener {
 		
 		batch.begin();
 		
+		Vector3 mousePos = new Vector3(inputProcessor.getCrossHairX(), inputProcessor.getCrossHairY(), 0);
+		camera.unproject(mousePos);
+		
 		player.getPlayableCharacter().update(Gdx.graphics.getDeltaTime(), gameWorld.getCapturePoints());
+		player.getPlayableCharacter().getAttack1().update(world, player.getPlayableCharacter(), 0, new Vector2(mousePos.x, mousePos.y));
+		player.getPlayableCharacter().getAttack2().update(world, player.getPlayableCharacter(), 0, new Vector2(mousePos.x, mousePos.y));
+		player.getPlayableCharacter().getAttack3().update(world, player.getPlayableCharacter(), 0, new Vector2(mousePos.x, mousePos.y));
+		player.getPlayableCharacter().getAttack1().cleanUp(world);
+		player.getPlayableCharacter().getAttack2().cleanUp(world);
+		player.getPlayableCharacter().getAttack3().cleanUp(world);
 		player.render(batch);
 		
 		synchronized (players) {

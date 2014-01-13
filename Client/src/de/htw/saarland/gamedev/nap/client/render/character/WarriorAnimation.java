@@ -19,7 +19,9 @@ public class WarriorAnimation extends EntityAnimation {
 	
 	private static final int SPRITE_WIDTH = 115;
 	private static final int SPRITE_HEIGHT = 96;
-	private static final float FRAME_DURATION = 0.025f;
+	private static final float WALK_FRAME_DURATION = 0.025f;
+	private static final float SKILL1_FRAME_DURATION = 0.05f;
+	private static final float DIE_FRAME_DURATION = 0.1f;
 	private static final int WALK_FRAMES = 6;
 	private static final int SKILL1_FRAMES = 5;
 	private static final int DIE_FRAMES = 6;
@@ -38,9 +40,9 @@ public class WarriorAnimation extends EntityAnimation {
 		idle = new TextureRegion(animationSheet, 0, 0, SPRITE_WIDTH, SPRITE_HEIGHT);
 		animations = new Animation[3]; // 3 animations, idle is no animation!
 		
-		animations[WALKING] = createAnimation(animationSheet, 1, WALK_FRAMES, SPRITE_WIDTH, SPRITE_HEIGHT, FRAME_DURATION);
-		animations[SKILL1] = createAnimation(animationSheet, 2, SKILL1_FRAMES, SPRITE_WIDTH, SPRITE_HEIGHT, FRAME_DURATION);
-		animations[DIE] = createAnimation(animationSheet, 3, DIE_FRAMES, SPRITE_WIDTH, SPRITE_HEIGHT, FRAME_DURATION);
+		animations[WALKING] = createAnimation(animationSheet, 1, WALK_FRAMES, SPRITE_WIDTH, SPRITE_HEIGHT, WALK_FRAME_DURATION);
+		animations[SKILL1] = createAnimation(animationSheet, 2, SKILL1_FRAMES, SPRITE_WIDTH, SPRITE_HEIGHT, SKILL1_FRAME_DURATION);
+		animations[DIE] = createAnimation(animationSheet, 3, DIE_FRAMES, SPRITE_WIDTH, SPRITE_HEIGHT, DIE_FRAME_DURATION);
 	}
 	
 	@Override
@@ -54,7 +56,7 @@ public class WarriorAnimation extends EntityAnimation {
 			case DEAD:
 				return animations[DIE].getKeyFrame(stateTime, false);
 			case SKILL1:
-				return animations[SKILL1].getKeyFrame(stateTime, false);
+				return animations[SKILL1].getKeyFrame(stateTime, true);
 			case WALKING:
 				return animations[WALKING].getKeyFrame(stateTime, true);
 			case CAPTURING:
