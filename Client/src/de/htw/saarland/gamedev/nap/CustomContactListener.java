@@ -28,6 +28,7 @@ public class CustomContactListener implements ContactListener {
 
 	public CustomContactListener(List<ClientPlayer> players, Array<CapturePoint> capturePoints) {
 		this.capturePoints=capturePoints;
+		this.players = new Array<IPlayer>();
 		for(IPlayer p: players){
 			this.players.add(p);
 		}

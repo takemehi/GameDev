@@ -387,8 +387,10 @@ public class GameClient implements ApplicationListener, IEventListener {
 		isInitialized = gameWorld != null && world != null && player != null && allObjectsReceived;
 		
 		if (isInitialized) {
-			System.out.println("Test:"+players.size());
-			world.setContactListener(new CustomContactListener(players, gameWorld.getCapturePoints()));
+			List<ClientPlayer> tmpList = new ArrayList<ClientPlayer>();
+			tmpList.addAll(players);
+			tmpList.add(player);
+			world.setContactListener(new CustomContactListener(tmpList, gameWorld.getCapturePoints()));
 			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_INITIALIZED, null, gameRoom));
 		}
 	}
