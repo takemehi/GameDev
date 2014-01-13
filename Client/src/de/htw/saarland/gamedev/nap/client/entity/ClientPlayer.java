@@ -11,10 +11,11 @@ import de.htw.saarland.gamedev.nap.client.render.EntityAnimation.CharacterStates
 import de.htw.saarland.gamedev.nap.client.render.IRender;
 import de.htw.saarland.gamedev.nap.client.render.character.MageAnimation;
 import de.htw.saarland.gamedev.nap.client.render.character.WarriorAnimation;
+import de.htw.saarland.gamedev.nap.data.IPlayer;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
 import de.htw.saarland.gamedev.nap.game.GameServer;
 
-public class ClientPlayer implements IRender, IMoveable, Disposable {
+public class ClientPlayer implements IPlayer, IRender, IMoveable, Disposable {
 
 	protected PlayableCharacter character;
 	protected int team;
@@ -92,6 +93,10 @@ public class ClientPlayer implements IRender, IMoveable, Disposable {
 	}
 	
 	public PlayableCharacter getPlayableCharacter() {
+		return character;
+	}
+	
+	public PlayableCharacter getPlChar(){
 		return character;
 	}
 	

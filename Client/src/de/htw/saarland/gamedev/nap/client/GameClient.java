@@ -139,7 +139,6 @@ public class GameClient implements ApplicationListener, IEventListener {
 		
 		players = Collections.synchronizedList(new ArrayList<ClientPlayer>());
 		npcs = Collections.synchronizedList(new ArrayList<ClientNPC>());
-		world.setContactListener(new CustomContactListener(players, gameWorld.getCapturePoints()));
 		
 		//TODO is viewport ok?
 		camera = new OrthographicCamera(Gdx.graphics.getWidth() / 20, Gdx.graphics.getHeight() / 20);
@@ -388,7 +387,8 @@ public class GameClient implements ApplicationListener, IEventListener {
 		isInitialized = gameWorld != null && world != null && player != null && allObjectsReceived;
 		
 		if (isInitialized) {
-			//TODO init contact listener
+			System.out.println("Test:"+players.size());
+			world.setContactListener(new CustomContactListener(players, gameWorld.getCapturePoints()));
 			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_INITIALIZED, null, gameRoom));
 		}
 	}

@@ -2,7 +2,6 @@ package de.htw.saarland.gamedev.nap.data.skills;
 
 import java.util.Iterator;
 
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -11,6 +10,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 
 import de.htw.saarland.gamedev.nap.data.GameWorld;
+import de.htw.saarland.gamedev.nap.data.IPlayer;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
 import de.htw.saarland.gamedev.nap.data.Player;
 import de.htw.saarland.gamedev.nap.data.entities.Entity;
@@ -79,7 +79,7 @@ public class Fireball extends Skill{
 		}
 	}
 	
-	public static void handleContact(Fixture fA, Fixture fB, Array<Player> players, boolean isClient){
+	public static void handleContact(Fixture fA, Fixture fB, Array<IPlayer> players, boolean isClient){
 		// Fireball hitting the world
 		if (fA.getUserData() == Fireball.USERDATA_FIREBALL && fB.getUserData() == GameWorld.USERDATA_FIXTURE_WORLD) {
 			fA.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
@@ -89,7 +89,7 @@ public class Fireball extends Skill{
 		// Fireball hitting a player
 		else if (fA.getUserData() == Fireball.USERDATA_FIREBALL && fB.getUserData() == PlayableCharacter.USERDATA_PLAYER) {
 			if(!isClient){
-				for (Player p : players) {
+				for (IPlayer p : players) {
 					if (p.getPlChar().getFixture().equals(fB)) {
 						p.getPlChar().setHealth(p.getPlChar().getHealth() - Fireball.DAMAGE);
 						break;
@@ -99,7 +99,7 @@ public class Fireball extends Skill{
 			fA.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
 		} else if (fB.getUserData() == Fireball.USERDATA_FIREBALL && fA.getUserData() == PlayableCharacter.USERDATA_PLAYER) {
 			if(!isClient){
-				for (Player p : players) {
+				for (IPlayer p : players) {
 					if (p.getPlChar().getFixture().equals(fA)) {
 						p.getPlChar().setHealth(p.getPlChar().getHealth() - Fireball.DAMAGE);
 						break;

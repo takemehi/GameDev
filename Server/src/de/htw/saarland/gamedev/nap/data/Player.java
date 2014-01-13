@@ -9,7 +9,7 @@ import com.smartfoxserver.v2.extensions.SFSExtension;
 
 import de.htw.saarland.gamedev.nap.data.network.GameOpcodes;
 
-public class Player {
+public class Player implements IPlayer{
 	
 	//exceptions
 	private static final String EXCEPTION_NULL_USER = "User object is missing!";

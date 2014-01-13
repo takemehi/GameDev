@@ -1,14 +1,14 @@
 package de.htw.saarland.gamedev.nap.data.skills;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.utils.Array;
 
+import de.htw.saarland.gamedev.nap.data.IPlayer;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
-import de.htw.saarland.gamedev.nap.data.Player;
 import de.htw.saarland.gamedev.nap.data.entities.Entity;
 import de.htw.saarland.gamedev.nap.data.entities.SensorEntity;
 
@@ -67,11 +67,11 @@ public class Snare extends Skill {
 		}		
 	}
 	
-	public static void handleContact(Fixture fA, Fixture fB, Array<Player> players, boolean isClient){
+	public static void handleContact(Fixture fA, Fixture fB, Array<IPlayer> players, boolean isClient){
 		//Snare hitting a player
 		if(!isClient){
 			if (fA.getUserData() == Snare.USERDATA_SNARE && fB.getUserData() == PlayableCharacter.USERDATA_PLAYER) {
-				for (Player p : players) {
+				for (IPlayer p : players) {
 					if (p.getPlChar().getFixture().equals(fB)) {
 						p.getPlChar().setHealth(p.getPlChar().getHealth() - Snare.DAMAGE);
 						p.getPlChar().setSnared(true, Snare.DURATION_SNARE);
@@ -80,7 +80,7 @@ public class Snare extends Skill {
 				}
 			}
 			else if (fB.getUserData() == Snare.USERDATA_SNARE && fA.getUserData() == PlayableCharacter.USERDATA_PLAYER) {
-				for (Player p : players) {
+				for (IPlayer p : players) {
 					if (p.getPlChar().getFixture().equals(fA)) {
 						p.getPlChar().setHealth(p.getPlChar().getHealth() - Snare.DAMAGE);
 						p.getPlChar().setSnared(true, Snare.DURATION_SNARE);

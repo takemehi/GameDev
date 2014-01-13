@@ -8,6 +8,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 
 import de.htw.saarland.gamedev.nap.data.GameWorld;
+import de.htw.saarland.gamedev.nap.data.IPlayer;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
 import de.htw.saarland.gamedev.nap.data.Player;
 import de.htw.saarland.gamedev.nap.data.entities.Entity;
@@ -86,7 +87,7 @@ public class Pyroblast extends Skill{
 		}			
 	}
 	
-	public static void handleContact(Fixture fA, Fixture fB, Array<Player> players, boolean isClient){
+	public static void handleContact(Fixture fA, Fixture fB, Array<IPlayer> players, boolean isClient){
 		// Pyroblast hitting the world
 		if (fA.getUserData() == Pyroblast.USERDATA_PYROBLAST && fB.getUserData() == GameWorld.USERDATA_FIXTURE_WORLD) {
 			fA.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
@@ -96,7 +97,7 @@ public class Pyroblast extends Skill{
 		// Pyroblast hitting a player
 		else if (fA.getUserData() == Pyroblast.USERDATA_PYROBLAST && fB.getUserData() == PlayableCharacter.USERDATA_PLAYER) {
 			if(!isClient){
-				for (Player p : players) {
+				for (IPlayer p : players) {
 					if (p.getPlChar().getFixture().equals(fB)) {
 						p.getPlChar().setHealth(p.getPlChar().getHealth() - Pyroblast.DAMAGE);
 						break;
@@ -106,7 +107,7 @@ public class Pyroblast extends Skill{
 			fA.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
 		} else if (fB.getUserData() == Pyroblast.USERDATA_PYROBLAST && fA.getUserData() == PlayableCharacter.USERDATA_PLAYER) {
 			if(!isClient){
-				for (Player p : players) {
+				for (IPlayer p : players) {
 					if (p.getPlChar().getFixture().equals(fA)) {
 						p.getPlChar().setHealth(p.getPlChar().getHealth() - Pyroblast.DAMAGE);
 						break;

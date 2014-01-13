@@ -9,7 +9,7 @@ import com.badlogic.gdx.utils.Array;
 import de.htw.saarland.gamedev.nap.data.skills.Charge;
 
 public class Platform {
-	public static void handleContactPreSolve(Contact contact, Array<Player> players){
+	public static void handleContactPreSolve(Contact contact, Array<IPlayer> players){
 		Fixture fA = contact.getFixtureA();
 		Fixture fB = contact.getFixtureB();
 		float offsetA = 0;
@@ -44,8 +44,8 @@ public class Platform {
 		}
 		// player dropping through a platform from above
 		if (fA.getUserData() != null && fA.getUserData().equals(GameWorld.USERDATA_FIXTURE_PLATFORM_TWO)) {
-			Player player = null;
-			for (Player p : players) {
+			IPlayer player = null;
+			for (IPlayer p : players) {
 				if (fB.equals(p.getPlChar().getFixture())) {
 					player = p;
 					break;
@@ -62,8 +62,8 @@ public class Platform {
 			}
 		}
 		if (fB.getUserData() != null && fB.getUserData().equals(GameWorld.USERDATA_FIXTURE_PLATFORM_TWO)) {
-			Player player = null;
-			for (Player p : players) {
+			IPlayer player = null;
+			for (IPlayer p : players) {
 				if (fB.equals(p.getPlChar().getFixture())) {
 					player = p;
 					break;

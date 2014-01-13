@@ -8,6 +8,7 @@ import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.utils.Array;
 
 import de.htw.saarland.gamedev.nap.data.CapturePoint;
+import de.htw.saarland.gamedev.nap.data.IPlayer;
 import de.htw.saarland.gamedev.nap.data.Platform;
 import de.htw.saarland.gamedev.nap.data.Player;
 import de.htw.saarland.gamedev.nap.data.SpawnPoint;
@@ -21,7 +22,7 @@ import de.htw.saarland.gamedev.nap.data.skills.Snare;
 
 public class CustomContactListener implements ContactListener {
 
-	private Array<Player> players;
+	private Array<IPlayer> players;
 	private Team blueTeam;
 	private Team redTeam;
 	private Array<CapturePoint> capturePoints;
@@ -34,7 +35,7 @@ public class CustomContactListener implements ContactListener {
 		this.blueTeam = blueTeam;
 		this.capturePoints=capturePoints;
 
-		players = new Array<Player>();
+		players = new Array<IPlayer>();
 		players. addAll(blueTeam.getMembers());
 		players.addAll(redTeam.getMembers());
 	}
@@ -54,7 +55,7 @@ public class CustomContactListener implements ContactListener {
 			Nova.handleContact(fA, fB, players, false);
 			
 			//Capture- and spawn point
-			CapturePoint.handleContactBegin(fA, fB, players, capturePoints);
+			//CapturePoint.handleContactBegin(fA, fB, players, capturePoints);
 			SpawnPoint.handleContactBegin(fA, fB, blueTeam, redTeam);
 		}
 		
@@ -66,7 +67,7 @@ public class CustomContactListener implements ContactListener {
 		Fixture fB = contact.getFixtureB();
 		
 		if(fA!=null && fB!=null){
-			CapturePoint.handleContactEnd(fA, fB, players, capturePoints);
+			//CapturePoint.handleContactEnd(fA, fB, players, capturePoints);
 			SpawnPoint.handleContactEnd(fA, fB, blueTeam, redTeam);
 		}
 	}
