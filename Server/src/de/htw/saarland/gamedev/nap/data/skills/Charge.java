@@ -96,7 +96,7 @@ public class Charge extends Skill {
 		distanceTraveled=0;
 	}
 	
-	public static void handleContact(Fixture fA, Fixture fB, Array<Player> players){
+	public static void handleContact(Fixture fA, Fixture fB, Array<Player> players, boolean isClient){
 		//Charge hitting the world
 		if(fA.getUserData()==Charge.USERDATA_CHARGE && fB.getUserData()==GameWorld.USERDATA_FIXTURE_WORLD){
 			for(Player p: players){
@@ -112,8 +112,10 @@ public class Charge extends Skill {
 		else if(fA.getUserData()==Charge.USERDATA_CHARGE && fB.getUserData()==PlayableCharacter.USERDATA_PLAYER){	
 			for(Player p: players){
 				if(p.getPlChar().getFixture().equals(fB)){
-					p.getPlChar().setHealth(p.getPlChar().getHealth()-Charge.DAMAGE);
-					p.getPlChar().setStunned(true, Charge.DURATION_STUN);
+					if(!isClient){
+						p.getPlChar().setHealth(p.getPlChar().getHealth()-Charge.DAMAGE);
+						p.getPlChar().setStunned(true, Charge.DURATION_STUN);
+					}
 					for(Player pl: players){
 						if(pl.getPlChar().getFixture().equals(fA)) pl.getPlChar().getAttack2().reset();
 					}
@@ -124,8 +126,10 @@ public class Charge extends Skill {
 		else if(fB.getUserData()==Charge.USERDATA_CHARGE && fA.getUserData()==PlayableCharacter.USERDATA_PLAYER){
 			for(Player p: players){
 				if(p.getPlChar().getFixture().equals(fA)){
-					p.getPlChar().setHealth(p.getPlChar().getHealth()-Charge.DAMAGE);
-					p.getPlChar().setStunned(true, Charge.DURATION_STUN);
+					if(!isClient){
+						p.getPlChar().setHealth(p.getPlChar().getHealth()-Charge.DAMAGE);
+						p.getPlChar().setStunned(true, Charge.DURATION_STUN);
+					}
 					for(Player pl: players){
 						if(pl.getPlChar().getFixture().equals(fB)) pl.getPlChar().getAttack2().reset();
 					}

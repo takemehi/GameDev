@@ -27,6 +27,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.smartfoxserver.v2.entities.data.SFSObject;
 import com.smartfoxserver.v2.exceptions.SFSException;
 
+import de.htw.saarland.gamedev.nap.CustomContactListener;
 import de.htw.saarland.gamedev.nap.NetworkConstants;
 import de.htw.saarland.gamedev.nap.client.entity.ClientNPC;
 import de.htw.saarland.gamedev.nap.client.entity.ClientPlayer;
@@ -138,6 +139,7 @@ public class GameClient implements ApplicationListener, IEventListener {
 		
 		players = Collections.synchronizedList(new ArrayList<ClientPlayer>());
 		npcs = Collections.synchronizedList(new ArrayList<ClientNPC>());
+		world.setContactListener(new CustomContactListener(players, gameWorld.getCapturePoints()));
 		
 		//TODO is viewport ok?
 		camera = new OrthographicCamera(Gdx.graphics.getWidth() / 20, Gdx.graphics.getHeight() / 20);

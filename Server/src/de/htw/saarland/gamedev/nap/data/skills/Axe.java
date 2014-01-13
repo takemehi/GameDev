@@ -69,21 +69,23 @@ public class Axe extends Skill{
 		}
 	}
 	
-	public static void handleContact(Fixture fA, Fixture fB, Array<Player> players){
+	public static void handleContact(Fixture fA, Fixture fB, Array<Player> players, boolean isClient){
 		//Axe hitting a player
-		if ((fA.getUserData() == Axe.USERDATA_AXE && fB.getUserData() == PlayableCharacter.USERDATA_PLAYER)) {
-			for (Player p : players) {
-				if (p.getPlChar().getFixture().equals(fB)) {
-					p.getPlChar().setHealth(p.getPlChar().getHealth() - Axe.DAMAGE);
-					break;
+		if(!isClient){
+			if ((fA.getUserData() == Axe.USERDATA_AXE && fB.getUserData() == PlayableCharacter.USERDATA_PLAYER)) {
+				for (Player p : players) {
+					if (p.getPlChar().getFixture().equals(fB)) {
+						p.getPlChar().setHealth(p.getPlChar().getHealth() - Axe.DAMAGE);
+						break;
+					}
 				}
-			}
-		} 
-		else if (fB.getUserData() == Axe.USERDATA_AXE && fA.getUserData() == PlayableCharacter.USERDATA_PLAYER) {
-			for (Player p : players) {
-				if (p.getPlChar().getFixture().equals(fA)) {
-					p.getPlChar().setHealth(p.getPlChar().getHealth() - Axe.DAMAGE);
-					break;
+			} 
+			else if (fB.getUserData() == Axe.USERDATA_AXE && fA.getUserData() == PlayableCharacter.USERDATA_PLAYER) {
+				for (Player p : players) {
+					if (p.getPlChar().getFixture().equals(fA)) {
+						p.getPlChar().setHealth(p.getPlChar().getHealth() - Axe.DAMAGE);
+						break;
+					}
 				}
 			}
 		}

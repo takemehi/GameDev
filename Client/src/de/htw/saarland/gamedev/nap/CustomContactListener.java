@@ -1,4 +1,4 @@
-package de.htw.saarland.gamedev.nap.game;
+package de.htw.saarland.gamedev.nap;
 
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
@@ -22,21 +22,12 @@ import de.htw.saarland.gamedev.nap.data.skills.Snare;
 public class CustomContactListener implements ContactListener {
 
 	private Array<Player> players;
-	private Team blueTeam;
-	private Team redTeam;
 	private Array<CapturePoint> capturePoints;
 
-	public CustomContactListener(Team blueTeam, Team redTeam, Array<CapturePoint> capturePoints) {
-		if (blueTeam == null || redTeam == null)
-			throw new NullPointerException();
-
-		this.redTeam = redTeam;
-		this.blueTeam = blueTeam;
+	public CustomContactListener(Array<Player> players, Array<CapturePoint> capturePoints) {
 		this.capturePoints=capturePoints;
+		this.players = players;
 
-		players = new Array<Player>();
-		players. addAll(blueTeam.getMembers());
-		players.addAll(redTeam.getMembers());
 	}
 
 	@Override
@@ -46,16 +37,16 @@ public class CustomContactListener implements ContactListener {
 
 		if (fA.getUserData() != null && fB.getUserData() != null) {
 			//Character abilities
-			Axe.handleContact(fA, fB, players, false);
-			Snare.handleContact(fA, fB, players, false);
-			Charge.handleContact(fA, fB, players, false);
-			Fireball.handleContact(fA, fB, players, false);
-			Pyroblast.handleContact(fA, fB, players, false);
-			Nova.handleContact(fA, fB, players, false);
+			Axe.handleContact(fA, fB, players, true);
+			Snare.handleContact(fA, fB, players, true);
+			Charge.handleContact(fA, fB, players, true);
+			Fireball.handleContact(fA, fB, players, true);
+			Pyroblast.handleContact(fA, fB, players, true);
+			Nova.handleContact(fA, fB, players, true);
 			
 			//Capture- and spawn point
-			CapturePoint.handleContactBegin(fA, fB, players, capturePoints);
-			SpawnPoint.handleContactBegin(fA, fB, blueTeam, redTeam);
+			//CapturePoint.handleContactBegin(fA, fB, players, capturePoints);
+			//SpawnPoint.handleContactBegin(fA, fB, blueTeam, redTeam);
 		}
 		
 	}
@@ -66,8 +57,8 @@ public class CustomContactListener implements ContactListener {
 		Fixture fB = contact.getFixtureB();
 		
 		if(fA!=null && fB!=null){
-			CapturePoint.handleContactEnd(fA, fB, players, capturePoints);
-			SpawnPoint.handleContactEnd(fA, fB, blueTeam, redTeam);
+			//CapturePoint.handleContactEnd(fA, fB, players, capturePoints);
+			//SpawnPoint.handleContactEnd(fA, fB, blueTeam, redTeam);
 		}
 	}
 

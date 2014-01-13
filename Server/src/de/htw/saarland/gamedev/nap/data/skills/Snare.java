@@ -67,23 +67,25 @@ public class Snare extends Skill {
 		}		
 	}
 	
-	public static void handleContact(Fixture fA, Fixture fB, Array<Player> players){
+	public static void handleContact(Fixture fA, Fixture fB, Array<Player> players, boolean isClient){
 		//Snare hitting a player
-		if (fA.getUserData() == Snare.USERDATA_SNARE && fB.getUserData() == PlayableCharacter.USERDATA_PLAYER) {
-			for (Player p : players) {
-				if (p.getPlChar().getFixture().equals(fB)) {
-					p.getPlChar().setHealth(p.getPlChar().getHealth() - Snare.DAMAGE);
-					p.getPlChar().setSnared(true, Snare.DURATION_SNARE);
-					break;
+		if(!isClient){
+			if (fA.getUserData() == Snare.USERDATA_SNARE && fB.getUserData() == PlayableCharacter.USERDATA_PLAYER) {
+				for (Player p : players) {
+					if (p.getPlChar().getFixture().equals(fB)) {
+						p.getPlChar().setHealth(p.getPlChar().getHealth() - Snare.DAMAGE);
+						p.getPlChar().setSnared(true, Snare.DURATION_SNARE);
+						break;
+					}
 				}
 			}
-		}
-		else if (fB.getUserData() == Snare.USERDATA_SNARE && fA.getUserData() == PlayableCharacter.USERDATA_PLAYER) {
-			for (Player p : players) {
-				if (p.getPlChar().getFixture().equals(fA)) {
-					p.getPlChar().setHealth(p.getPlChar().getHealth() - Snare.DAMAGE);
-					p.getPlChar().setSnared(true, Snare.DURATION_SNARE);
-					break;
+			else if (fB.getUserData() == Snare.USERDATA_SNARE && fA.getUserData() == PlayableCharacter.USERDATA_PLAYER) {
+				for (Player p : players) {
+					if (p.getPlChar().getFixture().equals(fA)) {
+						p.getPlChar().setHealth(p.getPlChar().getHealth() - Snare.DAMAGE);
+						p.getPlChar().setSnared(true, Snare.DURATION_SNARE);
+						break;
+					}
 				}
 			}
 		}

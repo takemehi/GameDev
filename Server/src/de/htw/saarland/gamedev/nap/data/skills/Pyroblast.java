@@ -86,7 +86,7 @@ public class Pyroblast extends Skill{
 		}			
 	}
 	
-	public static void handleContact(Fixture fA, Fixture fB, Array<Player> players){
+	public static void handleContact(Fixture fA, Fixture fB, Array<Player> players, boolean isClient){
 		// Pyroblast hitting the world
 		if (fA.getUserData() == Pyroblast.USERDATA_PYROBLAST && fB.getUserData() == GameWorld.USERDATA_FIXTURE_WORLD) {
 			fA.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
@@ -95,18 +95,22 @@ public class Pyroblast extends Skill{
 		}
 		// Pyroblast hitting a player
 		else if (fA.getUserData() == Pyroblast.USERDATA_PYROBLAST && fB.getUserData() == PlayableCharacter.USERDATA_PLAYER) {
-			for (Player p : players) {
-				if (p.getPlChar().getFixture().equals(fB)) {
-					p.getPlChar().setHealth(p.getPlChar().getHealth() - Pyroblast.DAMAGE);
-					break;
+			if(!isClient){
+				for (Player p : players) {
+					if (p.getPlChar().getFixture().equals(fB)) {
+						p.getPlChar().setHealth(p.getPlChar().getHealth() - Pyroblast.DAMAGE);
+						break;
+					}
 				}
 			}
 			fA.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
 		} else if (fB.getUserData() == Pyroblast.USERDATA_PYROBLAST && fA.getUserData() == PlayableCharacter.USERDATA_PLAYER) {
-			for (Player p : players) {
-				if (p.getPlChar().getFixture().equals(fA)) {
-					p.getPlChar().setHealth(p.getPlChar().getHealth() - Pyroblast.DAMAGE);
-					break;
+			if(!isClient){
+				for (Player p : players) {
+					if (p.getPlChar().getFixture().equals(fA)) {
+						p.getPlChar().setHealth(p.getPlChar().getHealth() - Pyroblast.DAMAGE);
+						break;
+					}
 				}
 			}
 			fB.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);

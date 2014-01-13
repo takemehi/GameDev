@@ -63,35 +63,37 @@ public class Nova extends Skill{
 		}		
 	}
 	
-	public static void handleContact(Fixture fA, Fixture fB, Array<Player> players){
+	public static void handleContact(Fixture fA, Fixture fB, Array<Player> players, boolean isClient){
 		// Nova hitting a player
-		if (fA.getUserData() == Nova.USERDATA_NOVA && fB.getUserData() == PlayableCharacter.USERDATA_PLAYER) {
-			Vector2 direction;
-
-			for (Player p : players) {
-				if (p.getPlChar().getFixture().equals(fB)) {
-					direction = new Vector2(p.getPlChar().getBody().getPosition().x - fA.getBody().getPosition().x, p.getPlChar().getBody().getPosition().y - fA.getBody().getPosition().y);
-					direction = direction.nor();
-					direction.mul(Nova.FORCE);
-					p.getPlChar().setHealth(p.getPlChar().getHealth() - Nova.DAMAGE);
-					p.getPlChar().setStunned(true, Nova.DURATION_STUN);
-					p.getPlChar().getBody().applyLinearImpulse(direction, p.getPlChar().getBody().getPosition(), true);
-					break;
+		if(!isClient){
+			if (fA.getUserData() == Nova.USERDATA_NOVA && fB.getUserData() == PlayableCharacter.USERDATA_PLAYER) {
+				Vector2 direction;
+	
+				for (Player p : players) {
+					if (p.getPlChar().getFixture().equals(fB)) {
+						direction = new Vector2(p.getPlChar().getBody().getPosition().x - fA.getBody().getPosition().x, p.getPlChar().getBody().getPosition().y - fA.getBody().getPosition().y);
+						direction = direction.nor();
+						direction.mul(Nova.FORCE);
+						p.getPlChar().setHealth(p.getPlChar().getHealth() - Nova.DAMAGE);
+						p.getPlChar().setStunned(true, Nova.DURATION_STUN);
+						p.getPlChar().getBody().applyLinearImpulse(direction, p.getPlChar().getBody().getPosition(), true);
+						break;
+					}
 				}
-			}
-		} 
-		else if (fB.getUserData() == Nova.USERDATA_NOVA && fA.getUserData() == PlayableCharacter.USERDATA_PLAYER) {
-			Vector2 direction;
-
-			for (Player p : players) {
-				if (p.getPlChar().getFixture().equals(fA)) {
-					direction = new Vector2(p.getPlChar().getBody().getPosition().x - fB.getBody().getPosition().x, p.getPlChar().getBody().getPosition().y - fB.getBody().getPosition().y);
-					direction = direction.nor();
-					direction.mul(Nova.FORCE);
-					p.getPlChar().setHealth(p.getPlChar().getHealth() - Nova.DAMAGE);
-					p.getPlChar().setStunned(true, Nova.DURATION_STUN);
-					p.getPlChar().getBody().applyLinearImpulse(direction, p.getPlChar().getBody().getPosition(), true);
-					break;
+			} 
+			else if (fB.getUserData() == Nova.USERDATA_NOVA && fA.getUserData() == PlayableCharacter.USERDATA_PLAYER) {
+				Vector2 direction;
+	
+				for (Player p : players) {
+					if (p.getPlChar().getFixture().equals(fA)) {
+						direction = new Vector2(p.getPlChar().getBody().getPosition().x - fB.getBody().getPosition().x, p.getPlChar().getBody().getPosition().y - fB.getBody().getPosition().y);
+						direction = direction.nor();
+						direction.mul(Nova.FORCE);
+						p.getPlChar().setHealth(p.getPlChar().getHealth() - Nova.DAMAGE);
+						p.getPlChar().setStunned(true, Nova.DURATION_STUN);
+						p.getPlChar().getBody().applyLinearImpulse(direction, p.getPlChar().getBody().getPosition(), true);
+						break;
+					}
 				}
 			}
 		}
