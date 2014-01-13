@@ -18,8 +18,6 @@ import de.htw.saarland.gamedev.nap.data.entities.SensorEntity;
 
 public class Fireball extends Skill{
 	
-	private static final Vector2 COMPENSATE_GRAVITY = new Vector2(0,20);
-	
 	public static final float COOLDOWN = 0.3f;
 	public static final float CASTTIME = 0f;
 	public static final float RADIUS = 0.1f;
@@ -52,6 +50,7 @@ public class Fireball extends Skill{
 		Vector2 direction = mouseCoords.sub(character.getBody().getPosition());
 		direction = direction.nor();
 		Vector2 velocityBall=direction.mul(VELOCITY);
+		ball.getBody().setGravityScale(0);
 		ball.getBody().setLinearVelocity(velocityBall);
 		fireBalls.add(ball);
 	}
@@ -65,7 +64,6 @@ public class Fireball extends Skill{
 			}else{
 				s.setDistanceTraveled((new Vector2(s.getPositionOriginal().x-s.getBody().getPosition().x
 						,s.getPositionOriginal().y-s.getBody().getPosition().y)).len());
-				s.getBody().applyForceToCenter(COMPENSATE_GRAVITY, true);
 			}
 		}
 	}

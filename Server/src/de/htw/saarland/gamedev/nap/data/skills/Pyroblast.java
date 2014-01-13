@@ -14,8 +14,6 @@ import de.htw.saarland.gamedev.nap.data.entities.Entity;
 import de.htw.saarland.gamedev.nap.data.entities.SensorEntity;
 
 public class Pyroblast extends Skill{
-
-	private static final Vector2 COMPENSATE_GRAVITY = new Vector2(0,20);
 	
 	public static final float COOLDOWN = 6f;
 	public static final float CASTTIME = 1.5f;
@@ -56,6 +54,7 @@ public class Pyroblast extends Skill{
 		Vector2 direction = mouseCoords.sub(character.getBody().getPosition());
 		direction = direction.nor();
 		velocityBall=direction.mul(VELOCITY);
+		ball.getBody().setGravityScale(0);
 		ball.getBody().setLinearVelocity(velocityBall);
 		character.setMovementEnabled(true);
 		
@@ -73,7 +72,6 @@ public class Pyroblast extends Skill{
 			try{
 				ball.setDistanceTraveled((new Vector2(ball.getPositionOriginal().x-ball.getBody().getPosition().x
 						,ball.getPositionOriginal().y-ball.getBody().getPosition().y)).len());
-				ball.getBody().applyForceToCenter(COMPENSATE_GRAVITY, true);
 				if(ball.getDistanceTraveled()>= TRAVEL_DISTANCE) ball.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
 			}catch (Exception e){}
 		}
