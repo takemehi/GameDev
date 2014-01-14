@@ -34,7 +34,7 @@ public class Pyroblast extends Skill{
 	}
 
 	@Override
-	protected void start(World world, PlayableCharacter character, Vector2 mouseCoords){
+	protected void start(World world, PlayableCharacter character, Vector2 direction){
 		
 		CircleShape shape = new CircleShape();
 		shape.setRadius(RADIUS);
@@ -50,9 +50,6 @@ public class Pyroblast extends Skill{
 		ball.setFixture(ball.getBody().createFixture(ball.getFixtureDef()));
 		ball.getFixture().setUserData(USERDATA_PYROBLAST);
 		ball.getBody().setType(BodyDef.BodyType.DynamicBody);							
-		
-		Vector2 direction = mouseCoords.sub(character.getBody().getPosition());
-		direction = direction.nor();
 		velocityBall=direction.mul(VELOCITY);
 		ball.getBody().setGravityScale(0);
 		ball.getBody().setLinearVelocity(velocityBall);

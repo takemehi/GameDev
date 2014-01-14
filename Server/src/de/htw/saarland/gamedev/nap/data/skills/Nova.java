@@ -32,7 +32,7 @@ public class Nova extends Skill{
 	}
 
 	@Override
-	public void start(World world, PlayableCharacter character, Vector2 mouseCoords) {		
+	public void start(World world, PlayableCharacter character, Vector2 direction) {		
 		CircleShape circle = new CircleShape();
 		circle.setRadius(RADIUS);
 				

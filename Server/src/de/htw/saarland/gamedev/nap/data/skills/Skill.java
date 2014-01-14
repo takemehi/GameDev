@@ -41,8 +41,10 @@ public abstract class Skill {
 	public void update(){
 		doUpdate(character.getWorld(), character, direction);
 		if(!onCooldown && attacking){
+			//TODO cast startet hier
 			casted=false;
 			if (deltaTime>=castTime){
+				//TODO cast ist hier beendet und skill wird gestartet
 				start(character.getWorld(), character, direction);
 				casted=true;
 			}

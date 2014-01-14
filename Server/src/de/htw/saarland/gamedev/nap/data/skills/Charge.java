@@ -40,10 +40,7 @@ public class Charge extends Skill {
 	}
 
 	@Override
-	protected void start(World world, PlayableCharacter character, Vector2 mouseCoords) {
-
-		Vector2 direction = mouseCoords.sub(character.getBody().getPosition());
-		direction = direction.nor();
+	protected void start(World world, PlayableCharacter character, Vector2 direction) {
 		Vector2 velocity=direction.mul(VELOCITY);
 		character.setMovementEnabled(false);
 		character.getBody().setLinearVelocity(velocity);
