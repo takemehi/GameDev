@@ -1,5 +1,6 @@
 package de.htw.saarland.gamedev.nap.data;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
@@ -102,6 +103,9 @@ public class GameCharacter extends MoveableEntity{
 			setUp(false);
 			jumping=false;
 		}
+		
+		if(!isGrounded()) setTimeonGround(0);
+		else setTimeonGround(getTimeOnGround()+Gdx.graphics.getDeltaTime());
 	}
 	
 	//methods that get used by the network

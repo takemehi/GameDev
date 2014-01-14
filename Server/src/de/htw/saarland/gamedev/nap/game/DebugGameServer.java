@@ -236,8 +236,6 @@ public class DebugGameServer implements ApplicationListener {
 			plCh.getAttack3().setDirection(direction);
 			
 			//Movement			
-			if(!plCh.isGrounded()) plCh.setTimeonGround(0);
-			else plCh.setTimeonGround(plCh.getTimeOnGround()+Gdx.graphics.getDeltaTime());
 			if(plCh.isMovementEnabled()){
 				if(!Gdx.input.isKeyPressed(Keys.A))
 					plCh.setLeft(false);
