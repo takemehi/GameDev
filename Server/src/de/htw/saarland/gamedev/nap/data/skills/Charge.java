@@ -28,20 +28,19 @@ public class Charge extends Skill {
 	private float distanceTraveled;
 	private boolean traveling;
 
-	public Charge() {
-		super(COOLDOWN, CASTTIME);
+	public Charge(PlayableCharacter character) {
+		super(character, COOLDOWN, CASTTIME, false);
 		
 		distanceTraveled=0;
 		traveling=false;
 	}
 
 	@Override
-	public void cleanUp(World world) {	
+	public void cleanUp() {	
 	}
 
 	@Override
-	protected void start(World world, PlayableCharacter character,
-			int currentId, Vector2 mouseCoords) {
+	protected void start(World world, PlayableCharacter character, Vector2 mouseCoords) {
 
 		Vector2 direction = mouseCoords.sub(character.getBody().getPosition());
 		direction = direction.nor();
@@ -55,8 +54,7 @@ public class Charge extends Skill {
 	}
 
 	@Override
-	protected void doUpdate(World world, PlayableCharacter character,
-			int currentId, Vector2 mouseCoords) {
+	protected void doUpdate(World world, PlayableCharacter character, Vector2 mouseCoords) {
 		this.character=character;
 		
 		if(isOnCooldown() && isCasted()){

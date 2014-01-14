@@ -29,13 +29,12 @@ public class Pyroblast extends Skill{
 	private Vector2 velocityBall;
 	
 	
-	public Pyroblast() {
-		super(COOLDOWN, CASTTIME);
+	public Pyroblast(PlayableCharacter character) {
+		super(character, COOLDOWN, CASTTIME, true);
 	}
 
 	@Override
-	protected void start(World world, PlayableCharacter character, int currentId,
-			Vector2 mouseCoords){
+	protected void start(World world, PlayableCharacter character, Vector2 mouseCoords){
 		
 		CircleShape shape = new CircleShape();
 		shape.setRadius(RADIUS);
@@ -45,7 +44,7 @@ public class Pyroblast extends Skill{
 			position.x=character.getBody().getPosition().x-0.2f;
 		else
 			position.x=character.getBody().getPosition().x+0.2f;
-		ball = new SensorEntity(world, shape, position, currentId);
+		ball = new SensorEntity(world, shape, position, -1);
 		ball.setBody(world.createBody(ball.getBodyDef()));
 		ball.getFixtureDef().filter.groupIndex=character.getFixture().getFilterData().groupIndex;
 		ball.setFixture(ball.getBody().createFixture(ball.getFixtureDef()));
@@ -62,8 +61,7 @@ public class Pyroblast extends Skill{
 	}
 
 	@Override
-	protected void doUpdate(World world, PlayableCharacter character, int currentId,
-			Vector2 mouseCoords) {
+	protected void doUpdate(World world, PlayableCharacter character, Vector2 mouseCoords) {
 		
 		if(isOnCooldown() && !isCasted()) {
 			character.setMovementEnabled(false);
@@ -80,9 +78,10 @@ public class Pyroblast extends Skill{
 	}
 
 	@Override
-	public void cleanUp(World world) {
-		if(ball!=null && ball.getBody().getUserData()!=null && ball.getBody().getUserData().equals(Entity.USERDATA_BODY_FLAG_DELETE) && !world.isLocked()){
-			world.destroyBody(ball.getBody());
+	public void cleanUp() {
+		if(ball!=null && ball.getBody().getUserData()!=null && ball.getBody().getUserData().equals(Entity.USERDATA_BODY_FLAG_DELETE) 
+				&& !getPlayableCharacter().getWorld().isLocked()){
+			getPlayableCharacter().getWorld().destroyBody(ball.getBody());
 			ball=null;
 		}			
 	}

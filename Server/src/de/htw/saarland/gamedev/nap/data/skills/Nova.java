@@ -27,17 +27,16 @@ public class Nova extends Skill{
 	
 	private SensorEntity nova;
 	
-	public Nova(){
-		super(COOLDOWN, CASTTIME);
+	public Nova(PlayableCharacter character){
+		super(character, COOLDOWN, CASTTIME, false);
 	}
 
 	@Override
-	public void start(World world, PlayableCharacter character, int currentId,
-			Vector2 mouseCoords) {		
+	public void start(World world, PlayableCharacter character, Vector2 mouseCoords) {		
 		CircleShape circle = new CircleShape();
 		circle.setRadius(RADIUS);
 				
-		nova = new SensorEntity(world, circle, character.getBody().getPosition(), currentId);
+		nova = new SensorEntity(world, circle, character.getBody().getPosition(), -1);
 		nova.setBody(world.createBody(nova.getBodyDef()));
 		nova.getBody().setType(BodyType.DynamicBody);
 		nova.getFixtureDef().filter.groupIndex=character.getFixture().getFilterData().groupIndex;
@@ -47,8 +46,7 @@ public class Nova extends Skill{
 	}
 
 	@Override
-	public void doUpdate(World world, PlayableCharacter character, int currentId,
-			Vector2 mouseCoords) {
+	public void doUpdate(World world, PlayableCharacter character, Vector2 mouseCoords) {
 		if(isOnCooldown()){
 			try{
 				nova.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
@@ -57,9 +55,10 @@ public class Nova extends Skill{
 	}
 
 	@Override
-	public void cleanUp(World world) {
-		if(nova!= null && nova.getBody().getUserData()!=null && nova.getBody().getUserData().equals(Entity.USERDATA_BODY_FLAG_DELETE) && !world.isLocked()){
-			world.destroyBody(nova.getBody());
+	public void cleanUp() {
+		if(nova!= null && nova.getBody().getUserData()!=null && nova.getBody().getUserData().equals(Entity.USERDATA_BODY_FLAG_DELETE) 
+				&& !getPlayableCharacter().getWorld().isLocked()){
+			getPlayableCharacter().getWorld().destroyBody(nova.getBody());
 			nova=null;
 		}		
 	}

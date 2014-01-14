@@ -23,22 +23,22 @@ public class Snare extends Skill {
 	
 	private SensorEntity snare;
 	
-	public Snare() {
-		super(COOLDOWN, CASTTIME);
+	public Snare(PlayableCharacter character) {
+		super(character, COOLDOWN, CASTTIME, false);
 	}
 
 	@Override
-	public void cleanUp(World world) {
-		if(snare!= null && snare.getBody().getUserData()!=null && snare.getBody().getUserData().equals(Entity.USERDATA_BODY_FLAG_DELETE) && !world.isLocked()){
-			world.destroyBody(snare.getBody());
+	public void cleanUp() {
+		if(snare!= null && snare.getBody().getUserData()!=null && snare.getBody().getUserData().equals(Entity.USERDATA_BODY_FLAG_DELETE) 
+				&& !getPlayableCharacter().getWorld().isLocked()){
+			getPlayableCharacter().getWorld().destroyBody(snare.getBody());
 			snare=null;
 		}
 		
 	}
 
 	@Override
-	protected void start(World world, PlayableCharacter character,
-			int currentId, Vector2 mouseCoords) {
+	protected void start(World world, PlayableCharacter character, Vector2 mouseCoords) {
 
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(0.2f, 0.35f, new Vector2(0.4f,0), 0);
@@ -48,7 +48,7 @@ public class Snare extends Skill {
 			position.x=character.getBody().getPosition().x-0.8f;
 		else
 			position.x=character.getBody().getPosition().x+0.0f;
-		snare = new SensorEntity(world, shape, position, currentId);
+		snare = new SensorEntity(world, shape, position, -1);
 		snare.setBody(world.createBody(snare.getBodyDef()));
 		snare.getBody().setType(BodyType.DynamicBody);
 		snare.getFixtureDef().filter.groupIndex=character.getFixture().getFilterData().groupIndex;
@@ -58,8 +58,7 @@ public class Snare extends Skill {
 	}
 
 	@Override
-	protected void doUpdate(World world, PlayableCharacter character,
-			int currentId, Vector2 mouseCoords) {
+	protected void doUpdate(World world, PlayableCharacter character, Vector2 mouseCoords) {
 		if(isOnCooldown()){
 			try{
 				snare.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);

@@ -229,9 +229,11 @@ public class DebugGameServer implements ApplicationListener {
 			}
 			
 			//update attacks
-			plCh.getAttack1().update(world, plCh, i, mouseCoords);
-			plCh.getAttack2().update(world, plCh, i, mouseCoords);
-			plCh.getAttack3().update(world, plCh, i, mouseCoords);
+			Vector2 direction = mouseCoords.sub(plCh.getBody().getPosition());
+			direction = direction.nor();
+			plCh.getAttack1().setDirection(direction);
+			plCh.getAttack2().setDirection(direction);
+			plCh.getAttack3().setDirection(direction);
 			
 			//Movement			
 			if(!plCh.isGrounded()) plCh.setTimeonGround(0);
@@ -302,9 +304,9 @@ public class DebugGameServer implements ApplicationListener {
 				teamBlue.getMembers().removeIndex(i);
 				world.destroyBody(character.getBody());
 			}
-			character.getAttack1().cleanUp(world);	
-			character.getAttack2().cleanUp(world);
-			character.getAttack3().cleanUp(world);
+			character.getAttack1().cleanUp();	
+			character.getAttack2().cleanUp();
+			character.getAttack3().cleanUp();
 		}
 		for(int i=0; i<teamRed.getMembers().size; i++){
 			PlayableCharacter character;
@@ -313,7 +315,7 @@ public class DebugGameServer implements ApplicationListener {
 				teamRed.getMembers().removeIndex(i);
 				world.destroyBody(character.getBody());
 			}
-			character.getAttack1().cleanUp(world);
+			character.getAttack1().cleanUp();
 		}
 		
 	}

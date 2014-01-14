@@ -23,14 +23,13 @@ public class Axe extends Skill{
 
 	private SensorEntity axe;
 	
-	public Axe() {
-		super(COOLDOWN, CASTTIME);
+	public Axe(PlayableCharacter character) {
+		super(character, COOLDOWN, CASTTIME, false);
 		
 	}
 
 	@Override
-	protected void start(World world, PlayableCharacter character, int currentId,
-			Vector2 mouseCoords) {
+	protected void start(World world, PlayableCharacter character, Vector2 mouseCoords) {
 		
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(0.2f, 0.35f, new Vector2(0.4f,0), 0);
@@ -40,7 +39,7 @@ public class Axe extends Skill{
 			position.x=character.getBody().getPosition().x-0.8f;
 		else
 			position.x=character.getBody().getPosition().x+0.0f;
-		axe = new SensorEntity(world, shape, position, currentId);
+		axe = new SensorEntity(world, shape, position, -1);
 		axe.setBody(world.createBody(axe.getBodyDef()));
 		axe.getBody().setType(BodyType.DynamicBody);
 		axe.getFixtureDef().filter.groupIndex=character.getFixture().getFilterData().groupIndex;
@@ -50,8 +49,7 @@ public class Axe extends Skill{
 	}
 
 	@Override
-	protected void doUpdate(World world, PlayableCharacter character, int currentId,
-			Vector2 mouseCoords) {
+	protected void doUpdate(World world, PlayableCharacter character, Vector2 mouseCoords) {
 		if(isOnCooldown()){
 			try{
 				axe.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
@@ -60,9 +58,10 @@ public class Axe extends Skill{
 	}
 
 	@Override
-	public void cleanUp(World world) {
-		if(axe!= null && axe.getBody().getUserData()!=null && axe.getBody().getUserData().equals(Entity.USERDATA_BODY_FLAG_DELETE) && !world.isLocked()){
-			world.destroyBody(axe.getBody());
+	public void cleanUp() {
+		if(axe!= null && axe.getBody().getUserData()!=null && axe.getBody().getUserData().equals(Entity.USERDATA_BODY_FLAG_DELETE) 
+				&& !getPlayableCharacter().getWorld().isLocked()){
+			getPlayableCharacter().getWorld().destroyBody(axe.getBody());
 			axe=null;
 		}
 	}

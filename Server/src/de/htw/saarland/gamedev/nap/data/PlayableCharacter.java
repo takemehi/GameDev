@@ -1,6 +1,7 @@
 package de.htw.saarland.gamedev.nap.data;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
@@ -62,6 +63,12 @@ public abstract class PlayableCharacter extends GameCharacter{
 	}
 	
 	@Override
+	public void setBody(Body body){
+		super.setBody(body);
+
+	}
+	
+	@Override
 	public void update(float deltaTime, Array<CapturePoint> capturePoints){
 		super.update(deltaTime, capturePoints);
 		
@@ -91,6 +98,10 @@ public abstract class PlayableCharacter extends GameCharacter{
 				point.setBeingCaptured(false);
 			}
 		}
+		
+		attack1.update();
+		attack2.update();
+		attack3.update();
 	}
 	
 	//getter / setter

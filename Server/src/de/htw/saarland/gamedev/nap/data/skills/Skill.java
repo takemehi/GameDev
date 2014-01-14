@@ -21,8 +21,11 @@ public abstract class Skill {
 	private boolean onCooldown;
 	private boolean casted;
 	private boolean attacking;
+	private Vector2 direction;
+	private boolean cast;
+	private PlayableCharacter character;
 	
-	public Skill(float cooldown, float castTime){
+	public Skill(PlayableCharacter character, float cooldown, float castTime, boolean cast){
 		if(cooldown<0) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_COOLDOWN);
 		if(castTime<0) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_CASTTIME);
 		this.cooldown=cooldown;
@@ -30,14 +33,17 @@ public abstract class Skill {
 		deltaTime=0;
 		onCooldown=false;
 		casted=true;
+		this.cast=cast;
+		this.character=character;
+		direction = new Vector2(0,0);
 	}
 	
-	public void update(World world, PlayableCharacter character, int currentId, Vector2 mouseCoords){
-		doUpdate(world, character, currentId, mouseCoords);
+	public void update(){
+		doUpdate(character.getWorld(), character, direction);
 		if(!onCooldown && attacking){
 			casted=false;
 			if (deltaTime>=castTime){
-				start(world, character, currentId, mouseCoords);
+				start(character.getWorld(), character, direction);
 				casted=true;
 			}
 			onCooldown=true;
@@ -46,7 +52,7 @@ public abstract class Skill {
 		if(onCooldown){
 			deltaTime+=Gdx.graphics.getDeltaTime();
 			if(!casted && deltaTime>=castTime){
-				start(world, character, currentId, mouseCoords);
+				start(character.getWorld(), character, direction);
 				casted=true;
 			}
 		}
@@ -58,11 +64,11 @@ public abstract class Skill {
 		}
 	}
 	
-	public abstract void cleanUp(World world);
+	public abstract void cleanUp();
 	
-	protected abstract void start(World world, PlayableCharacter character, int currentId, Vector2 mouseCoords);
+	protected abstract void start(World world, PlayableCharacter character, Vector2 mouseCoords);
 	
-	protected abstract void doUpdate(World world, PlayableCharacter character, int currentId, Vector2 mouseCoords);
+	protected abstract void doUpdate(World world, PlayableCharacter character, Vector2 mouseCoords);
 	
 	public void reset(){
 		casted=true;
@@ -77,6 +83,10 @@ public abstract class Skill {
 	
 	public void setAttacking(boolean attacking){
 		this.attacking=attacking;
+	}
+	
+	public boolean isCast(){
+		return cast;
 	}
 	
 	public boolean isCasted(){
@@ -97,6 +107,18 @@ public abstract class Skill {
 	
 	public void setOnCooldown(boolean onCooldown){
 		this.onCooldown=onCooldown;
+	}
+	
+	public Vector2 getDirection(){
+		return direction;
+	}
+	
+	public void setDirection(Vector2 direction){
+		this.direction=direction;
+	}
+	
+	public PlayableCharacter getPlayableCharacter(){
+		return character;
 	}
 	
 }

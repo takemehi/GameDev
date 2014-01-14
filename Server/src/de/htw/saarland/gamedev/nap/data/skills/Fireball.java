@@ -29,26 +29,24 @@ public class Fireball extends Skill{
 
 	private Array<SensorEntity> fireBalls;
 	
-	public Fireball() {
-		super(COOLDOWN, CASTTIME);
+	public Fireball(PlayableCharacter character) {
+		super(character, COOLDOWN, CASTTIME, false);
 		
 		fireBalls = new Array<SensorEntity>();
 	}
 
 	@Override
-	protected void start(World world, PlayableCharacter character, int currentId, Vector2 mouseCoords) {
+	protected void start(World world, PlayableCharacter character, Vector2 direction) {
 		
 		SensorEntity ball;
 		CircleShape shape = new CircleShape();
 		shape.setRadius(RADIUS);
-		ball = new SensorEntity(world, shape, character.getBody().getPosition().x, character.getBody().getPosition().y, currentId);
+		ball = new SensorEntity(world, shape, character.getBody().getPosition().x, character.getBody().getPosition().y, -1);
 		ball.setBody(world.createBody(ball.getBodyDef()));
 		ball.getFixtureDef().filter.groupIndex=character.getFixture().getFilterData().groupIndex;
 		ball.setFixture(ball.getBody().createFixture(ball.getFixtureDef()));
 		ball.getFixture().setUserData(USERDATA_FIREBALL);
 		ball.getBody().setType(BodyDef.BodyType.DynamicBody);
-		Vector2 direction = mouseCoords.sub(character.getBody().getPosition());
-		direction = direction.nor();
 		Vector2 velocityBall=direction.mul(VELOCITY);
 		ball.getBody().setGravityScale(0);
 		ball.getBody().setLinearVelocity(velocityBall);
@@ -56,7 +54,7 @@ public class Fireball extends Skill{
 	}
 
 	@Override
-	protected void doUpdate(World world, PlayableCharacter character, int currentId, Vector2 mouseCoords) {		
+	protected void doUpdate(World world, PlayableCharacter character, Vector2 mouseCoords) {		
 		
 		for(SensorEntity s: fireBalls){
 			if(s.getDistanceTraveled()>TRAVEL_DISTANCE){
@@ -69,12 +67,13 @@ public class Fireball extends Skill{
 	}
 	
 	@Override
-	public void cleanUp(World world){
+	public void cleanUp(){
 		for (Iterator<SensorEntity> it = fireBalls.iterator(); it.hasNext(); ) {
 		    SensorEntity s = it.next();
-		    if(s.getBody().getUserData()!=null && s.getBody().getUserData().equals(Entity.USERDATA_BODY_FLAG_DELETE) && !world.isLocked()){
+		    if(s.getBody().getUserData()!=null && s.getBody().getUserData().equals(Entity.USERDATA_BODY_FLAG_DELETE) 
+		    		&& !getPlayableCharacter().getWorld().isLocked()){
 				fireBalls.removeValue(s, true);
-				world.destroyBody(s.getBody());
+				getPlayableCharacter().getWorld().destroyBody(s.getBody());
 			}
 		}
 	}

@@ -187,13 +187,17 @@ public class GameClient implements ApplicationListener, IEventListener {
 		Vector3 mousePos = new Vector3(inputProcessor.getCrossHairX(), inputProcessor.getCrossHairY(), 0);
 		camera.unproject(mousePos);
 		
+		Vector2 mousePos2 = new Vector2(mousePos.x,mousePos.y);
+		Vector2 direction = mousePos2.sub(player.getPlayableCharacter().getBody().getPosition());
+		direction = direction.nor();
+		player.getPlayableCharacter().getAttack1().setDirection(direction);
+		player.getPlayableCharacter().getAttack2().setDirection(direction);
+		player.getPlayableCharacter().getAttack3().setDirection(direction);
+		
 		player.getPlayableCharacter().update(Gdx.graphics.getDeltaTime(), gameWorld.getCapturePoints());
-		player.getPlayableCharacter().getAttack1().update(world, player.getPlayableCharacter(), 0, new Vector2(mousePos.x, mousePos.y));
-		player.getPlayableCharacter().getAttack2().update(world, player.getPlayableCharacter(), 0, new Vector2(mousePos.x, mousePos.y));
-		player.getPlayableCharacter().getAttack3().update(world, player.getPlayableCharacter(), 0, new Vector2(mousePos.x, mousePos.y));
-		player.getPlayableCharacter().getAttack1().cleanUp(world);
-		player.getPlayableCharacter().getAttack2().cleanUp(world);
-		player.getPlayableCharacter().getAttack3().cleanUp(world);
+		player.getPlayableCharacter().getAttack1().cleanUp();
+		player.getPlayableCharacter().getAttack2().cleanUp();
+		player.getPlayableCharacter().getAttack3().cleanUp();
 		player.render(batch);
 		
 		synchronized (players) {
