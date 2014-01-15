@@ -12,7 +12,6 @@ import com.badlogic.gdx.utils.Array;
 import de.htw.saarland.gamedev.nap.data.GameWorld;
 import de.htw.saarland.gamedev.nap.data.IPlayer;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
-import de.htw.saarland.gamedev.nap.data.Player;
 import de.htw.saarland.gamedev.nap.data.entities.Entity;
 import de.htw.saarland.gamedev.nap.data.entities.SensorEntity;
 
@@ -29,8 +28,8 @@ public class Fireball extends Skill{
 
 	private Array<SensorEntity> fireBalls;
 	
-	public Fireball(PlayableCharacter character) {
-		super(character, COOLDOWN, CASTTIME, false);
+	public Fireball(PlayableCharacter character, int skillNr) {
+		super(character, COOLDOWN, CASTTIME, false, skillNr);
 		
 		fireBalls = new Array<SensorEntity>();
 	}

@@ -22,9 +22,9 @@ public class Mage extends PlayableCharacter{
 		super(world, new MageShape(), DENSITY, FRICTION, RESTITUTION, position, BASEVELOCITY,
 				MAXVELOCITY, MAXHEALTH, PlayableCharacter.ID_MAGE, teamId, id);
 		
-		attack1 = new Fireball(this);
-		attack2 = new Pyroblast(this);
-		attack3 = new Nova(this);
+		attack1 = new Fireball(this, 1);
+		attack2 = new Pyroblast(this, 2);
+		attack3 = new Nova(this, 3);
 	}
 
 }

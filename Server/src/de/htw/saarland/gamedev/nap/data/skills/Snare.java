@@ -23,8 +23,8 @@ public class Snare extends Skill {
 	
 	private SensorEntity snare;
 	
-	public Snare(PlayableCharacter character) {
-		super(character, COOLDOWN, CASTTIME, false);
+	public Snare(PlayableCharacter character, int skillNr) {
+		super(character, COOLDOWN, CASTTIME, false, skillNr);
 	}
 
 	@Override

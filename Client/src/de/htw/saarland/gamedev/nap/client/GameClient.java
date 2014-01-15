@@ -359,22 +359,21 @@ public class GameClient implements ApplicationListener, IEventListener {
 			
 			//Skills
 			case GameOpcodes.GAME_SKILL1_START:
-				doSkill(Skills.SKILL1, params.getInt(GameOpcodes.ENTITY_ID_PARAM), true);
+				//TODO skill start
 				break;
-			case GameOpcodes.GAME_SKILL1_STOP:
-				doSkill(Skills.SKILL1, params.getInt(GameOpcodes.ENTITY_ID_PARAM), false);
+			case GameOpcodes.GAME_SKILL1_CAST_START:
+				// TODO skill cast started
 				break;
 			case GameOpcodes.GAME_SKILL2_START:
-				doSkill(Skills.SKILL2, params.getInt(GameOpcodes.ENTITY_ID_PARAM), true);
+				//TODO skill start
 				break;
-			case GameOpcodes.GAME_SKILL2_STOP:
-				doSkill(Skills.SKILL2, params.getInt(GameOpcodes.ENTITY_ID_PARAM), false);
+			case GameOpcodes.GAME_SKILL2_CAST_START:
+				// TODO skill cast started
 				break;
 			case GameOpcodes.GAME_SKILL3_START:
-				doSkill(Skills.SKILL3, params.getInt(GameOpcodes.ENTITY_ID_PARAM), true);
+				//TODO skill start
 				break;
-			case GameOpcodes.GAME_SKILL3_STOP:
-				doSkill(Skills.SKILL3, params.getInt(GameOpcodes.ENTITY_ID_PARAM), false);
+			case GameOpcodes.GAME_SKILL3_CAST_START:
 				break;
 			//Skills end
 			
@@ -441,30 +440,6 @@ public class GameClient implements ApplicationListener, IEventListener {
 		IMoveable entity = getMoveableEntityById(entityId);
 		
 		entity.setPosition(pos);
-	}
-	
-	private void doSkill(Skills skill, int entityId, boolean start) {
-		ClientPlayer player = getPlayerById(entityId);
-		
-		if (player == null) {
-			System.out.println("Player not found!!");
-		}
-		else {
-			switch (skill) {
-				case SKILL1:
-					System.out.println("Attack 1");
-					player.getPlayableCharacter().setAttacking1(start);
-					break;
-				case SKILL2:
-					System.out.println("Attack 2");
-					player.getPlayableCharacter().setAttacking2(start);
-					break;
-				case SKILL3:
-					System.out.println("Attack 3");
-					player.getPlayableCharacter().setAttacking3(start);
-					break;
-			}
-		}
 	}
 	
 	private void moveEntity(Direction direction, int entityId) {

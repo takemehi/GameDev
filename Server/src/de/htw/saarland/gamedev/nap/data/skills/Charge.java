@@ -8,7 +8,6 @@ import com.badlogic.gdx.utils.Array;
 import de.htw.saarland.gamedev.nap.data.GameWorld;
 import de.htw.saarland.gamedev.nap.data.IPlayer;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
-import de.htw.saarland.gamedev.nap.data.Player;
 
 public class Charge extends Skill {
 	
@@ -28,8 +27,8 @@ public class Charge extends Skill {
 	private float distanceTraveled;
 	private boolean traveling;
 
-	public Charge(PlayableCharacter character) {
-		super(character, COOLDOWN, CASTTIME, false);
+	public Charge(PlayableCharacter character, int skillNr) {
+		super(character, COOLDOWN, CASTTIME, false, skillNr);
 		
 		distanceTraveled=0;
 		traveling=false;

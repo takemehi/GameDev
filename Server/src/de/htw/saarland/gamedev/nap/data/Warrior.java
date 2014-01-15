@@ -24,8 +24,8 @@ public class Warrior extends PlayableCharacter{
 		super(world, new WarriorShape(), DENSITY, FRICTION, RESTITUTION, position, BASEVELOCITY,
 				MAXVELOCITY, MAXHEALTH, PlayableCharacter.ID_WARRIOR, teamId, id);
 		
-		attack1=new Axe(this);
-		attack2=new Charge(this);
-		attack3=new Snare(this);
+		attack1=new Axe(this, 1);
+		attack2=new Charge(this, 2);
+		attack3=new Snare(this, 3);
 	}
 }

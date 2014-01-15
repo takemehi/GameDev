@@ -27,8 +27,8 @@ public class Nova extends Skill{
 	
 	private SensorEntity nova;
 	
-	public Nova(PlayableCharacter character){
-		super(character, COOLDOWN, CASTTIME, false);
+	public Nova(PlayableCharacter character, int skillNr){
+		super(character, COOLDOWN, CASTTIME, false, skillNr);
 	}
 
 	@Override

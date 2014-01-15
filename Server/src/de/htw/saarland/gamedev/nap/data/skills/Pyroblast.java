@@ -10,7 +10,6 @@ import com.badlogic.gdx.utils.Array;
 import de.htw.saarland.gamedev.nap.data.GameWorld;
 import de.htw.saarland.gamedev.nap.data.IPlayer;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
-import de.htw.saarland.gamedev.nap.data.Player;
 import de.htw.saarland.gamedev.nap.data.entities.Entity;
 import de.htw.saarland.gamedev.nap.data.entities.SensorEntity;
 
@@ -29,8 +28,8 @@ public class Pyroblast extends Skill{
 	private Vector2 velocityBall;
 	
 	
-	public Pyroblast(PlayableCharacter character) {
-		super(character, COOLDOWN, CASTTIME, true);
+	public Pyroblast(PlayableCharacter character, int skillNr) {
+		super(character, COOLDOWN, CASTTIME, true, skillNr);
 	}
 
 	@Override
