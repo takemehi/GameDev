@@ -105,7 +105,7 @@ public class GameCharacter extends MoveableEntity{
 		}
 		
 		if(!isGrounded()) setTimeonGround(0);
-		else setTimeonGround(getTimeOnGround()+Gdx.graphics.getDeltaTime());
+		else setTimeonGround(getTimeOnGround()+deltaTime);
 	}
 	
 	//methods that get used by the network

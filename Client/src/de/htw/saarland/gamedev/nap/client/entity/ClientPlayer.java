@@ -22,7 +22,7 @@ public class ClientPlayer implements IPlayer, IRender, IMoveable, Disposable {
 	
 	private EntityAnimation animations;
 	private float stateTime;
-	private boolean flip;
+	protected PlayerCasting cast;
 	
 	public ClientPlayer(PlayableCharacter character, int team) {
 		if (character == null) {
@@ -31,7 +31,7 @@ public class ClientPlayer implements IPlayer, IRender, IMoveable, Disposable {
 		
 		this.character = character;
 		this.team = team;
-		this.flip = true;
+		cast = null;
 		
 		switch (character.getCharacterClass()) {
 			case PlayableCharacter.ID_MAGE:
@@ -51,12 +51,12 @@ public class ClientPlayer implements IPlayer, IRender, IMoveable, Disposable {
 		float width = (region.getRegionWidth() * GameServer.PIXELS_TO_METERS);
 		float height = (region.getRegionHeight() * GameServer.PIXELS_TO_METERS);
 		
-		if (region.isFlipX() == flip) {
+		if (region.isFlipX() == (character.getOrientation() == PlayableCharacter.ORIENTATION_LEFT)) {
 			region.flip(true, false);
 		}
 		
 		float x = pos.x - (width / 2);
-		x = flip ? x + animations.getXOffset(GameServer.PIXELS_TO_METERS) : x - animations.getXOffset(GameServer.PIXELS_TO_METERS);
+		x = !region.isFlipX() ? x + animations.getXOffset(GameServer.PIXELS_TO_METERS) : x - animations.getXOffset(GameServer.PIXELS_TO_METERS);
 		
 		batch.draw(region,
 				x,
@@ -66,28 +66,21 @@ public class ClientPlayer implements IPlayer, IRender, IMoveable, Disposable {
 		
 		// TODO render healthbar & name
 	}
+	
+	public void setCast(PlayerCasting cast) {
+		this.cast = cast;
+	}
 
 	protected CharacterStates getCharacterState() {
 		if (character.getHealth() <= 0) {
 			return CharacterStates.DEAD;
 		}
-		else if (character.isAttacking1()) {
-			return CharacterStates.SKILL1;
-		}
-		else if (character.isAttacking2()) {
-			return CharacterStates.SKILL2;
-		}
-		else if (character.isAttacking3()) {
-			return CharacterStates.SKILL3;
-		}
-		else if (character.isJumping()) {
-			return CharacterStates.JUMPING;
+		else if (cast != null) {
+			return cast.getCharacterState();
 		}
 		else if (character.getLeft() || character.getRight()) {
 			return CharacterStates.WALKING;
 		}
-		
-		// TODO skills?, capturing
 		
 		return CharacterStates.IDLE;
 	}
@@ -112,13 +105,11 @@ public class ClientPlayer implements IPlayer, IRender, IMoveable, Disposable {
 	@Override
 	public void moveLeft() {
 		character.setLeft(true);
-		flip = false;
 	}
 
 	@Override
 	public void moveRight() {
 		character.setRight(true);
-		flip = true;
 	}
 
 	@Override

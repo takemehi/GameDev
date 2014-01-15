@@ -35,7 +35,7 @@ public class Fireball extends Skill{
 	}
 
 	@Override
-	protected void start(World world, PlayableCharacter character, Vector2 direction) {
+	public void start(World world, PlayableCharacter character, Vector2 direction) {
 		
 		SensorEntity ball;
 		CircleShape shape = new CircleShape();

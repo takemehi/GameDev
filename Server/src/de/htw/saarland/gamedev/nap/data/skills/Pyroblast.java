@@ -33,7 +33,7 @@ public class Pyroblast extends Skill{
 	}
 
 	@Override
-	protected void start(World world, PlayableCharacter character, Vector2 direction){
+	public void start(World world, PlayableCharacter character, Vector2 direction){
 		
 		CircleShape shape = new CircleShape();
 		shape.setRadius(RADIUS);

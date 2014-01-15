@@ -1,6 +1,5 @@
 package de.htw.saarland.gamedev.nap.data.skills;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.smartfoxserver.v2.entities.data.SFSObject;
@@ -46,11 +45,11 @@ public abstract class Skill {
 		this.sendPacketListener = sendPacketListener;
 	}
 	
-	public void update(){
+	public void update(float _deltaTime){
 		doUpdate(character.getWorld(), character, direction);
 		if(!onCooldown && attacking){
 			
-			if (sendPacketListener != null) {
+			if (sendPacketListener != null && castTime > 0) {
 				//we are the server send ok packet to client that started the request
 				SFSObject params = new SFSObject();
 				params.putInt(GameOpcodes.ENTITY_ID_PARAM, character.getId());
@@ -88,16 +87,22 @@ public abstract class Skill {
 							break;
 					}
 				}
-				start(character.getWorld(), character, direction);
+				if (sendPacketListener != null) {
+					//only do this on the server side
+					start(character.getWorld(), character, direction);
+				}
 				casted=true;
 			}
 			onCooldown=true;
 		}	
 		
 		if(onCooldown){
-			deltaTime+=Gdx.graphics.getDeltaTime();
+			deltaTime+=_deltaTime;
 			if(!casted && deltaTime>=castTime){
-				start(character.getWorld(), character, direction);
+				if (sendPacketListener != null) {
+					//only do this on the server side
+					start(character.getWorld(), character, direction);
+				}
 				casted=true;
 			}
 		}
@@ -111,7 +116,7 @@ public abstract class Skill {
 	
 	public abstract void cleanUp();
 	
-	protected abstract void start(World world, PlayableCharacter character, Vector2 mouseCoords);
+	public abstract void start(World world, PlayableCharacter character, Vector2 mouseCoords);
 	
 	protected abstract void doUpdate(World world, PlayableCharacter character, Vector2 mouseCoords);
 	

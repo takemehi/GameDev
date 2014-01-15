@@ -72,7 +72,7 @@ public class Player implements IPlayer{
 //				moveParams.putInt(GameOpcodes.ENTITY_ID_PARAM, plChar.getId());
 //				moveParams.putFloat(GameOpcodes.COORD_X_PARAM, plChar.getBody().getPosition().x);
 //				moveParams.putFloat(GameOpcodes.COORD_Y_PARAM, plChar.getBody().getPosition().y);
-//				extension.send(GameOpcodes.GAME_OBJECT_COORD_UPDATE, moveParams, extension.getParentRoom().getPlayersList());
+//				sendPacketListener.sendServerPacketUDP(GameOpcodes.GAME_OBJECT_COORD_UPDATE, moveParams);
 //				stateTime = 0;
 //			}
 //		}

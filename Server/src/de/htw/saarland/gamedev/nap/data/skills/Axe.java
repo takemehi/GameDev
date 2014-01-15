@@ -28,7 +28,7 @@ public class Axe extends Skill{
 	}
 
 	@Override
-	protected void start(World world, PlayableCharacter character, Vector2 direction) {
+	public void start(World world, PlayableCharacter character, Vector2 direction) {
 		
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(0.2f, 0.35f, new Vector2(0.4f,0), 0);

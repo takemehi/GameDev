@@ -4,6 +4,7 @@ import sfs2x.client.SmartFox;
 import sfs2x.client.entities.Room;
 import sfs2x.client.requests.ExtensionRequest;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import de.htw.saarland.gamedev.nap.client.input.IBaseInput;
@@ -31,6 +32,12 @@ public class MeClientPlayer extends ClientPlayer {
 	
 	@Override
 	public void render(SpriteBatch batch) {
+		if (cast != null) {
+			if (cast.update(Gdx.graphics.getDeltaTime())) {
+				//TODO send direction update
+			}
+		}
+		
 		super.render(batch);
 		
 		if (inputProcessor.isLeftDown() && !inputProcessor.wasLeftDown()) {

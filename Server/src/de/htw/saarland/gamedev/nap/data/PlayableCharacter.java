@@ -99,9 +99,9 @@ public abstract class PlayableCharacter extends GameCharacter{
 			}
 		}
 		
-		attack1.update();
-		attack2.update();
-		attack3.update();
+		attack1.update(deltaTime);
+		attack2.update(deltaTime);
+		attack3.update(deltaTime);
 	}
 	
 	//getter / setter
