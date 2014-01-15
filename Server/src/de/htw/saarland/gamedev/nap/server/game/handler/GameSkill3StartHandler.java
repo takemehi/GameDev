@@ -20,10 +20,5 @@ public class GameSkill3StartHandler extends BaseClientRequestHandler {
 		PlayableCharacter player = game.getPlayerBySFSUser((SFSUser)user).getPlChar();
 		
 		player.setAttacking3(true);
-		
-		SFSObject params = new SFSObject();
-		params.putInt(GameOpcodes.ENTITY_ID_PARAM, player.getId());
-		
-		send(GameOpcodes.GAME_SKILL3_START, params, getParentExtension().getParentRoom().getPlayersList());
 	}
 }

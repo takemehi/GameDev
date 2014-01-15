@@ -1,14 +1,13 @@
 package de.htw.saarland.gamedev.nap.data.skills;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.Array;
+import com.smartfoxserver.v2.entities.data.SFSObject;
 
 import de.htw.saarland.gamedev.nap.data.GameCharacter;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
-import de.htw.saarland.gamedev.nap.data.Player;
+import de.htw.saarland.gamedev.nap.data.network.GameOpcodes;
+import de.htw.saarland.gamedev.nap.game.ISendPacket;
 
 public abstract class Skill {
 
@@ -26,7 +25,10 @@ public abstract class Skill {
 	private boolean cast;
 	private PlayableCharacter character;
 	
-	public Skill(PlayableCharacter character, float cooldown, float castTime, boolean cast){
+	private ISendPacket sendPacketListener;
+	private int skillNr;
+	
+	public Skill(PlayableCharacter character, float cooldown, float castTime, boolean cast, int skillNr){
 		if(cooldown<0) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_COOLDOWN);
 		if(castTime<0) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_CASTTIME);
 		this.cooldown=cooldown;
@@ -37,25 +39,71 @@ public abstract class Skill {
 		this.cast=cast;
 		this.character=character;
 		direction = new Vector2(0,0);
+		this.skillNr = skillNr;
 	}
 	
-	public void update(){
+	public void setSendPacketListener(ISendPacket sendPacketListener) {
+		this.sendPacketListener = sendPacketListener;
+	}
+	
+	public void update(float _deltaTime){
 		doUpdate(character.getWorld(), character, direction);
 		if(!onCooldown && attacking){
-			//TODO cast startet hier
+			
+			if (sendPacketListener != null && castTime > 0) {
+				//we are the server send ok packet to client that started the request
+				SFSObject params = new SFSObject();
+				params.putInt(GameOpcodes.ENTITY_ID_PARAM, character.getId());
+				
+				switch (skillNr) {
+					case 1:
+						sendPacketListener.sendServerPacket(GameOpcodes.GAME_SKILL1_CAST_START, params);
+						break;
+					case 2:
+						sendPacketListener.sendServerPacket(GameOpcodes.GAME_SKILL2_CAST_START, params);
+						break;
+					case 3:
+						sendPacketListener.sendServerPacket(GameOpcodes.GAME_SKILL3_CAST_START, params);
+						break;
+				}
+			}
 			casted=false;
 			if (deltaTime>=castTime){
-				//TODO cast ist hier beendet und skill wird gestartet
-				start(character.getWorld(), character, direction);
+				if (sendPacketListener != null) {
+					//we are the server send ok packet to client that started the request
+					SFSObject params = new SFSObject();
+					params.putInt(GameOpcodes.ENTITY_ID_PARAM, character.getId());
+					params.putFloat(GameOpcodes.DIRECTION_X_PARAM, direction.x);
+					params.putFloat(GameOpcodes.DIRECTION_Y_PARAM, direction.y);
+					
+					switch (skillNr) {
+						case 1:
+							sendPacketListener.sendServerPacket(GameOpcodes.GAME_SKILL1_START, params);
+							break;
+						case 2:
+							sendPacketListener.sendServerPacket(GameOpcodes.GAME_SKILL2_START, params);
+							break;
+						case 3:
+							sendPacketListener.sendServerPacket(GameOpcodes.GAME_SKILL3_START, params);
+							break;
+					}
+				}
+				if (sendPacketListener != null) {
+					//only do this on the server side
+					start(character.getWorld(), character, direction);
+				}
 				casted=true;
 			}
 			onCooldown=true;
 		}	
 		
 		if(onCooldown){
-			deltaTime+=Gdx.graphics.getDeltaTime();
+			deltaTime+=_deltaTime;
 			if(!casted && deltaTime>=castTime){
-				start(character.getWorld(), character, direction);
+				if (sendPacketListener != null) {
+					//only do this on the server side
+					start(character.getWorld(), character, direction);
+				}
 				casted=true;
 			}
 		}
@@ -72,7 +120,7 @@ public abstract class Skill {
 	
 	public abstract void cleanUp();
 	
-	protected abstract void start(World world, PlayableCharacter character, Vector2 mouseCoords);
+	public abstract void start(World world, PlayableCharacter character, Vector2 mouseCoords);
 	
 	protected abstract void doUpdate(World world, PlayableCharacter character, Vector2 mouseCoords);
 	

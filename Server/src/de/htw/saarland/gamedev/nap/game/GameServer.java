@@ -2,6 +2,7 @@ package de.htw.saarland.gamedev.nap.game;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
@@ -25,7 +26,7 @@ import de.htw.saarland.gamedev.nap.server.DeltaTime;
 import de.htw.saarland.gamedev.nap.server.ServerExtension;
 import de.htw.saarland.gamedev.nap.server.launcher.exception.PlayerNotFoundException;
 
-public class GameServer implements ApplicationListener {
+public class GameServer implements ApplicationListener, ISendPacket {
 	
 	//exceptions
 	private final static String EXCEPTION_ILLEGAL_MAP = "Map files are missing!";
@@ -141,13 +142,13 @@ public class GameServer implements ApplicationListener {
 		
 		Array<Player> blue = new Array<Player>();
 		for(int i=0; i<charactersBlue.size(); i++){
-			blue.add(new Player(blueMembers.get(i), world, spawnPointBlue.getSpawnPoint().getPositionOriginal(), charactersBlue.get(i), PlayableCharacter.ID_TEAM_BLUE, currentId++, extension));
+			blue.add(new Player(blueMembers.get(i), world, spawnPointBlue.getSpawnPoint().getPositionOriginal(), charactersBlue.get(i), PlayableCharacter.ID_TEAM_BLUE, currentId++, this));
 		}
 		blueTeam = new Team(spawnPointBlue, blue);
 		
 		Array<Player> red = new Array<Player>();
 		for(int i=0; i<charactersRed.size(); i++){
-			red.add(new Player(redMembers.get(i), world, spawnPointRed.getSpawnPoint().getPositionOriginal(), charactersRed.get(i), PlayableCharacter.ID_TEAM_RED, currentId++, extension));
+			red.add(new Player(redMembers.get(i), world, spawnPointRed.getSpawnPoint().getPositionOriginal(), charactersRed.get(i), PlayableCharacter.ID_TEAM_RED, currentId++, this));
 		}
 		redTeam = new Team(spawnPointRed, red);
 		
@@ -249,5 +250,25 @@ public class GameServer implements ApplicationListener {
 	
 	public boolean isGameEnd() {
 		return gameEnded;
+	}
+
+	@Override
+	public void sendServerPacket(String opcode, ISFSObject params, List<User> recipients) {
+		extension.send(opcode, params, recipients);		
+	}
+
+	@Override
+	public void sendServerPacket(String opcode, ISFSObject params, User recipient) {
+		extension.send(opcode, params, recipient);
+	}
+
+	@Override
+	public void sendServerPacket(String opcode, ISFSObject params) {
+		extension.send(opcode, params, extension.getParentRoom().getPlayersList());
+	}
+
+	@Override
+	public void sendServerPacketUDP(String opcode, ISFSObject params) {
+		extension.send(opcode, params, extension.getParentRoom().getPlayersList(), true);
 	}
 }

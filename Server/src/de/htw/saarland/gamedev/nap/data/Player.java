@@ -8,6 +8,7 @@ import com.smartfoxserver.v2.entities.data.SFSObject;
 import com.smartfoxserver.v2.extensions.SFSExtension;
 
 import de.htw.saarland.gamedev.nap.data.network.GameOpcodes;
+import de.htw.saarland.gamedev.nap.game.ISendPacket;
 
 public class Player implements IPlayer{
 	
@@ -20,13 +21,13 @@ public class Player implements IPlayer{
 	private SFSUser user;
 	
 	private float stateTime;
-	private SFSExtension extension;
+	private ISendPacket sendPacketListener;
 	
-	public Player(SFSUser user, World world, Vector2 position,int characterId, int teamId, int id, SFSExtension extension){
+	public Player(SFSUser user, World world, Vector2 position,int characterId, int teamId, int id, ISendPacket sendPacketListener){
 		//if(user==null) throw new NullPointerException(EXCEPTION_NULL_USER);
 		
 		this.user=user;
-		this.extension = extension;
+		this.sendPacketListener = sendPacketListener;
 		this.stateTime = 0.0f;
 		initPlayableCharacter(world, position, characterId, teamId, id);
 	}
@@ -44,6 +45,10 @@ public class Player implements IPlayer{
 			plChar.setFixture(plChar.getBody().createFixture(plChar.getFixtureDef()));
 			break;
 		}
+		
+		plChar.getAttack1().setSendPacketListener(sendPacketListener);
+		plChar.getAttack2().setSendPacketListener(sendPacketListener);
+		plChar.getAttack3().setSendPacketListener(sendPacketListener);
 	}
 	
 	
@@ -67,7 +72,7 @@ public class Player implements IPlayer{
 //				moveParams.putInt(GameOpcodes.ENTITY_ID_PARAM, plChar.getId());
 //				moveParams.putFloat(GameOpcodes.COORD_X_PARAM, plChar.getBody().getPosition().x);
 //				moveParams.putFloat(GameOpcodes.COORD_Y_PARAM, plChar.getBody().getPosition().y);
-//				extension.send(GameOpcodes.GAME_OBJECT_COORD_UPDATE, moveParams, extension.getParentRoom().getPlayersList());
+//				sendPacketListener.sendServerPacketUDP(GameOpcodes.GAME_OBJECT_COORD_UPDATE, moveParams);
 //				stateTime = 0;
 //			}
 //		}

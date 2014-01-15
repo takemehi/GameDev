@@ -9,6 +9,8 @@ package de.htw.saarland.gamedev.nap.launcher;
 import com.smartfoxserver.v2.exceptions.SFSException;
 import de.htw.saarland.gamedev.nap.NetworkConstants;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
 import sfs2x.client.SmartFox;
 import sfs2x.client.core.BaseEvent;
 import sfs2x.client.core.IEventListener;
@@ -160,8 +162,13 @@ public class FrameConnect extends javax.swing.JFrame implements IEventListener {
                 break;
             case SFSEvent.LOGIN:
                 //successfully connected, start the "real" launcher frame
-                
-                listener.startLauncher();
+            	SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						sfClient.initUdp(textFieldHost.getText(), Integer.parseInt(textFieldPort.getText()));
+		                listener.startLauncher();
+					}
+				});
                 break;
             case SFSEvent.LOGIN_ERROR:
                 //cannot login :( . Show why and disconnect

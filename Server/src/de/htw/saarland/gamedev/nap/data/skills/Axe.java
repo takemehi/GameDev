@@ -9,7 +9,6 @@ import com.badlogic.gdx.utils.Array;
 
 import de.htw.saarland.gamedev.nap.data.IPlayer;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
-import de.htw.saarland.gamedev.nap.data.Player;
 import de.htw.saarland.gamedev.nap.data.entities.Entity;
 import de.htw.saarland.gamedev.nap.data.entities.SensorEntity;
 
@@ -23,13 +22,13 @@ public class Axe extends Skill{
 
 	private SensorEntity axe;
 	
-	public Axe(PlayableCharacter character) {
-		super(character, COOLDOWN, CASTTIME, false);
+	public Axe(PlayableCharacter character, int skillNr) {
+		super(character, COOLDOWN, CASTTIME, false, skillNr);
 		
 	}
 
 	@Override
-	protected void start(World world, PlayableCharacter character, Vector2 direction) {
+	public void start(World world, PlayableCharacter character, Vector2 direction) {
 		
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(0.2f, 0.35f, new Vector2(0.4f,0), 0);
@@ -87,5 +86,4 @@ public class Axe extends Skill{
 			}
 		}
 	}
-
 }

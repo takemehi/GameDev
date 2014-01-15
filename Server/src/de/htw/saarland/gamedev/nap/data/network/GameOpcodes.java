@@ -235,82 +235,88 @@ public class GameOpcodes {
 	 * C->S<br/>
 	 * Request to cast Skill1 (Skill1 key is being pressed)
 	 */
-	public static final String GAME_SKILL1_START_REQUEST = "game.player.skill1.start.request";
+	public static final String GAME_SKILL1_ON_REQUEST = "game.player.skill1.on.request";
 	/**
 	 * C->S<br/>
 	 * Request to stop casting skill1 (Skill1 key is not pressed anymore) 
 	 */
-	public static final String GAME_SKILL1_STOP_REQUEST = "game.player.skill1.stop.request";
+	public static final String GAME_SKILL1_OFF_REQUEST = "game.player.skill1.off.request";
 	/**
 	 * S->C<br/>
-	 * Cast Skill1 succeeded<br/>
+	 * Cast Skill1 started succeeded<br/>
 	 * <br/>
 	 * params:<br/>
 	 * 	int ENTITY_ID_PARAM the id of the casting entity
+	 */
+	public static final String GAME_SKILL1_CAST_START = "game.player.skill1.caststart";
+	/**
+	 * S->C<br/>
+	 * Cast Skill1 succeeded ended<br/>
+	 * <br/>
+	 * params:<br/>
+	 * 	int ENTITY_ID_PARAM the id of the casting entity
+	 *  float DIRECTION_X_PARAM the x value of the direction vector
+	 *  float DIRECTION_Y_PARAM the y value of the direction vector
 	 */
 	public static final String GAME_SKILL1_START = "game.player.skill1.start";
-	/**
-	 * S->C<br/>
-	 * Skill1 not casting anymore<br/>
-	 * <br/>
-	 * params:<br/>
-	 * 	int ENTITY_ID_PARAM the id of the casting entity
-	 */
-	public static final String GAME_SKILL1_STOP = "game.player.skill1.stop";
 	
 	/**
 	 * C->S<br/>
 	 * Request to cast Skill2 (Skill2 key is being pressed)
 	 */
-	public static final String GAME_SKILL2_START_REQUEST = "game.player.skill2.start.request";
+	public static final String GAME_SKILL2_ON_REQUEST = "game.player.skill2.on.request";
 	/**
 	 * C->S<br/>
 	 * Request to stop casting skill2 (Skill2 key is not pressed anymore) 
 	 */
-	public static final String GAME_SKILL2_STOP_REQUEST = "game.player.skill2.stop.request";
+	public static final String GAME_SKILL2_OFF_REQUEST = "game.player.skill2.off.request";
 	/**
 	 * S->C<br/>
-	 * Cast Skill2 succeeded<br/>
+	 * Cast Skill2 succeeded started<br/>
 	 * <br/>
 	 * params:<br/>
 	 * 	int ENTITY_ID_PARAM the id of the casting entity
+	 */
+	public static final String GAME_SKILL2_CAST_START = "game.player.skill2.caststart";
+	/**
+	 * S->C<br/>
+	 * Cast Skill2 succeeded ended<br/>
+	 * <br/>
+	 * params:<br/>
+	 * 	int ENTITY_ID_PARAM the id of the casting entity
+	 *  float DIRECTION_X_PARAM the x value of the direction vector
+	 *  float DIRECTION_Y_PARAM the y value of the direction vector
 	 */
 	public static final String GAME_SKILL2_START = "game.player.skill2.start";
-	/**
-	 * S->C<br/>
-	 * Skill2 not casting anymore<br/>
-	 * <br/>
-	 * params:<br/>
-	 * 	int ENTITY_ID_PARAM the id of the casting entity
-	 */
-	public static final String GAME_SKILL2_STOP = "game.player.skill2.stop";
 	
 	/**
 	 * C->S<br/>
 	 * Request to cast Skill3 (Skill3 key is being pressed)
 	 */
-	public static final String GAME_SKILL3_START_REQUEST = "game.player.skill3.start.request";
+	public static final String GAME_SKILL3_ON_REQUEST = "game.player.skill3.on.request";
 	/**
 	 * C->S<br/>
 	 * Request to stop casting skill3 (Skill3 key is not pressed anymore) 
 	 */
-	public static final String GAME_SKILL3_STOP_REQUEST = "game.player.skill3.stop.request";
+	public static final String GAME_SKILL3_OFF_REQUEST = "game.player.skill3.off.request";
 	/**
 	 * S->C<br/>
-	 * Cast Skill3 succeeded<br/>
+	 * Cast Skill3 succeeded started<br/>
 	 * <br/>
 	 * params:<br/>
 	 * 	int ENTITY_ID_PARAM the id of the casting entity
+	 */
+	public static final String GAME_SKILL3_CAST_START = "game.player.skill3.caststart";
+	/**
+	 * S->C<br/>
+	 * Cast Skill3 succeeded ended<br/>
+	 * <br/>
+	 * params:<br/>
+	 * 	int ENTITY_ID_PARAM the id of the casting entity
+	 * 	float DIRECTION_X_PARAM the x value of the direction vector
+	 *  float DIRECTION_Y_PARAM the y value of the direction vector
 	 */
 	public static final String GAME_SKILL3_START = "game.player.skill3.start";
-	/**
-	 * S->C<br/>
-	 * Skill3 not casting anymore<br/>
-	 * <br/>
-	 * params:<br/>
-	 * 	int ENTITY_ID_PARAM the id of the casting entity
-	 */
-	public static final String GAME_SKILL3_STOP = "game.player.skill3.stop";
 	
 	///////////////////////////////////////////////////////////////////////////////
 	// Game Objects / Initialization											 //
@@ -402,4 +408,6 @@ public class GameOpcodes {
 	public static final String CURRENT_MAP_PARAM = "currentmap";
 	public static final String CHARACTER_ID_PARAM = "charid";
 	public static final String TEAM_ID_PARAM = "teamid";
+	public static final String DIRECTION_X_PARAM = "directionx";
+	public static final String DIRECTION_Y_PARAM = "directiony";
 }

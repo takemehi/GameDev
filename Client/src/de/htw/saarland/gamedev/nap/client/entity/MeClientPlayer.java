@@ -4,6 +4,7 @@ import sfs2x.client.SmartFox;
 import sfs2x.client.entities.Room;
 import sfs2x.client.requests.ExtensionRequest;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import de.htw.saarland.gamedev.nap.client.input.IBaseInput;
@@ -31,6 +32,12 @@ public class MeClientPlayer extends ClientPlayer {
 	
 	@Override
 	public void render(SpriteBatch batch) {
+		if (cast != null) {
+			if (cast.update(Gdx.graphics.getDeltaTime())) {
+				//TODO send direction update
+			}
+		}
+		
 		super.render(batch);
 		
 		if (inputProcessor.isLeftDown() && !inputProcessor.wasLeftDown()) {
@@ -70,24 +77,24 @@ public class MeClientPlayer extends ClientPlayer {
 		}
 		
 		if (inputProcessor.isSkill1Down() && !inputProcessor.wasSkill1Down()) {
-			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_SKILL1_START_REQUEST, null, gameRoom));
+			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_SKILL1_ON_REQUEST, null, gameRoom));
 		}
 		else if (!inputProcessor.isSkill1Down() && inputProcessor.wasSkill1Down()) {
-			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_SKILL1_STOP_REQUEST, null, gameRoom));
+			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_SKILL1_OFF_REQUEST, null, gameRoom));
 		}
 		
 		if (inputProcessor.isSkill2Down() && !inputProcessor.wasSkill2Down()) {
-			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_SKILL2_START_REQUEST, null, gameRoom));
+			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_SKILL2_ON_REQUEST, null, gameRoom));
 		}
 		else if (!inputProcessor.isSkill2Down() && inputProcessor.wasSkill2Down()) {
-			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_SKILL2_STOP_REQUEST, null, gameRoom));
+			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_SKILL2_OFF_REQUEST, null, gameRoom));
 		}
 		
 		if (inputProcessor.isSkill3Down() && !inputProcessor.wasSkill3Down()) {
-			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_SKILL3_START_REQUEST, null, gameRoom));
+			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_SKILL3_ON_REQUEST, null, gameRoom));
 		}
 		else if (!inputProcessor.isSkill3Down() && inputProcessor.wasSkill3Down()) {
-			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_SKILL3_STOP_REQUEST, null, gameRoom));
+			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_SKILL3_OFF_REQUEST, null, gameRoom));
 		}
 	}
 

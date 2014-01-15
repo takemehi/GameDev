@@ -20,11 +20,6 @@ public class GameSkill3StopHandler extends BaseClientRequestHandler {
 		PlayableCharacter player = game.getPlayerBySFSUser((SFSUser)user).getPlChar();
 		
 		player.setAttacking3(false);
-		
-		SFSObject params = new SFSObject();
-		params.putInt(GameOpcodes.ENTITY_ID_PARAM, player.getId());
-		
-		send(GameOpcodes.GAME_SKILL3_STOP, params, getParentExtension().getParentRoom().getPlayersList());
 	}
 
 }
