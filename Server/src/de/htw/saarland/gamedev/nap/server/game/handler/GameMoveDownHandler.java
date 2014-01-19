@@ -19,10 +19,16 @@ public class GameMoveDownHandler extends BaseClientRequestHandler {
 		
 		Player player = game.getPlayerBySFSUser((SFSUser)user);
 		
-		player.getPlChar().setDown(true);
 		SFSObject params = new SFSObject();
 		params.putInt(GameOpcodes.ENTITY_ID_PARAM, player.getPlChar().getId());
 		send(GameOpcodes.GAME_MOVE_DOWN_START, params, getParentExtension().getParentRoom().getPlayersList());
+		
+		try {
+			Thread.sleep(System.currentTimeMillis() - user.getLastRequestTime());
+		} catch (InterruptedException e) {
+		}
+		
+		player.getPlChar().setDown(true);
 	}
 
 }
