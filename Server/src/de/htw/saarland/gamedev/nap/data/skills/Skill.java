@@ -24,6 +24,7 @@ public abstract class Skill {
 	private boolean directionUpdated;
 	private Vector2 direction;
 	protected boolean cast;
+	boolean client;
 	private PlayableCharacter character;
 	
 	private ISendPacket sendPacketListener;
@@ -49,35 +50,50 @@ public abstract class Skill {
 	}
 	
 	public void update(float _deltaTime){
-		doUpdate(character.getWorld(), character, direction);
-		if(!onCooldown && attacking){
-			//accept request here and send packet to confirm the accepted request
-			//if the skill is no cast the client can start the attack simulation immediately
-			//without receiving further packets
-			//
-			//if the skill is no cast the client can immediately start the cast simulation
-			casted=false;
-			if (!isCast()){				
+		doUpdate(character.getWorld(), character, direction);		
+		if(isClient()){
+			if (!cast && ){ //add info about received packet
 				start(character.getWorld(), character, direction);
-				directionUpdated=false;
 				casted=true;
+				onCooldown=true;
 			}
-			onCooldown=true;
-		}	
-		
-		if(onCooldown){
-			deltaTime+=_deltaTime;
-			if(!casted && deltaTime>=castTime){
-				//send direction request
+			if(){ //direction request
+				//send direction
+				start(character.getWorld(), character, direction);
+				casted=true;
 			}
 		}
 		
-		//direction has to be updatedt via setDirection()
-		//once the direction has been Updated the skill starts
-		if(casted==false && directionUpdated==true){
-			start(character.getWorld(), character, direction);
-			casted=true;
-			directionUpdated=false;
+		if(!isClient()){
+			if(!onCooldown && attacking){
+				//accept request here and send packet to confirm the accepted request
+				//if the skill is no cast the client can start the attack simulation immediately
+				//without receiving further packets
+				//
+				//if the skill is no cast the client can immediately start the cast simulation
+				casted=false;
+				if (!isCast()){				
+					start(character.getWorld(), character, direction);
+					directionUpdated=false;
+					casted=true;
+				}
+				onCooldown=true;
+			}
+			
+			if(onCooldown){
+				deltaTime+=_deltaTime;
+				if(!casted && deltaTime>=castTime){
+					//send direction request
+				}
+			}
+			
+			//direction has to be updatedt via setDirection()
+			//once the direction has been Updated the skill starts
+			if(casted==false && directionUpdated==true){
+				start(character.getWorld(), character, direction);
+				casted=true;
+				directionUpdated=false;
+			}
 		}
 		
 		if(onCooldown && casted && deltaTime>=cooldown){
@@ -125,6 +141,14 @@ public abstract class Skill {
 
 	public float getCastTime() {
 		return castTime;
+	}
+	
+	public boolean isClient(){
+		return client;
+	}
+	
+	public void setClient(boolean client){
+		this.client=client;
 	}
 	
 	public boolean isOnCooldown(){
