@@ -30,6 +30,7 @@ public class Charge extends Skill {
 	public Charge(PlayableCharacter character, int skillNr) {
 		super(character, COOLDOWN, CASTTIME, false, skillNr);
 		
+		cast=false;
 		distanceTraveled=0;
 		traveling=false;
 	}

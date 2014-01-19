@@ -30,6 +30,7 @@ public class Pyroblast extends Skill{
 	
 	public Pyroblast(PlayableCharacter character, int skillNr) {
 		super(character, COOLDOWN, CASTTIME, true, skillNr);
+		cast=true;
 	}
 
 	@Override

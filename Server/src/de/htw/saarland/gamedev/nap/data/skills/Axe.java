@@ -24,7 +24,7 @@ public class Axe extends Skill{
 	
 	public Axe(PlayableCharacter character, int skillNr) {
 		super(character, COOLDOWN, CASTTIME, false, skillNr);
-		
+		cast=false;
 	}
 
 	@Override

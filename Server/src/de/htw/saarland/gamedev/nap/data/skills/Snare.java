@@ -25,6 +25,7 @@ public class Snare extends Skill {
 	
 	public Snare(PlayableCharacter character, int skillNr) {
 		super(character, COOLDOWN, CASTTIME, false, skillNr);
+		cast=false;
 	}
 
 	@Override

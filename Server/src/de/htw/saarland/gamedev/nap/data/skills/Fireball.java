@@ -32,6 +32,7 @@ public class Fireball extends Skill{
 		super(character, COOLDOWN, CASTTIME, false, skillNr);
 		
 		fireBalls = new Array<SensorEntity>();
+		cast=false;
 	}
 
 	@Override

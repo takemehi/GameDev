@@ -29,6 +29,7 @@ public class Nova extends Skill{
 	
 	public Nova(PlayableCharacter character, int skillNr){
 		super(character, COOLDOWN, CASTTIME, false, skillNr);
+		cast=false;
 	}
 
 	@Override
