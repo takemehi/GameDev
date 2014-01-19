@@ -15,11 +15,12 @@ public class Player implements IPlayer{
 	//exceptions
 	private static final String EXCEPTION_NULL_USER = "User object is missing!";
 	
-	private static final float MOVEMENT_UPDATE_TRESHOLD = 0.300f;
+	private static final float MOVEMENT_UPDATE_TRESHOLD = 0.5f;
 	
 	private PlayableCharacter plChar;
 	private SFSUser user;
 	
+	private boolean sendUpdate;
 	private float stateTime;
 	private ISendPacket sendPacketListener;
 	
@@ -29,6 +30,7 @@ public class Player implements IPlayer{
 		this.user=user;
 		this.sendPacketListener = sendPacketListener;
 		this.stateTime = 0.0f;
+		this.sendUpdate = false;
 		initPlayableCharacter(world, position, characterId, teamId, id);
 	}
 	
@@ -64,18 +66,22 @@ public class Player implements IPlayer{
 	}
 	
 	public void update(float deltaTime, Array<CapturePoint> capturePoints) {
-//		if (plChar.isMoving()) {
-//			stateTime += deltaTime;
-//			
-//			if (stateTime > MOVEMENT_UPDATE_TRESHOLD) {
-//				SFSObject moveParams = new SFSObject();
-//				moveParams.putInt(GameOpcodes.ENTITY_ID_PARAM, plChar.getId());
-//				moveParams.putFloat(GameOpcodes.COORD_X_PARAM, plChar.getBody().getPosition().x);
-//				moveParams.putFloat(GameOpcodes.COORD_Y_PARAM, plChar.getBody().getPosition().y);
-//				sendPacketListener.sendServerPacketUDP(GameOpcodes.GAME_OBJECT_COORD_UPDATE, moveParams);
-//				stateTime = 0;
-//			}
-//		}
+		if (plChar.isMoving()) {
+			stateTime += deltaTime;
+			
+			if (!sendUpdate || stateTime > MOVEMENT_UPDATE_TRESHOLD) {
+				SFSObject moveParams = new SFSObject();
+				moveParams.putInt(GameOpcodes.ENTITY_ID_PARAM, plChar.getId());
+				moveParams.putFloat(GameOpcodes.COORD_X_PARAM, plChar.getBody().getPosition().x);
+				moveParams.putFloat(GameOpcodes.COORD_Y_PARAM, plChar.getBody().getPosition().y);
+				sendPacketListener.sendServerPacketUDP(GameOpcodes.GAME_OBJECT_COORD_UPDATE, moveParams);
+				sendUpdate = true;
+				stateTime = 0;
+			}
+		}
+		else {
+			sendUpdate = false;
+		}
 		
 		plChar.update(deltaTime, capturePoints);
 	}

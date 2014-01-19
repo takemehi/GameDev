@@ -19,10 +19,16 @@ public class GameMoveStopRightHandler extends BaseClientRequestHandler {
 		
 		Player player = game.getPlayerBySFSUser((SFSUser)user);
 		
-		player.getPlChar().setRight(false);
 		SFSObject params = new SFSObject();
 		params.putInt(GameOpcodes.ENTITY_ID_PARAM, player.getPlChar().getId());
 		send(GameOpcodes.GAME_MOVE_STOP_RIGHT, params, getParentExtension().getParentRoom().getPlayersList());
+		
+		try {
+			Thread.sleep(System.currentTimeMillis() - user.getLastRequestTime());
+		} catch (InterruptedException e) {
+		}
+		
+		player.getPlChar().setRight(false);
 	}
 
 }

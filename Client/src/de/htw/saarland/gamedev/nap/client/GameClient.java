@@ -224,10 +224,10 @@ public class GameClient implements ApplicationListener, IEventListener {
 		
 		
 		worldTime += Gdx.graphics.getDeltaTime();
-		if (worldTime > GameServer.TIME_STEP) {
-			world.step(GameServer.TIME_STEP, GameServer.ITERATIONS_VELOCITY, GameServer.ITERATIONS_POSITION);
+		//if (worldTime > GameServer.TIME_STEP) {
+			world.step(1/60f, GameServer.ITERATIONS_VELOCITY, GameServer.ITERATIONS_POSITION);
 			worldTime = 0;
-		}
+		//}
 	}
 	
 	@Override
