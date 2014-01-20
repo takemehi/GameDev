@@ -181,11 +181,9 @@ public class GameCharacter extends MoveableEntity{
 			if(attacking1){
 				if(attack2.isCasted() && attack3.isCasted()){
 					this.attacking1 = attacking1;
-					attack1.setAttacking(attacking1);
 				}
 			}else{
 				this.attacking1=false;
-				attack1.setAttacking(false);
 			}
 		}else
 			this.attacking1=false;
@@ -202,11 +200,9 @@ public class GameCharacter extends MoveableEntity{
 			if(attacking2){
 				if(attack1.isCasted() && attack3.isCasted()){
 					this.attacking2 = attacking2;
-					attack2.setAttacking(attacking2);
 				}
 			}else{
 				this.attacking2=false;
-				attack2.setAttacking(false);
 			}
 		}else
 			this.attacking2=false;
@@ -223,11 +219,9 @@ public class GameCharacter extends MoveableEntity{
 			if(attacking3){
 				if(attack1.isCasted() && attack2.isCasted()){
 					this.attacking3 = attacking3;
-					attack3.setAttacking(attacking3);
 				}
 			}else{
 				this.attacking3=false;
-				attack3.setAttacking(false);
 			}
 		}else
 			this.attacking3=false;

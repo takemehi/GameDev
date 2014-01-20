@@ -20,13 +20,11 @@ public abstract class Skill {
 	private float deltaTime;
 	private boolean onCooldown;
 	private boolean casted;
-	private boolean attacking;
 	private boolean directionUpdated;
 	private Vector2 direction;
 	protected boolean cast;
-	boolean client;
+	private boolean client;
 	private PlayableCharacter character;
-	
 	private ISendPacket sendPacketListener;
 	private int skillNr;
 	
@@ -43,16 +41,18 @@ public abstract class Skill {
 		direction = new Vector2(0,0);
 		directionUpdated = false;
 		this.skillNr = skillNr;
+		client=true;
 	}
 	
 	public void setSendPacketListener(ISendPacket sendPacketListener) {
 		this.sendPacketListener = sendPacketListener;
+		client=false;
 	}
 	
 	public void update(float _deltaTime){
 		doUpdate(character.getWorld(), character, direction);		
-		if(isClient()){
-			if (!cast && ){ //add info about received packet
+		if(client){
+			if (!cast && attacking){ //add info about received packet
 				start(character.getWorld(), character, direction);
 				casted=true;
 				onCooldown=true;
@@ -64,8 +64,9 @@ public abstract class Skill {
 			}
 		}
 		
-		if(!isClient()){
-			if(!onCooldown && attacking){
+		if(!client){
+			if(!onCooldown &&
+				((skillNr==1 && character.isAttacking1())||(skillNr==2 && character.isAttacking2())||(skillNr==1 && character.isAttacking1()))){
 				//accept request here and send packet to confirm the accepted request
 				//if the skill is no cast the client can start the attack simulation immediately
 				//without receiving further packets
@@ -76,6 +77,14 @@ public abstract class Skill {
 					start(character.getWorld(), character, direction);
 					directionUpdated=false;
 					casted=true;
+					switch(skillNr){
+					case 1:
+						character.setAttacking1(false);
+					case 2:
+						character.setAttacking2(false);
+					case 3:
+						character.setAttacking3(false);
+					}
 				}
 				onCooldown=true;
 			}
@@ -93,6 +102,14 @@ public abstract class Skill {
 				start(character.getWorld(), character, direction);
 				casted=true;
 				directionUpdated=false;
+				switch(skillNr){
+				case 1:
+					character.setAttacking1(false);
+				case 2:
+					character.setAttacking2(false);
+				case 3:
+					character.setAttacking3(false);
+				}
 			}
 		}
 		
@@ -119,14 +136,6 @@ public abstract class Skill {
 	
 	//getter / setter
 	
-	public boolean isAttacking(){
-		return attacking;
-	}
-	
-	public void setAttacking(boolean attacking){
-		this.attacking=attacking;
-	}
-	
 	public boolean isCast(){
 		return cast;
 	}
@@ -141,14 +150,6 @@ public abstract class Skill {
 
 	public float getCastTime() {
 		return castTime;
-	}
-	
-	public boolean isClient(){
-		return client;
-	}
-	
-	public void setClient(boolean client){
-		this.client=client;
 	}
 	
 	public boolean isOnCooldown(){
