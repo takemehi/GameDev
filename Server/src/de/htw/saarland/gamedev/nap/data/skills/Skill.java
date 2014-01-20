@@ -52,7 +52,9 @@ public abstract class Skill {
 	public void update(float _deltaTime){
 		doUpdate(character.getWorld(), character, direction);		
 		if(client){
-			if (!cast && attacking){ //add info about received packet
+			if (!cast &&
+					((skillNr==1 && character.isAttacking1())||(skillNr==2 && character.isAttacking2())||(skillNr==1 && character.isAttacking1()))){ 
+				//add info about received packet
 				start(character.getWorld(), character, direction);
 				casted=true;
 				onCooldown=true;
