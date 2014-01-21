@@ -19,7 +19,7 @@ public class GameSkillDirectionUpdateHandler extends BaseClientRequestHandler {
 		
 		Player player = game.getPlayerBySFSUser((SFSUser)user);
 		
-		Vector2 direction = new Vector2(params.getFloat(GameOpcodes.DIRECTION_X_PARAM), params.getFloat(GameOpcodes.DIRECTION_X_PARAM));
+		Vector2 direction = new Vector2(params.getFloat(GameOpcodes.DIRECTION_X_PARAM), params.getFloat(GameOpcodes.DIRECTION_Y_PARAM));
 		
 		player.getPlChar().getAttack1().setDirection(direction);
 		player.getPlChar().getAttack2().setDirection(direction);

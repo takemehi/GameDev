@@ -21,6 +21,7 @@ import de.htw.saarland.gamedev.nap.server.game.handler.GameMoveStopRightHandler;
 import de.htw.saarland.gamedev.nap.server.game.handler.GameSkill1StartHandler;
 import de.htw.saarland.gamedev.nap.server.game.handler.GameSkill2StartHandler;
 import de.htw.saarland.gamedev.nap.server.game.handler.GameSkill3StartHandler;
+import de.htw.saarland.gamedev.nap.server.game.handler.GameSkillDirectionUpdateHandler;
 import de.htw.saarland.gamedev.nap.server.game.handler.GetMoveableEntitiesHandler;
 import de.htw.saarland.gamedev.nap.server.launcher.Launcher;
 import de.htw.saarland.gamedev.nap.server.launcher.LauncherOpcodes;
@@ -100,6 +101,7 @@ public class ServerExtension extends SFSExtension implements Runnable {
 		addRequestHandler(GameOpcodes.GAME_SKILL1_START_REQUEST, GameSkill1StartHandler.class);
 		addRequestHandler(GameOpcodes.GAME_SKILL2_START_REQUEST, GameSkill2StartHandler.class);
 		addRequestHandler(GameOpcodes.GAME_SKILL3_START_REQUEST, GameSkill3StartHandler.class);
+		addRequestHandler(GameOpcodes.GAME_SKILL_DIRECTION_UPDATE, GameSkillDirectionUpdateHandler.class);
 		
 		ArrayList<LauncherPlayer> redTeam = new ArrayList<LauncherPlayer>();
 		ArrayList<LauncherPlayer> blueTeam = new ArrayList<LauncherPlayer>();

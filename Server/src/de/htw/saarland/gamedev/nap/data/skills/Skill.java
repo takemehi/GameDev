@@ -20,16 +20,16 @@ public abstract class Skill {
 	private float deltaTime;
 	private boolean onCooldown;
 	private boolean casted;
-	private boolean directionUpdated;
+	private volatile boolean directionUpdated;
 	private Vector2 direction;
 	protected boolean cast;
 	private boolean client;
 	private PlayableCharacter character;
 	private ISendPacket sendPacketListener;
 	private int skillNr;
-	private boolean packetStartAttack;
-	private boolean packetStartCast;
-	private boolean directionRequestSend;
+	private volatile boolean packetStartAttack;
+	private volatile boolean packetStartCast;
+	private volatile boolean directionRequestSend;
 	
 	public Skill(PlayableCharacter character, float cooldown, float castTime, boolean cast, int skillNr){
 		if(cooldown<0) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_COOLDOWN);
@@ -47,7 +47,7 @@ public abstract class Skill {
 		client=true;
 		packetStartAttack = false;
 		packetStartCast = false;
-		directionRequestSend = true;
+		directionRequestSend = false;
 	}
 	
 	public void setSendPacketListener(ISendPacket sendPacketListener) {
@@ -68,6 +68,7 @@ public abstract class Skill {
 		if(client){
 			if (packetStartCast) {
 				onCooldown = true;
+				casted = false;
 				packetStartCast = false;
 			}
 			else if (packetStartAttack){ 
@@ -135,6 +136,7 @@ public abstract class Skill {
 					}
 				}
 				onCooldown=true;
+				directionUpdated = false;
 			}
 			
 			if(onCooldown && !directionRequestSend){
@@ -148,7 +150,7 @@ public abstract class Skill {
 			
 			//direction has to be updated via setDirection()
 			//once the direction has been Updated the skill starts
-			if(cast && !casted && directionUpdated && deltaTime>=castTime){
+			if(cast && !casted && directionUpdated && deltaTime >= castTime){
 				SFSObject params = new SFSObject();
 				params.putInt(GameOpcodes.ENTITY_ID_PARAM, character.getId());
 				params.putFloat(GameOpcodes.DIRECTION_X_PARAM, direction.x);

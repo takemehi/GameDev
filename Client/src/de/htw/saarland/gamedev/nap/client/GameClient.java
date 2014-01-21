@@ -396,7 +396,7 @@ public class GameClient implements ApplicationListener, IEventListener {
 		SFSObject params = new SFSObject();
 		params.putFloat(GameOpcodes.DIRECTION_X_PARAM, direction.x);
 		params.putFloat(GameOpcodes.DIRECTION_Y_PARAM, direction.y);
-		sfClient.send(new ExtensionRequest(GameOpcodes.GAME_SKILL_DIRECTION_UPDATE, params));
+		sfClient.send(new ExtensionRequest(GameOpcodes.GAME_SKILL_DIRECTION_UPDATE, params, gameRoom));
 	}
 	
 	private void checkInitialized() {
