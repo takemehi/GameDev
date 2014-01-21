@@ -271,4 +271,29 @@ public class GameServer implements ApplicationListener, ISendPacket {
 	public void sendServerPacketUDP(String opcode, ISFSObject params) {
 		extension.send(opcode, params, extension.getParentRoom().getPlayersList(), true);
 	}
+
+	@Override
+	public void sendServerPacket(String opcode, ISFSObject params, int entityId) {
+		Player p = null;
+		for (Player player : blueTeam.getMembers()) {
+			if (player.getPlChar().getId() == entityId) {
+				p = player;
+				break;
+			}
+		}
+		
+		if (p == null) {
+			for (Player player : redTeam.getMembers()) {
+				if (player.getPlChar().getId() == entityId) {
+					p = player;
+					break;
+				}
+			}
+		}
+		
+		if (p != null) { 
+			extension.send(opcode, params, p.getUser());
+		}
+		
+	}
 }

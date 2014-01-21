@@ -235,12 +235,7 @@ public class GameOpcodes {
 	 * C->S<br/>
 	 * Request to cast Skill1 (Skill1 key is being pressed)
 	 */
-	public static final String GAME_SKILL1_ON_REQUEST = "game.player.skill1.on.request";
-	/**
-	 * C->S<br/>
-	 * Request to stop casting skill1 (Skill1 key is not pressed anymore) 
-	 */
-	public static final String GAME_SKILL1_OFF_REQUEST = "game.player.skill1.off.request";
+	public static final String GAME_SKILL1_START_REQUEST = "game.player.skill1.start.request";
 	/**
 	 * S->C<br/>
 	 * Cast Skill1 started succeeded<br/>
@@ -264,12 +259,7 @@ public class GameOpcodes {
 	 * C->S<br/>
 	 * Request to cast Skill2 (Skill2 key is being pressed)
 	 */
-	public static final String GAME_SKILL2_ON_REQUEST = "game.player.skill2.on.request";
-	/**
-	 * C->S<br/>
-	 * Request to stop casting skill2 (Skill2 key is not pressed anymore) 
-	 */
-	public static final String GAME_SKILL2_OFF_REQUEST = "game.player.skill2.off.request";
+	public static final String GAME_SKILL2_START_REQUEST = "game.player.skill2.start.request";
 	/**
 	 * S->C<br/>
 	 * Cast Skill2 succeeded started<br/>
@@ -293,12 +283,7 @@ public class GameOpcodes {
 	 * C->S<br/>
 	 * Request to cast Skill3 (Skill3 key is being pressed)
 	 */
-	public static final String GAME_SKILL3_ON_REQUEST = "game.player.skill3.on.request";
-	/**
-	 * C->S<br/>
-	 * Request to stop casting skill3 (Skill3 key is not pressed anymore) 
-	 */
-	public static final String GAME_SKILL3_OFF_REQUEST = "game.player.skill3.off.request";
+	public static final String GAME_SKILL3_START_REQUEST = "game.player.skill3.start.request";
 	/**
 	 * S->C<br/>
 	 * Cast Skill3 succeeded started<br/>
@@ -317,6 +302,21 @@ public class GameOpcodes {
 	 *  float DIRECTION_Y_PARAM the y value of the direction vector
 	 */
 	public static final String GAME_SKILL3_START = "game.player.skill3.start";
+	
+	/**
+	 * C->S<br/>
+	 * Direction update for a skill<br/>
+	 * <br/>
+	 * params:<br/>
+	 * 	float DIRECTION_X_PARAM x part of the direction vector
+	 * 	float DIRECTION_Y_PARAM y part of the direction vector
+	 */
+	public static final String GAME_SKILL_DIRECTION_UPDATE = "game.player.skill.direction.update";
+	/**
+	 * S->C<br/>
+	 * Direction request update for a client
+	 */
+	public static final String GAME_SKILL_DIRECTION_REQUEST = "game.player.skill.direction.request";
 	
 	///////////////////////////////////////////////////////////////////////////////
 	// Game Objects / Initialization											 //
@@ -387,7 +387,8 @@ public class GameOpcodes {
 	 *  int CHARACTER_ID_PARAM char id of the player<br/>
 	 *  int TEAM_ID_PARAM team if of the player<br/>
 	 *  float COORD_X_PARAM x coord of that player<br/>
-	 *  float COORD_Y_PARAM y coord of that player
+	 *  float COORD_Y_PARAM y coord of that player<br/>
+	 *  String PLAYER_NAME_PARAM the name of the player
 	 */
 	public static final String GAME_SPAWN_PLAYER = "game.spawn.player";
 	
@@ -410,4 +411,5 @@ public class GameOpcodes {
 	public static final String TEAM_ID_PARAM = "teamid";
 	public static final String DIRECTION_X_PARAM = "directionx";
 	public static final String DIRECTION_Y_PARAM = "directiony";
+	public static final String PLAYER_NAME_PARAM = "playername";
 }

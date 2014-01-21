@@ -19,11 +19,8 @@ import de.htw.saarland.gamedev.nap.server.game.handler.GameMoveRightHandler;
 import de.htw.saarland.gamedev.nap.server.game.handler.GameMoveStopLeftHandler;
 import de.htw.saarland.gamedev.nap.server.game.handler.GameMoveStopRightHandler;
 import de.htw.saarland.gamedev.nap.server.game.handler.GameSkill1StartHandler;
-import de.htw.saarland.gamedev.nap.server.game.handler.GameSkill1StopHandler;
 import de.htw.saarland.gamedev.nap.server.game.handler.GameSkill2StartHandler;
-import de.htw.saarland.gamedev.nap.server.game.handler.GameSkill2StopHandler;
 import de.htw.saarland.gamedev.nap.server.game.handler.GameSkill3StartHandler;
-import de.htw.saarland.gamedev.nap.server.game.handler.GameSkill3StopHandler;
 import de.htw.saarland.gamedev.nap.server.game.handler.GetMoveableEntitiesHandler;
 import de.htw.saarland.gamedev.nap.server.launcher.Launcher;
 import de.htw.saarland.gamedev.nap.server.launcher.LauncherOpcodes;
@@ -100,12 +97,9 @@ public class ServerExtension extends SFSExtension implements Runnable {
 		addRequestHandler(GameOpcodes.GAME_MOVE_RIGHT_REQUEST, GameMoveRightHandler.class);
 		addRequestHandler(GameOpcodes.GAME_MOVE_STOP_LEFT_REQUEST, GameMoveStopLeftHandler.class);
 		addRequestHandler(GameOpcodes.GAME_MOVE_STOP_RIGHT_REQUEST, GameMoveStopRightHandler.class);
-		addRequestHandler(GameOpcodes.GAME_SKILL1_ON_REQUEST, GameSkill1StartHandler.class);
-		addRequestHandler(GameOpcodes.GAME_SKILL1_OFF_REQUEST, GameSkill1StopHandler.class);
-		addRequestHandler(GameOpcodes.GAME_SKILL2_ON_REQUEST, GameSkill2StartHandler.class);
-		addRequestHandler(GameOpcodes.GAME_SKILL2_OFF_REQUEST, GameSkill2StopHandler.class);
-		addRequestHandler(GameOpcodes.GAME_SKILL3_ON_REQUEST, GameSkill3StartHandler.class);
-		addRequestHandler(GameOpcodes.GAME_SKILL3_OFF_REQUEST, GameSkill3StopHandler.class);
+		addRequestHandler(GameOpcodes.GAME_SKILL1_START_REQUEST, GameSkill1StartHandler.class);
+		addRequestHandler(GameOpcodes.GAME_SKILL2_START_REQUEST, GameSkill2StartHandler.class);
+		addRequestHandler(GameOpcodes.GAME_SKILL3_START_REQUEST, GameSkill3StartHandler.class);
 		
 		ArrayList<LauncherPlayer> redTeam = new ArrayList<LauncherPlayer>();
 		ArrayList<LauncherPlayer> blueTeam = new ArrayList<LauncherPlayer>();

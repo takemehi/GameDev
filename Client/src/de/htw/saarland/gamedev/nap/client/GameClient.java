@@ -34,11 +34,9 @@ import de.htw.saarland.gamedev.nap.client.entity.ClientPlayer;
 import de.htw.saarland.gamedev.nap.client.entity.EntityNotFound;
 import de.htw.saarland.gamedev.nap.client.entity.IMoveable;
 import de.htw.saarland.gamedev.nap.client.entity.MeClientPlayer;
-import de.htw.saarland.gamedev.nap.client.entity.PlayerCasting;
 import de.htw.saarland.gamedev.nap.client.input.IBaseInput;
 import de.htw.saarland.gamedev.nap.client.input.InputConfigLoader;
 import de.htw.saarland.gamedev.nap.client.input.KeyboardMouseInputProcessor;
-import de.htw.saarland.gamedev.nap.client.render.EntityAnimation.CharacterStates;
 import de.htw.saarland.gamedev.nap.client.world.RenderableGameWorld;
 import de.htw.saarland.gamedev.nap.data.Mage;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
@@ -187,21 +185,11 @@ public class GameClient implements ApplicationListener, IEventListener {
 		
 		batch.begin();
 		
-		Vector3 mousePos = new Vector3(inputProcessor.getCrossHairX(), inputProcessor.getCrossHairY(), 0);
-		camera.unproject(mousePos);
-		
-//		Vector2 mousePos2 = new Vector2(mousePos.x,mousePos.y);
-//		Vector2 direction = mousePos2.sub(player.getPlayableCharacter().getBody().getPosition());
-//		direction = direction.nor();
-//		player.getPlayableCharacter().getAttack1().setDirection(direction);
-//		player.getPlayableCharacter().getAttack2().setDirection(direction);
-//		player.getPlayableCharacter().getAttack3().setDirection(direction);
-		
 		player.getPlayableCharacter().update(Gdx.graphics.getDeltaTime(), gameWorld.getCapturePoints());
 		player.getPlayableCharacter().getAttack1().cleanUp();
 		player.getPlayableCharacter().getAttack2().cleanUp();
 		player.getPlayableCharacter().getAttack3().cleanUp();
-		player.render(batch);
+		player.render(batch, getDirection());
 		
 		synchronized (players) {
 			for (ClientPlayer player: players) {
@@ -259,7 +247,8 @@ public class GameClient implements ApplicationListener, IEventListener {
 					gameloopPackets.add(be);
 				}
 				else {
-					if (be.getArguments().get(NetworkConstants.CMD_KEY).equals(GameOpcodes.GAME_OBJECT_COORD_UPDATE)) {
+					if (be.getArguments().get(NetworkConstants.CMD_KEY).equals(GameOpcodes.GAME_OBJECT_COORD_UPDATE) ||
+							be.getArguments().get(NetworkConstants.CMD_KEY).equals(GameOpcodes.GAME_SKILL_DIRECTION_REQUEST)) {
 						gameloopPackets.add(be);
 					} else {
 						dispatchExtensionResponse(be);
@@ -314,7 +303,7 @@ public class GameClient implements ApplicationListener, IEventListener {
 					checkInitialized();
 				}
 				else {
-					players.add(new ClientPlayer(character, teamid));
+					players.add(new ClientPlayer(character, teamid, params.getUtfString(GameOpcodes.PLAYER_NAME_PARAM)));
 				}
 				
 				break;
@@ -379,12 +368,35 @@ public class GameClient implements ApplicationListener, IEventListener {
 			case GameOpcodes.GAME_SKILL3_CAST_START:
 				doSkill(Skills.SKILL3, false, params);
 				break;
+			case GameOpcodes.GAME_SKILL_DIRECTION_REQUEST:
+				sendDirectionUpdate();
+				break;
 			//Skills end
 			
 			default:
 				System.out.println("Unknown packet received! : " + cmd);
 				break;
 		}
+	}
+	
+	private Vector2 getDirection() {
+		Vector3 mousePos = new Vector3(inputProcessor.getCrossHairX(), inputProcessor.getCrossHairY(), 0);
+		camera.unproject(mousePos);
+		
+		Vector2 mousePos2 = new Vector2(mousePos.x,mousePos.y);
+		Vector2 direction = mousePos2.sub(player.getPlayableCharacter().getBody().getPosition());
+		direction = direction.nor();
+		
+		return direction;
+	}
+	
+	private void sendDirectionUpdate() {
+		Vector2 direction = getDirection();
+		
+		SFSObject params = new SFSObject();
+		params.putFloat(GameOpcodes.DIRECTION_X_PARAM, direction.x);
+		params.putFloat(GameOpcodes.DIRECTION_Y_PARAM, direction.y);
+		sfClient.send(new ExtensionRequest(GameOpcodes.GAME_SKILL_DIRECTION_UPDATE, params));
 	}
 	
 	private void checkInitialized() {
@@ -455,8 +467,27 @@ public class GameClient implements ApplicationListener, IEventListener {
 					params.getFloat(GameOpcodes.DIRECTION_X_PARAM),
 					params.getFloat(GameOpcodes.DIRECTION_Y_PARAM)
 					);
-			player.setCast(null);
+			
 			Skill s = null;
+			switch (skill) {
+				case SKILL1:
+					s = player.getPlayableCharacter().getAttack1();
+					break;
+				case SKILL2:
+					s = player.getPlayableCharacter().getAttack2();
+					break;
+				case SKILL3:
+					System.out.println("Skill 3 Start");
+					s = player.getPlayableCharacter().getAttack3();
+					break;
+			}
+			
+			s.setDirection(direction);
+			s.startAttackByPacket();
+		}
+		else {
+			Skill s = null;
+			
 			switch (skill) {
 				case SKILL1:
 					s = player.getPlayableCharacter().getAttack1();
@@ -469,20 +500,7 @@ public class GameClient implements ApplicationListener, IEventListener {
 					break;
 			}
 			
-			s.start(world, player.getPlayableCharacter(), direction); // TODO make it work correct
-		}
-		else {
-			switch (skill) {
-				case SKILL1:
-					player.setCast(new PlayerCasting(player.getPlayableCharacter().getAttack1().getCastTime(), CharacterStates.SKILL1));
-					break;
-				case SKILL2:
-					player.setCast(new PlayerCasting(player.getPlayableCharacter().getAttack2().getCastTime(), CharacterStates.SKILL2));
-					break;
-				case SKILL3:
-					player.setCast(new PlayerCasting(player.getPlayableCharacter().getAttack3().getCastTime(), CharacterStates.SKILL3));
-					break;
-			}
+			s.startCastByPacket();
 		}
 	}
 	

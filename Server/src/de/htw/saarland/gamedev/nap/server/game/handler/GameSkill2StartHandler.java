@@ -1,9 +1,9 @@
 package de.htw.saarland.gamedev.nap.server.game.handler;
 
+import com.badlogic.gdx.math.Vector2;
 import com.smartfoxserver.v2.entities.SFSUser;
 import com.smartfoxserver.v2.entities.User;
 import com.smartfoxserver.v2.entities.data.ISFSObject;
-import com.smartfoxserver.v2.entities.data.SFSObject;
 import com.smartfoxserver.v2.extensions.BaseClientRequestHandler;
 
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
@@ -18,6 +18,13 @@ public class GameSkill2StartHandler extends BaseClientRequestHandler {
 		GameServer game = ((ServerExtension)getParentExtension()).getGame();
 		
 		PlayableCharacter player = game.getPlayerBySFSUser((SFSUser)user).getPlChar();
+		
+		Vector2 direction = new Vector2(
+				args.getFloat(GameOpcodes.DIRECTION_X_PARAM),
+				args.getFloat(GameOpcodes.DIRECTION_Y_PARAM)
+		);
+		
+		player.getAttack2().setDirection(direction);
 		
 		player.setAttacking2(true);
 	}

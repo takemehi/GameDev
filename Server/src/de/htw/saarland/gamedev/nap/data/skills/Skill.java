@@ -27,6 +27,9 @@ public abstract class Skill {
 	private PlayableCharacter character;
 	private ISendPacket sendPacketListener;
 	private int skillNr;
+	private boolean packetStartAttack;
+	private boolean packetStartCast;
+	private boolean directionRequestSend;
 	
 	public Skill(PlayableCharacter character, float cooldown, float castTime, boolean cast, int skillNr){
 		if(cooldown<0) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_COOLDOWN);
@@ -42,6 +45,9 @@ public abstract class Skill {
 		directionUpdated = false;
 		this.skillNr = skillNr;
 		client=true;
+		packetStartAttack = false;
+		packetStartCast = false;
+		directionRequestSend = true;
 	}
 	
 	public void setSendPacketListener(ISendPacket sendPacketListener) {
@@ -49,69 +55,123 @@ public abstract class Skill {
 		client=false;
 	}
 	
+	public void startAttackByPacket() {
+		packetStartAttack = true;
+	}
+	
+	public void startCastByPacket() {
+		packetStartCast = true;
+	}
+	
 	public void update(float _deltaTime){
 		doUpdate(character.getWorld(), character, direction);		
 		if(client){
-			if (!cast &&
-					((skillNr==1 && character.isAttacking1())||(skillNr==2 && character.isAttacking2())||(skillNr==1 && character.isAttacking1()))){ 
+			if (packetStartCast) {
+				onCooldown = true;
+				packetStartCast = false;
+			}
+			else if (packetStartAttack){ 
 				//add info about received packet
 				start(character.getWorld(), character, direction);
+				
 				casted=true;
 				onCooldown=true;
-			}
-			if(){ //direction request
-				//send direction
-				start(character.getWorld(), character, direction);
-				casted=true;
+				
+				packetStartAttack = false;
 			}
 		}
 		
 		if(!client){
 			if(!onCooldown &&
-				((skillNr==1 && character.isAttacking1())||(skillNr==2 && character.isAttacking2())||(skillNr==1 && character.isAttacking1()))){
+				((skillNr==1 && character.isAttacking1())||(skillNr==2 && character.isAttacking2())||(skillNr==3 && character.isAttacking3()))){
 				//accept request here and send packet to confirm the accepted request
 				//if the skill is no cast the client can start the attack simulation immediately
 				//without receiving further packets
 				//
 				//if the skill is no cast the client can immediately start the cast simulation
 				casted=false;
-				if (!isCast()){				
-					start(character.getWorld(), character, direction);
+				if (!isCast()){
+					SFSObject params = new SFSObject();
+					params.putInt(GameOpcodes.ENTITY_ID_PARAM, character.getId());
+					params.putFloat(GameOpcodes.DIRECTION_X_PARAM, direction.x);
+					params.putFloat(GameOpcodes.DIRECTION_Y_PARAM, direction.y);
+					
 					directionUpdated=false;
 					casted=true;
 					switch(skillNr){
-					case 1:
-						character.setAttacking1(false);
-					case 2:
-						character.setAttacking2(false);
-					case 3:
-						character.setAttacking3(false);
+						case 1:
+							sendPacketListener.sendServerPacket(GameOpcodes.GAME_SKILL1_START, params);
+							character.setAttacking1(false);
+							break;
+						case 2:
+							sendPacketListener.sendServerPacket(GameOpcodes.GAME_SKILL2_START, params);
+							character.setAttacking2(false);
+							break;
+						case 3:
+							sendPacketListener.sendServerPacket(GameOpcodes.GAME_SKILL3_START, params);
+							character.setAttacking3(false);
+							break;
+					}
+					
+					start(character.getWorld(), character, direction);
+				}
+				else {
+					SFSObject params = new SFSObject();
+					params.putInt(GameOpcodes.ENTITY_ID_PARAM, character.getId());
+					
+					switch(skillNr){
+						case 1:
+							sendPacketListener.sendServerPacket(GameOpcodes.GAME_SKILL1_CAST_START, params);
+							//character.setAttacking1(false);
+							break;
+						case 2:
+							sendPacketListener.sendServerPacket(GameOpcodes.GAME_SKILL2_CAST_START, params);
+							//character.setAttacking2(false);
+							break;
+						case 3:
+							sendPacketListener.sendServerPacket(GameOpcodes.GAME_SKILL3_CAST_START, params);
+							//character.setAttacking3(false);
+							break;
 					}
 				}
 				onCooldown=true;
 			}
 			
-			if(onCooldown){
+			if(onCooldown && !directionRequestSend){
 				deltaTime+=_deltaTime;
 				if(!casted && deltaTime>=castTime){
-					//send direction request
+					directionUpdated = false;
+					sendPacketListener.sendServerPacket(GameOpcodes.GAME_SKILL_DIRECTION_REQUEST, null, character.getId());
+					directionRequestSend = true;
 				}
 			}
 			
-			//direction has to be updatedt via setDirection()
+			//direction has to be updated via setDirection()
 			//once the direction has been Updated the skill starts
-			if(casted==false && directionUpdated==true){
-				start(character.getWorld(), character, direction);
+			if(cast && !casted && directionUpdated && deltaTime>=castTime){
+				SFSObject params = new SFSObject();
+				params.putInt(GameOpcodes.ENTITY_ID_PARAM, character.getId());
+				params.putFloat(GameOpcodes.DIRECTION_X_PARAM, direction.x);
+				params.putFloat(GameOpcodes.DIRECTION_Y_PARAM, direction.y);
+				
 				casted=true;
 				directionUpdated=false;
 				switch(skillNr){
-				case 1:
-					character.setAttacking1(false);
-				case 2:
-					character.setAttacking2(false);
-				case 3:
-					character.setAttacking3(false);
+					case 1:
+						sendPacketListener.sendServerPacket(GameOpcodes.GAME_SKILL1_START, params);
+						character.setAttacking1(false);
+						break;
+					case 2:
+						sendPacketListener.sendServerPacket(GameOpcodes.GAME_SKILL2_START, params);
+						character.setAttacking2(false);
+						break;
+					case 3:
+						sendPacketListener.sendServerPacket(GameOpcodes.GAME_SKILL3_START, params);
+						character.setAttacking3(false);
+						break;
 				}
+				
+				start(character.getWorld(), character, direction);
 			}
 		}
 		
@@ -169,6 +229,7 @@ public abstract class Skill {
 	public void setDirection(Vector2 direction){
 		this.direction=direction;
 		directionUpdated=true;
+		directionRequestSend = false;
 	}
 	
 	public PlayableCharacter getPlayableCharacter(){

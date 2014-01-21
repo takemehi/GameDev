@@ -4,8 +4,9 @@ import sfs2x.client.SmartFox;
 import sfs2x.client.entities.Room;
 import sfs2x.client.requests.ExtensionRequest;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
+import com.smartfoxserver.v2.entities.data.SFSObject;
 
 import de.htw.saarland.gamedev.nap.client.input.IBaseInput;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
@@ -30,13 +31,7 @@ public class MeClientPlayer extends ClientPlayer {
 		this.gameRoom = gameRoom;
 	}
 	
-	@Override
-	public void render(SpriteBatch batch) {
-		if (cast != null) {
-			if (cast.update(Gdx.graphics.getDeltaTime())) {
-				//TODO send direction update
-			}
-		}
+	public void render(SpriteBatch batch, Vector2 direction) {
 		
 		super.render(batch);
 		
@@ -77,24 +72,25 @@ public class MeClientPlayer extends ClientPlayer {
 		}
 		
 		if (inputProcessor.isSkill1Down() && !inputProcessor.wasSkill1Down()) {
-			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_SKILL1_ON_REQUEST, null, gameRoom));
-		}
-		else if (!inputProcessor.isSkill1Down() && inputProcessor.wasSkill1Down()) {
-			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_SKILL1_OFF_REQUEST, null, gameRoom));
-		}
-		
-		if (inputProcessor.isSkill2Down() && !inputProcessor.wasSkill2Down()) {
-			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_SKILL2_ON_REQUEST, null, gameRoom));
-		}
-		else if (!inputProcessor.isSkill2Down() && inputProcessor.wasSkill2Down()) {
-			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_SKILL2_OFF_REQUEST, null, gameRoom));
-		}
-		
-		if (inputProcessor.isSkill3Down() && !inputProcessor.wasSkill3Down()) {
-			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_SKILL3_ON_REQUEST, null, gameRoom));
-		}
-		else if (!inputProcessor.isSkill3Down() && inputProcessor.wasSkill3Down()) {
-			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_SKILL3_OFF_REQUEST, null, gameRoom));
+			SFSObject params = new SFSObject();
+			params.putFloat(GameOpcodes.DIRECTION_X_PARAM, direction.x);
+			params.putFloat(GameOpcodes.DIRECTION_Y_PARAM, direction.y);
+			
+			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_SKILL1_START_REQUEST, params, gameRoom));
+		}		
+		else if (inputProcessor.isSkill2Down() && !inputProcessor.wasSkill2Down()) {
+			SFSObject params = new SFSObject();
+			params.putFloat(GameOpcodes.DIRECTION_X_PARAM, direction.x);
+			params.putFloat(GameOpcodes.DIRECTION_Y_PARAM, direction.y);
+			
+			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_SKILL2_START_REQUEST, params, gameRoom));
+		}		
+		else if (inputProcessor.isSkill3Down() && !inputProcessor.wasSkill3Down()) {
+			SFSObject params = new SFSObject();
+			params.putFloat(GameOpcodes.DIRECTION_X_PARAM, direction.x);
+			params.putFloat(GameOpcodes.DIRECTION_Y_PARAM, direction.y);
+			
+			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_SKILL3_START_REQUEST, params, gameRoom));
 		}
 	}
 

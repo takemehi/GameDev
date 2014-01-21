@@ -38,6 +38,7 @@ public class GetMoveableEntitiesHandler extends BaseClientRequestHandler {
 		spawnPlayer.putInt(GameOpcodes.TEAM_ID_PARAM, player.getPlChar().getTeamId());
 		spawnPlayer.putFloat(GameOpcodes.COORD_X_PARAM, player.getPlChar().getBody().getPosition().x);
 		spawnPlayer.putFloat(GameOpcodes.COORD_Y_PARAM, player.getPlChar().getBody().getPosition().y);
+		spawnPlayer.putUtfString(GameOpcodes.PLAYER_NAME_PARAM, user.getName());
 		send(GameOpcodes.GAME_SPAWN_PLAYER, spawnPlayer, user);
 	}
 
