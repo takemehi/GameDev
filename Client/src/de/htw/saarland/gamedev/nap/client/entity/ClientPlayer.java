@@ -22,7 +22,6 @@ public class ClientPlayer implements IPlayer, IRender, IMoveable, Disposable {
 	
 	private EntityAnimation animations;
 	private float stateTime;
-	protected PlayerCasting cast;
 	
 	public ClientPlayer(PlayableCharacter character, int team) {
 		if (character == null) {
@@ -31,7 +30,6 @@ public class ClientPlayer implements IPlayer, IRender, IMoveable, Disposable {
 		
 		this.character = character;
 		this.team = team;
-		cast = null;
 		
 		switch (character.getCharacterClass()) {
 			case PlayableCharacter.ID_MAGE:
@@ -66,17 +64,10 @@ public class ClientPlayer implements IPlayer, IRender, IMoveable, Disposable {
 		
 		// TODO render healthbar & name
 	}
-	
-	public void setCast(PlayerCasting cast) {
-		this.cast = cast;
-	}
 
 	protected CharacterStates getCharacterState() {
 		if (character.getHealth() <= 0) {
 			return CharacterStates.DEAD;
-		}
-		else if (cast != null) {
-			return cast.getCharacterState();
 		}
 		else if (character.getLeft() || character.getRight()) {
 			return CharacterStates.WALKING;

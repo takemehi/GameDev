@@ -303,7 +303,7 @@ public class GameClient implements ApplicationListener, IEventListener {
 					checkInitialized();
 				}
 				else {
-					players.add(new ClientPlayer(character, teamid, params.getUtfString(GameOpcodes.PLAYER_NAME_PARAM)));
+					players.add(new ClientPlayer(character, teamid));
 				}
 				
 				break;
