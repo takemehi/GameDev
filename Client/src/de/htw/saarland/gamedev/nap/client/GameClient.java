@@ -194,6 +194,9 @@ public class GameClient implements ApplicationListener, IEventListener {
 		synchronized (players) {
 			for (ClientPlayer player: players) {
 				player.getPlayableCharacter().update(Gdx.graphics.getDeltaTime(), gameWorld.getCapturePoints());
+				player.getPlayableCharacter().getAttack1().cleanUp();
+				player.getPlayableCharacter().getAttack2().cleanUp();
+				player.getPlayableCharacter().getAttack3().cleanUp();
 				player.render(batch);
 			}
 		}

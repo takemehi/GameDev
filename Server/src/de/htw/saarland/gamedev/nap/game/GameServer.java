@@ -172,6 +172,9 @@ public class GameServer implements ApplicationListener, ISendPacket {
 		players.addAll(redTeam.getMembers());
 		for (Player player: players) {
 			player.update(deltaTime.getDeltaTime(), capturePoints);
+			player.getPlChar().getAttack1().cleanUp();
+			player.getPlChar().getAttack2().cleanUp();
+			player.getPlChar().getAttack3().cleanUp();
 		}
 		
 		
@@ -220,15 +223,15 @@ public class GameServer implements ApplicationListener, ISendPacket {
 	}
 	
 	public Player getPlayerBySFSUser(SFSUser user) {
-		for (Player player: blueTeam.getMembers()) {
-			if (player.getUser().equals(user)) {
-				return player;
+		for (int i = 0; i < blueTeam.getMembers().size; i++) {
+			if (blueTeam.getMembers().get(i).getUser().equals(user)) {
+				return blueTeam.getMembers().get(i);
 			}
 		}
 		
-		for (Player player: redTeam.getMembers()) {
-			if (player.getUser().equals(user)) {
-				return player;
+		for (int i = 0; i < redTeam.getMembers().size; i++) {
+			if (redTeam.getMembers().get(i).getUser().equals(user)) {
+				return redTeam.getMembers().get(i);
 			}
 		}
 		
