@@ -19,14 +19,14 @@ public class GameMoveStopLeftHandler extends BaseClientRequestHandler {
 		
 		Player player = game.getPlayerBySFSUser((SFSUser)user);
 		
-		SFSObject params = new SFSObject();
-		params.putInt(GameOpcodes.ENTITY_ID_PARAM, player.getPlChar().getId());
-		send(GameOpcodes.GAME_MOVE_STOP_LEFT, params, getParentExtension().getParentRoom().getPlayersList());
-		
-		try {
-			Thread.sleep(System.currentTimeMillis() - user.getLastRequestTime());
-		} catch (InterruptedException e) {
-		}
+//		SFSObject params = new SFSObject();
+//		params.putInt(GameOpcodes.ENTITY_ID_PARAM, player.getPlChar().getId());
+//		send(GameOpcodes.GAME_MOVE_STOP_LEFT, params, getParentExtension().getParentRoom().getPlayersList());
+//		
+//		try {
+//			Thread.sleep(System.currentTimeMillis() - user.getLastRequestTime());
+//		} catch (InterruptedException e) {
+//		}
 		
 		player.getPlChar().setLeft(false);
 	}
