@@ -20,7 +20,7 @@ public class MeClientPlayer extends ClientPlayer {
 	
 	public MeClientPlayer(PlayableCharacter character, int team,
 			IBaseInput inputProcessor, SmartFox sfClient, Room gameRoom) {
-		super(character, team);
+		super(character, team, character.getTeamId());
 		
 		if (inputProcessor == null || sfClient == null || gameRoom == null) {
 			throw new NullPointerException();

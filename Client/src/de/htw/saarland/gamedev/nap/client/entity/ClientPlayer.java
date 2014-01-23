@@ -1,8 +1,11 @@
 package de.htw.saarland.gamedev.nap.client.entity;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 
@@ -17,19 +20,26 @@ import de.htw.saarland.gamedev.nap.game.GameServer;
 
 public class ClientPlayer implements IPlayer, IRender, IMoveable, Disposable {
 
+	public static final Color FRIENDLY_COLOR = new Color(0, 1.0f, 0, 1.0f);
+	public static final Color ENEMY_COLOR = new Color(1.0f, 0, 0, 1.0f);
+	
 	protected PlayableCharacter character;
 	protected int team;
 	
 	private EntityAnimation animations;
 	private float stateTime;
 	
-	public ClientPlayer(PlayableCharacter character, int team) {
+	private ShapeRenderer shapeRenderer;
+	
+	public ClientPlayer(PlayableCharacter character, int team, int friendlyTemId) {
 		if (character == null) {
 			throw new NullPointerException();
 		}
 		
 		this.character = character;
 		this.team = team;
+		this.shapeRenderer = new ShapeRenderer();
+		this.shapeRenderer.setColor(friendlyTemId == character.getTeamId() ? FRIENDLY_COLOR : ENEMY_COLOR);
 		
 		switch (character.getCharacterClass()) {
 			case PlayableCharacter.ID_MAGE:
@@ -61,8 +71,19 @@ public class ClientPlayer implements IPlayer, IRender, IMoveable, Disposable {
 				pos.y - (height / 2) + animations.getYOffset(GameServer.PIXELS_TO_METERS),
 				width,
 				height);
+		batch.end();
 		
 		// TODO render healthbar & name
+		shapeRenderer.begin(ShapeType.Filled);
+		shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
+		shapeRenderer.rect(
+				x,
+				pos.y + animations.getHealthBarYOffset(GameServer.PIXELS_TO_METERS),
+				1,
+				10 * GameServer.PIXELS_TO_METERS);
+		shapeRenderer.end();
+		
+		batch.begin();
 	}
 
 	protected CharacterStates getCharacterState() {

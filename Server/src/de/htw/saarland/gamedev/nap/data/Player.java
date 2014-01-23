@@ -5,7 +5,6 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.smartfoxserver.v2.entities.SFSUser;
 import com.smartfoxserver.v2.entities.data.SFSObject;
-import com.smartfoxserver.v2.extensions.SFSExtension;
 
 import de.htw.saarland.gamedev.nap.data.network.GameOpcodes;
 import de.htw.saarland.gamedev.nap.game.ISendPacket;
@@ -62,7 +61,6 @@ public class Player implements IPlayer{
 	}
 	
 	public void update(float deltaTime, Array<CapturePoint> capturePoints) {
-		// TODO check if this is correct (coord update called when needed or more often)?
 		if (plChar.isMoving() || !plChar.isGrounded()) {
 			SFSObject moveParams = new SFSObject();
 			moveParams.putInt(GameOpcodes.ENTITY_ID_PARAM, plChar.getId());

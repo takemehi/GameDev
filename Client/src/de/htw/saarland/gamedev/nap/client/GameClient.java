@@ -162,10 +162,15 @@ public class GameClient implements ApplicationListener, IEventListener {
 	public void render() {
 		if (gameloopPackets.size() > 0) {
 			synchronized (gameloopPackets) {
-				for (BaseEvent be: gameloopPackets) {
-					dispatchExtensionResponse(be);
+				ArrayList<BaseEvent> toDelete = new ArrayList<BaseEvent>();
+				for (int i = 0; i < gameloopPackets.size(); i++) {
+					if (dispatchExtensionResponse(gameloopPackets.get(i))) {
+						toDelete.add(gameloopPackets.get(i));
+					}
 				}
-				gameloopPackets.clear();
+				for (BaseEvent del: toDelete) {
+					gameloopPackets.remove(del);
+				}
 			}
 		}
 		
@@ -264,7 +269,7 @@ public class GameClient implements ApplicationListener, IEventListener {
 		}
 	}
 	
-	public void dispatchExtensionResponse(BaseEvent be) {
+	public boolean dispatchExtensionResponse(BaseEvent be) {
 		String cmd = (String)be.getArguments().get(NetworkConstants.CMD_KEY);
 		SFSObject params = (SFSObject)be.getArguments().get(NetworkConstants.PARAMS_KEY);
 		
@@ -277,6 +282,9 @@ public class GameClient implements ApplicationListener, IEventListener {
 				checkInitialized();
 				break;
 			case GameOpcodes.GAME_SPAWN_PLAYER:
+				if (player == null) {
+					return false;
+				}
 			case GameOpcodes.GAME_OWN_CHARACTER:
 				PlayableCharacter character = null;
 				
@@ -306,7 +314,7 @@ public class GameClient implements ApplicationListener, IEventListener {
 					checkInitialized();
 				}
 				else {
-					players.add(new ClientPlayer(character, teamid));
+					players.add(new ClientPlayer(character, teamid, player.getPlChar().getTeamId()));
 				}
 				
 				break;
@@ -321,7 +329,6 @@ public class GameClient implements ApplicationListener, IEventListener {
 			
 			//Movement
 			case GameOpcodes.GAME_OBJECT_COORD_UPDATE:
-				System.out.println("Coord update");
 				updateCoordsOfObject(params.getInt(GameOpcodes.ENTITY_ID_PARAM),
 						params.getFloat(GameOpcodes.COORD_X_PARAM),
 						params.getFloat(GameOpcodes.COORD_Y_PARAM));
@@ -380,6 +387,8 @@ public class GameClient implements ApplicationListener, IEventListener {
 				System.out.println("Unknown packet received! : " + cmd);
 				break;
 		}
+		
+		return true;
 	}
 	
 	private Vector2 getDirection() {
