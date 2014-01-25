@@ -9,7 +9,6 @@ import com.badlogic.gdx.utils.Array;
 
 import de.htw.saarland.gamedev.nap.data.IPlayer;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
-import de.htw.saarland.gamedev.nap.data.Player;
 import de.htw.saarland.gamedev.nap.data.entities.Entity;
 import de.htw.saarland.gamedev.nap.data.entities.SensorEntity;
 
@@ -44,6 +43,9 @@ public class Nova extends Skill{
 		nova.setFixture(nova.getBody().createFixture(nova.getFixtureDef()));
 		nova.getFixture().setUserData(USERDATA_NOVA);
 		
+		if (skillEventListener != null) {
+			skillEventListener.skillStarted(this, nova);
+		}
 	}
 
 	@Override
@@ -60,6 +62,11 @@ public class Nova extends Skill{
 		if(nova!= null && nova.getBody().getUserData()!=null && nova.getBody().getUserData().equals(Entity.USERDATA_BODY_FLAG_DELETE) 
 				&& !getPlayableCharacter().getWorld().isLocked()){
 			getPlayableCharacter().getWorld().destroyBody(nova.getBody());
+			
+			if (skillEventListener != null) {
+				skillEventListener.skillEnd(this, nova);
+			}
+			
 			nova=null;
 		}		
 	}

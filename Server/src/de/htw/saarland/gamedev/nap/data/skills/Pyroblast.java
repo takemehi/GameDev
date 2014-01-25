@@ -55,6 +55,10 @@ public class Pyroblast extends Skill{
 		ball.getBody().setLinearVelocity(velocityBall);
 		character.setMovementEnabled(true);
 		
+		if (skillEventListener != null) {
+			skillEventListener.skillStarted(this, ball);
+		}
+		
 	}
 
 	@Override
@@ -79,6 +83,11 @@ public class Pyroblast extends Skill{
 		if(ball!=null && ball.getBody().getUserData()!=null && ball.getBody().getUserData().equals(Entity.USERDATA_BODY_FLAG_DELETE) 
 				&& !getPlayableCharacter().getWorld().isLocked()){
 			getPlayableCharacter().getWorld().destroyBody(ball.getBody());
+			
+			if (skillEventListener != null) {
+				skillEventListener.skillEnd(this, ball);
+			}
+			
 			ball=null;
 		}			
 	}

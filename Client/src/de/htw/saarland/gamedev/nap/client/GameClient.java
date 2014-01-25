@@ -37,11 +37,15 @@ import de.htw.saarland.gamedev.nap.client.entity.MeClientPlayer;
 import de.htw.saarland.gamedev.nap.client.input.IBaseInput;
 import de.htw.saarland.gamedev.nap.client.input.InputConfigLoader;
 import de.htw.saarland.gamedev.nap.client.input.KeyboardMouseInputProcessor;
+import de.htw.saarland.gamedev.nap.client.render.IRender;
+import de.htw.saarland.gamedev.nap.client.render.SkillRenderer;
 import de.htw.saarland.gamedev.nap.client.world.RenderableGameWorld;
 import de.htw.saarland.gamedev.nap.data.Mage;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
 import de.htw.saarland.gamedev.nap.data.Warrior;
+import de.htw.saarland.gamedev.nap.data.entities.Entity;
 import de.htw.saarland.gamedev.nap.data.network.GameOpcodes;
+import de.htw.saarland.gamedev.nap.data.skills.ISkillEvent;
 import de.htw.saarland.gamedev.nap.data.skills.Skill;
 import de.htw.saarland.gamedev.nap.game.GameServer;
 
@@ -51,7 +55,7 @@ import de.htw.saarland.gamedev.nap.game.GameServer;
  * @author Pascal
  * 
  */
-public class GameClient implements ApplicationListener, IEventListener {
+public class GameClient implements ApplicationListener, IEventListener, ISkillEvent {
 
 	public final static String FOLDER_CONFIG = "data/config/";
 	public static final String FOLDER_MAPS = "data/maps/";
@@ -75,6 +79,7 @@ public class GameClient implements ApplicationListener, IEventListener {
 	
 	private List<ClientPlayer> players;
 	private List<ClientNPC> npcs;
+	private List<IRender> renderedObjects;
 	
 	private List<BaseEvent> gameloopPackets;
 	
@@ -140,8 +145,8 @@ public class GameClient implements ApplicationListener, IEventListener {
 		
 		players = Collections.synchronizedList(new ArrayList<ClientPlayer>());
 		npcs = Collections.synchronizedList(new ArrayList<ClientNPC>());
+		renderedObjects = Collections.synchronizedList(new ArrayList<IRender>());
 		
-		//TODO is viewport ok?
 		camera = new OrthographicCamera(Gdx.graphics.getWidth() / 20, Gdx.graphics.getHeight() / 20);
 		camera.position.set(Gdx.graphics.getWidth()/40-2, Gdx.graphics.getHeight()/40-2, 0);
 		camera.update();
@@ -209,6 +214,24 @@ public class GameClient implements ApplicationListener, IEventListener {
 		synchronized (npcs) {
 			for (ClientNPC npc: npcs) {
 				npc.render(batch);
+			}
+		}
+		
+		synchronized (renderedObjects) {
+			ArrayList<IRender> toDelete = new ArrayList<IRender>();
+			
+			for(IRender renderer: renderedObjects) {
+				if (renderer instanceof SkillRenderer) {
+					if (!((SkillRenderer) renderer).isActive()) {
+						toDelete.add(renderer);
+					}
+				}
+				
+				renderer.render(batch);
+			}
+			
+			for (IRender del: toDelete) {
+				renderedObjects.remove(del);
 			}
 		}
 		
@@ -300,6 +323,9 @@ public class GameClient implements ApplicationListener, IEventListener {
 						break;
 					case PlayableCharacter.ID_MAGE:
 						character = new Mage(world, new Vector2(coordx, coordy), teamid, entid);
+						character.getAttack1().setSkillStartListener(this);
+						character.getAttack2().setSkillStartListener(this);
+						character.getAttack3().setSkillStartListener(this);
 						break;
 					default:
 						System.out.println("This character id does not exist! " + charid);
@@ -489,7 +515,6 @@ public class GameClient implements ApplicationListener, IEventListener {
 					s = player.getPlayableCharacter().getAttack2();
 					break;
 				case SKILL3:
-					System.out.println("Skill 3 Start");
 					s = player.getPlayableCharacter().getAttack3();
 					break;
 			}
@@ -554,6 +579,24 @@ public class GameClient implements ApplicationListener, IEventListener {
 				break;
 		}
 	}
+	
+	@Override
+	public void skillStarted(Skill s, Entity e) {
+		IRender renderer = SkillRenderer.getSkillRenderer(s, e);
+		
+		if (renderer != null) {
+			renderedObjects.add(renderer);
+		}
+	}
+
+	@Override
+	public void skillEnd(Skill s, Entity e) {
+		int index = renderedObjects.indexOf(SkillRenderer.getSkillRenderer(s, e));
+		
+		if (index != -1) {
+			((SkillRenderer)renderedObjects.get(index)).setActive(false);
+		}
+	}
 
 	@Override
 	public void pause() {
@@ -580,5 +623,4 @@ public class GameClient implements ApplicationListener, IEventListener {
 		SKILL2,
 		SKILL3
 	}
-	
 }

@@ -32,6 +32,8 @@ public abstract class Skill {
 	private volatile boolean packetStartCast;
 	private volatile boolean directionRequestSend;
 	
+	protected ISkillEvent skillEventListener;
+	
 	public Skill(PlayableCharacter character, float cooldown, float castTime, boolean cast, int skillNr){
 		if(cooldown<0) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_COOLDOWN);
 		if(castTime<0) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_CASTTIME);
@@ -49,6 +51,10 @@ public abstract class Skill {
 		packetStartAttack = false;
 		packetStartCast = false;
 		directionRequestSend = false;
+	}
+	
+	public void setSkillStartListener(ISkillEvent skillEventListener) {
+		this.skillEventListener = skillEventListener;
 	}
 	
 	public void setSendPacketListener(ISendPacket sendPacketListener) {

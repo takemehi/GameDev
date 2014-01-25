@@ -51,6 +51,10 @@ public class Fireball extends Skill{
 		ball.getBody().setGravityScale(0);
 		ball.getBody().setLinearVelocity(velocityBall);
 		fireBalls.add(ball);
+		
+		if (skillEventListener != null) {
+			skillEventListener.skillStarted(this, ball);
+		}
 	}
 
 	@Override
@@ -72,6 +76,9 @@ public class Fireball extends Skill{
 		    SensorEntity s = it.next();
 		    if(s.getBody().getUserData()!=null && s.getBody().getUserData().equals(Entity.USERDATA_BODY_FLAG_DELETE) 
 		    		&& !getPlayableCharacter().getWorld().isLocked()){
+		    	if (skillEventListener != null) {
+					skillEventListener.skillEnd(this, s);
+				}
 				fireBalls.removeValue(s, true);
 				getPlayableCharacter().getWorld().destroyBody(s.getBody());
 			}
