@@ -16,6 +16,7 @@ public class WarriorAnimation extends EntityAnimation {
 	
 	private static final float X_OFFSET = 20;
 	private static final float Y_OFFSET = 16;
+	private static final float HEALTH_X_OFFSET = 40;
 	private static final float HEALTH_Y_OFFSET = 50;
 	
 	private static final int SPRITE_WIDTH = 115;
@@ -81,6 +82,11 @@ public class WarriorAnimation extends EntityAnimation {
 	@Override
 	public float getYOffset(float unitScale) {
 		return Y_OFFSET * unitScale;
+	}
+	
+	@Override
+	public float getHealthBarXOffset(float unitScale) {
+		return HEALTH_X_OFFSET * unitScale;
 	}
 
 	@Override

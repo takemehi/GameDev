@@ -8,6 +8,7 @@ import de.htw.saarland.gamedev.nap.data.GameCharacter;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
 import de.htw.saarland.gamedev.nap.data.network.GameOpcodes;
 import de.htw.saarland.gamedev.nap.game.ISendPacket;
+import de.htw.saarland.gamedev.nap.server.ServerExtension;
 
 public abstract class Skill {
 
@@ -142,7 +143,6 @@ public abstract class Skill {
 			if(onCooldown && !directionRequestSend){
 				deltaTime+=_deltaTime;
 				if(!casted && deltaTime>=castTime){
-					directionUpdated = false;
 					sendPacketListener.sendServerPacket(GameOpcodes.GAME_SKILL_DIRECTION_REQUEST, null, character.getId());
 					directionRequestSend = true;
 				}
@@ -151,6 +151,7 @@ public abstract class Skill {
 			//direction has to be updated via setDirection()
 			//once the direction has been Updated the skill starts
 			if(cast && !casted && directionUpdated && deltaTime >= castTime){
+				
 				SFSObject params = new SFSObject();
 				params.putInt(GameOpcodes.ENTITY_ID_PARAM, character.getId());
 				params.putFloat(GameOpcodes.DIRECTION_X_PARAM, direction.x);
@@ -182,9 +183,6 @@ public abstract class Skill {
 			casted=true;
 			deltaTime=0;
 		}
-		
-		if(direction.x>0) character.setOrientation(GameCharacter.ORIENTATION_RIGHT);
-		else character.setOrientation(GameCharacter.ORIENTATION_LEFT);
 	}
 	
 	public abstract void cleanUp();
@@ -229,9 +227,18 @@ public abstract class Skill {
 	}
 	
 	public void setDirection(Vector2 direction){
+		ServerExtension.s_trace("Direction update");
+		
 		this.direction=direction;
 		directionUpdated=true;
 		directionRequestSend = false;
+		
+		if(direction.x > 0) {
+			character.setOrientation(GameCharacter.ORIENTATION_RIGHT);
+		}
+		else {
+			character.setOrientation(GameCharacter.ORIENTATION_LEFT);
+		}
 	}
 	
 	public PlayableCharacter getPlayableCharacter(){

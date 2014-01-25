@@ -16,6 +16,7 @@ public class MageAnimation extends EntityAnimation {
 	
 	private static final float X_OFFSET = 12;
 	private static final float Y_OFFSET = 10;
+	private static final float HEALTH_X_OFFSET = 40;
 	private static final float HEALTH_Y_OFFSET = 60;
 	
 	private static final int SPRITE_WIDTH = 96;
@@ -83,6 +84,11 @@ public class MageAnimation extends EntityAnimation {
 	@Override
 	public float getYOffset(float unitScale) {
 		return Y_OFFSET * unitScale;
+	}
+	
+	@Override
+	public float getHealthBarXOffset(float unitScale) {
+		return HEALTH_X_OFFSET * unitScale;
 	}
 
 	@Override

@@ -59,7 +59,7 @@ public class ClientPlayer implements IPlayer, IRender, IMoveable, Disposable {
 		float width = (region.getRegionWidth() * GameServer.PIXELS_TO_METERS);
 		float height = (region.getRegionHeight() * GameServer.PIXELS_TO_METERS);
 		
-		if (region.isFlipX() == (character.getOrientation() == PlayableCharacter.ORIENTATION_LEFT)) {
+		if (region.isFlipX() == (character.getOrientation() == PlayableCharacter.ORIENTATION_RIGHT)) {
 			region.flip(true, false);
 		}
 		
@@ -73,11 +73,11 @@ public class ClientPlayer implements IPlayer, IRender, IMoveable, Disposable {
 				height);
 		batch.end();
 		
-		// TODO render healthbar & name
+		// TODO render name
 		shapeRenderer.begin(ShapeType.Filled);
 		shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
 		shapeRenderer.rect(
-				x,
+				pos.x - animations.getHealthBarXOffset(GameServer.PIXELS_TO_METERS),
 				pos.y + animations.getHealthBarYOffset(GameServer.PIXELS_TO_METERS),
 				1,
 				10 * GameServer.PIXELS_TO_METERS);

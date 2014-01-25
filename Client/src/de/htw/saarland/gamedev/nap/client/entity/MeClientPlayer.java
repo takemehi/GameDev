@@ -92,6 +92,8 @@ public class MeClientPlayer extends ClientPlayer {
 			
 			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_SKILL3_START_REQUEST, params, gameRoom));
 		}
+		
+		character.getAttack1().setDirection(direction);
 	}
 
 }

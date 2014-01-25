@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.Array;
 import de.htw.saarland.gamedev.nap.data.GameWorld;
 import de.htw.saarland.gamedev.nap.data.IPlayer;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
+import de.htw.saarland.gamedev.nap.server.ServerExtension;
 
 public class Charge extends Skill {
 	
@@ -52,12 +53,13 @@ public class Charge extends Skill {
 
 	@Override
 	protected void doUpdate(World world, PlayableCharacter character, Vector2 mouseCoords) {
-		this.character=character;
+		this.character=character; // TODO ???
 		
 		if(isOnCooldown() && isCasted()){
 			if(traveling){
 				try{
 					if(distanceTraveled>=TRAVEL_DISTANCE){
+						ServerExtension.s_trace("Charge done");
 						character.getBody().setLinearVelocity(0,0);
 						character.setMovementEnabled(true);
 						character.getBody().setGravityScale(1);
@@ -65,6 +67,7 @@ public class Charge extends Skill {
 						distanceTraveled=0;
 						character.getFixture().setUserData(PlayableCharacter.USERDATA_PLAYER);
 					}else{
+						ServerExtension.s_trace(character.getBody().getLinearVelocity());
 						distanceTraveled+=((new Vector2(positionStart.x-character.getBody().getPosition().x
 								,positionStart.y-character.getBody().getPosition().y)).len());
 					}

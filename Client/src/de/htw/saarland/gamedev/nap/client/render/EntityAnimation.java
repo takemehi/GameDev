@@ -33,6 +33,7 @@ public abstract class EntityAnimation implements Disposable {
 	
 	public abstract float getXOffset(float unitScale);
 	public abstract float getYOffset(float unitScale);
+	public abstract float getHealthBarXOffset(float unitScale);
 	public abstract float getHealthBarYOffset(float unitScale);
 	
 	public abstract TextureRegion getAnimationFrame(CharacterStates state, float stateTime);
