@@ -22,6 +22,7 @@ public class MageAnimation extends EntityAnimation {
 	private static final int SPRITE_WIDTH = 96;
 	private static final int SPRITE_HEIGHT = 96;
 	private static final float FRAME_DURATION = 0.1f;
+	private static final float FRAME_DURATION_SKILLS = 0.07f;
 	private static final int WALK_FRAMES = 6;
 	private static final int SKILL1_FRAMES = 6;
 	private static final int SKILL3_FRAMES = 6;
@@ -43,7 +44,7 @@ public class MageAnimation extends EntityAnimation {
 		animations = new Animation[4]; // 4 animations, idle is no animation!
 		
 		animations[WALKING] = createAnimation(animationSheet, 1, WALK_FRAMES, SPRITE_WIDTH, SPRITE_HEIGHT, FRAME_DURATION);
-		animations[SKILL1] = createAnimation(animationSheet, 2, SKILL1_FRAMES, SPRITE_WIDTH, SPRITE_HEIGHT, FRAME_DURATION);
+		animations[SKILL1] = createAnimation(animationSheet, 2, SKILL1_FRAMES, SPRITE_WIDTH, SPRITE_HEIGHT, FRAME_DURATION_SKILLS);
 		animations[SKILL3] = createAnimation(animationSheet, 3, SKILL3_FRAMES, SPRITE_WIDTH, SPRITE_HEIGHT, FRAME_DURATION);
 		animations[DIE] = createAnimation(animationSheet, 4, DIE_FRAMES, SPRITE_WIDTH, SPRITE_HEIGHT, FRAME_DURATION);
 	}
@@ -94,5 +95,18 @@ public class MageAnimation extends EntityAnimation {
 	@Override
 	public float getHealthBarYOffset(float unitScale) {
 		return HEALTH_Y_OFFSET * unitScale;
+	}
+
+	@Override
+	public float getAnimationTime(CharacterStates state) {
+		switch (state) {
+			case SKILL2:
+			case SKILL1:
+				return SKILL1_FRAMES * FRAME_DURATION_SKILLS;
+			case SKILL3:
+				return SKILL3_FRAMES * FRAME_DURATION;
+			default:
+				return Float.MAX_VALUE;
+		}
 	}
 }

@@ -18,13 +18,15 @@ import de.htw.saarland.gamedev.nap.data.IPlayer;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
 import de.htw.saarland.gamedev.nap.game.GameServer;
 
-public class ClientPlayer implements IPlayer, IRender, IMoveable, Disposable {
+public class ClientPlayer implements IPlayer, IRender, IMoveable, ISkillStart, Disposable {
 
 	public static final Color FRIENDLY_COLOR = new Color(0, 1.0f, 0, 1.0f);
 	public static final Color ENEMY_COLOR = new Color(1.0f, 0, 0, 1.0f);
 	
 	protected PlayableCharacter character;
 	protected int team;
+	private CharacterStates charState;
+	private CharacterStates charStateBefore;
 	
 	private EntityAnimation animations;
 	private float stateTime;
@@ -38,6 +40,8 @@ public class ClientPlayer implements IPlayer, IRender, IMoveable, Disposable {
 		
 		this.character = character;
 		this.team = team;
+		this.charState = CharacterStates.IDLE;
+		this.charStateBefore = CharacterStates.IDLE;
 		this.shapeRenderer = new ShapeRenderer();
 		this.shapeRenderer.setColor(friendlyTemId == character.getTeamId() ? FRIENDLY_COLOR : ENEMY_COLOR);
 		
@@ -83,6 +87,10 @@ public class ClientPlayer implements IPlayer, IRender, IMoveable, Disposable {
 				10 * GameServer.PIXELS_TO_METERS);
 		shapeRenderer.end();
 		
+		if (stateTime > animations.getAnimationTime(charState)) {
+			charState = charStateBefore;
+		}
+		
 		batch.begin();
 	}
 
@@ -90,11 +98,37 @@ public class ClientPlayer implements IPlayer, IRender, IMoveable, Disposable {
 		if (character.getHealth() <= 0) {
 			return CharacterStates.DEAD;
 		}
-		else if (character.getLeft() || character.getRight()) {
-			return CharacterStates.WALKING;
-		}
 		
-		return CharacterStates.IDLE;
+		return charState;
+	}
+	
+	private void setCharacterState(CharacterStates newCharState) {
+		switch (newCharState) {
+			case SKILL1:
+			case SKILL2:
+			case SKILL3:
+				if (charState != CharacterStates.SKILL1 && charState != CharacterStates.SKILL2 && charState != CharacterStates.SKILL3) {
+					//new state == SKILL & current state != SKILL
+					charStateBefore = charState;
+					charState = newCharState;
+					stateTime = 0;
+				}
+				break;
+			case IDLE:
+			case WALKING:
+				if (charState == CharacterStates.SKILL1 || charState == CharacterStates.SKILL2 || charState == CharacterStates.SKILL3) {
+					//new state == IDLE | WALKING & current state == SKILL
+					charStateBefore = newCharState;
+				}
+				else {
+					//new state == IDLE | WALKING & current state != SKILL
+					charStateBefore = newCharState;
+					charState = newCharState;
+					stateTime = 0;
+				}
+				break;
+				
+		}
 	}
 	
 	public PlayableCharacter getPlayableCharacter() {
@@ -116,47 +150,41 @@ public class ClientPlayer implements IPlayer, IRender, IMoveable, Disposable {
 
 	@Override
 	public void moveLeft() {
-		character.setLeft(true);
+		setCharacterState(CharacterStates.WALKING);
 	}
 
 	@Override
 	public void moveRight() {
-		character.setRight(true);
-	}
-
-	@Override
-	public void startJump() {
-		character.setUp(true);
-	}
-	
-	@Override
-	public void stopJump() {
-		character.setUp(false);
+		setCharacterState(CharacterStates.WALKING);
 	}
 
 	@Override
 	public void stopMoveLeft() {
-		character.setLeft(false);
+		setCharacterState(CharacterStates.IDLE);
 	}
 	
 	@Override
 	public void stopMoveRight() {
-		character.setRight(false);
+		setCharacterState(CharacterStates.IDLE);
+	}
+	
+	@Override
+	public void startSkill1() {
+		setCharacterState(CharacterStates.SKILL1);
 	}
 
 	@Override
-	public void moveDown() {
-		character.setDown(true);
+	public void startSkill2() {
+		setCharacterState(CharacterStates.SKILL2);
 	}
 
 	@Override
-	public void stopDown() {
-		character.setDown(false);
+	public void startSkill3() {
+		setCharacterState(CharacterStates.SKILL3);
 	}
 
 	@Override
 	public void dispose() {
 		animations.dispose();
 	}
-
 }

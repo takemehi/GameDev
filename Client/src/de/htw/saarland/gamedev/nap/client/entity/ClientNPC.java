@@ -63,42 +63,18 @@ public class ClientNPC implements IRender, IMoveable, Disposable {
 
 	@Override
 	public void moveLeft() {
-		npc.setLeft(true);
 	}
 
 	@Override
 	public void moveRight() {
-		npc.setRight(true);
-	}
-
-	@Override
-	public void startJump() {
-		npc.setUp(true);
-	}
-	
-	@Override
-	public void stopJump() {
-		npc.setUp(false);
 	}
 
 	@Override
 	public void stopMoveLeft() {
-		npc.setLeft(false);
 	}
 	
 	@Override
 	public void stopMoveRight() {
-		npc.setRight(false);
-	}
-
-	@Override
-	public void moveDown() {
-		npc.setDown(true);
-	}
-	
-	@Override
-	public void stopDown() {
-		npc.setDown(false);
 	}
 
 	@Override

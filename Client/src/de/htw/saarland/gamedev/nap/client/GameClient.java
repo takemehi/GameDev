@@ -510,12 +510,15 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 			switch (skill) {
 				case SKILL1:
 					s = player.getPlayableCharacter().getAttack1();
+					player.startSkill1();
 					break;
 				case SKILL2:
 					s = player.getPlayableCharacter().getAttack2();
+					player.startSkill2();
 					break;
 				case SKILL3:
 					s = player.getPlayableCharacter().getAttack3();
+					player.startSkill3();
 					break;
 			}
 			
@@ -546,36 +549,25 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 		
 		switch (direction) {
 			case LEFT:
-				System.out.println("left");
 				entity.moveLeft();
 				break;
 			case RIGHT:
-				System.out.println("right");
 				entity.moveRight();
 				break;
-			case DOWN:
-				System.out.println("down");
-				entity.moveDown();
-				break;
-			case JUMP:
-				System.out.println("jump");
-				entity.startJump();
-				break;
-			case STOP_JUMP:
-				System.out.println("stop jump");
-				entity.stopJump();
-				break;
 			case STOP_LEFT:
-				System.out.println("stop left");
 				entity.stopMoveLeft();
 				break;
 			case STOP_RIGHT:
-				System.out.println("stop right");
 				entity.stopMoveRight();
 				break;
+				
+			case DOWN:
+				break;
 			case STOP_DOWN:
-				System.out.println("stop down");
-				entity.stopDown();
+				break;
+			case JUMP:
+				break;
+			case STOP_JUMP:
 				break;
 		}
 	}

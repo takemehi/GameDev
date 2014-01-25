@@ -93,4 +93,14 @@ public class WarriorAnimation extends EntityAnimation {
 	public float getHealthBarYOffset(float unitScale) {
 		return HEALTH_Y_OFFSET * unitScale;
 	}
+
+	@Override
+	public float getAnimationTime(CharacterStates state) {
+		switch (state) {
+			case SKILL1:
+				return SKILL1_FRAME_DURATION * SKILL1_FRAMES;
+			default:
+				return Float.MAX_VALUE;
+		}
+	}
 }
