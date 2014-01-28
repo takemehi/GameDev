@@ -16,6 +16,7 @@ public class MageAnimation extends EntityAnimation {
 	
 	private static final int SPRITE_WIDTH = 96;
 	private static final int SPRITE_HEIGHT = 96;
+	private static final float FRAME_DURATION_WALK = 0.025f;
 	private static final float FRAME_DURATION = 0.1f;
 	private static final float FRAME_DURATION_SKILLS = 0.07f;
 	private static final int WALK_FRAMES = 6;
@@ -38,7 +39,7 @@ public class MageAnimation extends EntityAnimation {
 		idle = new TextureRegion(animationSheet, 0, 0, SPRITE_WIDTH, SPRITE_HEIGHT);
 		animations = new Animation[4]; // 4 animations, idle is no animation!
 		
-		animations[WALKING] = createAnimation(animationSheet, 1, WALK_FRAMES, SPRITE_WIDTH, SPRITE_HEIGHT, FRAME_DURATION);
+		animations[WALKING] = createAnimation(animationSheet, 1, WALK_FRAMES, SPRITE_WIDTH, SPRITE_HEIGHT, FRAME_DURATION_WALK);
 		animations[SKILL1] = createAnimation(animationSheet, 2, SKILL1_FRAMES, SPRITE_WIDTH, SPRITE_HEIGHT, FRAME_DURATION_SKILLS);
 		animations[SKILL3] = createAnimation(animationSheet, 3, SKILL3_FRAMES, SPRITE_WIDTH, SPRITE_HEIGHT, FRAME_DURATION);
 		animations[DIE] = createAnimation(animationSheet, 4, DIE_FRAMES, SPRITE_WIDTH, SPRITE_HEIGHT, FRAME_DURATION);
