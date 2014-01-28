@@ -53,7 +53,7 @@ public class Axe extends Skill{
 	protected void doUpdate(World world, PlayableCharacter character, Vector2 mouseCoords, float deltaTime) {
 		if(isOnCooldown()){
 			timeLiving+=deltaTime;
-			if(deltaTime>=0.1f){
+			if(timeLiving>=0.1f){
 				try{
 					axe.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
 					timeLiving=0;

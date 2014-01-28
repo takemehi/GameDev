@@ -63,10 +63,13 @@ public class Snare extends Skill {
 	@Override
 	protected void doUpdate(World world, PlayableCharacter character, Vector2 mouseCoords, float deltaTime) {
 		if(isOnCooldown()){
-			try{
-				snare.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
-				timeLiving=0;
-			}catch(Exception e){}
+			timeLiving+=deltaTime;
+			if(timeLiving>=0.1f){
+				try{
+					snare.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
+					timeLiving=0;
+				}catch(Exception e){}
+			}
 		}		
 	}
 	
