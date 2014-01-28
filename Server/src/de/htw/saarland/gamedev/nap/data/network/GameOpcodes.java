@@ -410,11 +410,31 @@ public class GameOpcodes {
 	 * <br/>
 	 * params:<br/>
 	 * 	int ENTITY_ID_PARAM entity id of the entity<br/>
-	 * 	int HEALTH_PARAM the new health of the entity<br/>
-	 * 	boolean STUN_PARAM true if the object is stunned<br/>
-	 * 	boolean SNARE_PARAM true if the object is snared
+	 * 	int HEALTH_PARAM the new health of the entity
 	 */
-	public static final String GAME_UPDATE_HEALTH_STATUS = "game.update.health";
+	public static final String GAME_UPDATE_HEALTH = "game.update.health";
+	
+	/**
+	 * S->C<br/>
+	 * <br/>
+	 * Sets the stun status of an entity<br>
+	 * <br/>
+	 * param:<br/>
+	 * 	int ENTITY_ID_PARAM id of the entity<br/>
+	 * 	boolean STUN_STATUS_PARAM true if the entity is stunned, else false
+	 */
+	public static final String GAME_UPDATE_STATUS_STUN = "game.update.status.stun";
+	
+	/**
+	 * S->C<br/>
+	 * <br/>
+	 * Sets the snare status of an entity<br>
+	 * <br/>
+	 * param:<br/>
+	 * 	int ENTITY_ID_PARAM id of the entity<br/>
+	 * 	boolean SNARE_STATUS_PARAM true if the entity is snared, else false
+	 */
+	public static final String GAME_UPDATE_STATUS_SNARE = "game.update.status.snare";
 	
 	///////////////////////////////////////////////////////////////////////////////
 	// Params																	 //
@@ -430,6 +450,6 @@ public class GameOpcodes {
 	public static final String DIRECTION_Y_PARAM = "directiony";
 	public static final String PLAYER_NAME_PARAM = "playername";
 	public static final String HEALTH_PARAM = "health";
-	public static final String STUN_PARAM = "stun";
-	public static final String SNARE_PARAM = "snare";
+	public static final String STUN_STATUS_PARAM = "stun";
+	public static final String SNARE_STATUS_PARAM = "snare";
 }

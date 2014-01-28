@@ -1,6 +1,5 @@
 package de.htw.saarland.gamedev.nap.data;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
@@ -8,7 +7,6 @@ import com.badlogic.gdx.utils.Array;
 
 import de.htw.saarland.gamedev.nap.data.entities.MoveableEntity;
 import de.htw.saarland.gamedev.nap.data.skills.Skill;
-import de.htw.saarland.gamedev.nap.server.ServerExtension;
 
 public class GameCharacter extends MoveableEntity{
 	
@@ -47,6 +45,7 @@ public class GameCharacter extends MoveableEntity{
 	private boolean attacking1;
 	private boolean attacking2;
 	private boolean attacking3;
+	private IStatusUpdateListener statusUpdateListener;
 	
 	public GameCharacter(World world, Shape shape, float density,
 			float friction, float restitution, Vector2 position, Vector2 baseVelocity, Vector2 maxVelocity, int maxHealth
@@ -67,6 +66,10 @@ public class GameCharacter extends MoveableEntity{
 		timeSnared=0;
 		timeStunned=0;
 		lostHealth=false;
+	}
+	
+	public void setStatusUpdateListener(IStatusUpdateListener statusUpdateListener) {
+		this.statusUpdateListener = statusUpdateListener;
 	}
 	
 	public void update(float deltaTime, Array<CapturePoint> capturepoints){
@@ -255,11 +258,20 @@ public class GameCharacter extends MoveableEntity{
 		this.attackEnabled = attackEnabled;
 	}
 
-	public void setHealth(int health){
-		ServerExtension.s_trace("new health: " + health);
+	public void setHealth(int health){		
+		if (health>maxHealth) {
+			this.health=maxHealth;
+		}
+		else if (health < 0) {
+			this.health = 0;
+		}
+		else {
+			this.health=health;
+		}
 		
-		if(health>maxHealth) this.health=maxHealth;
-		else this.health=health;
+		if (statusUpdateListener != null) {
+			statusUpdateListener.hpUpdated(this.health);
+		}
 	}
 	
 	public int getMaxHealth(){
@@ -297,6 +309,10 @@ public class GameCharacter extends MoveableEntity{
 	}
 
 	public void setStunned(boolean stunned, float stunDuration) {
+		if (statusUpdateListener != null) {
+			statusUpdateListener.stunUpdated(stunned);
+		}
+		
 		this.stunned = stunned;
 		if(stunned){
 			setMovementEnabled(false);
@@ -318,6 +334,10 @@ public class GameCharacter extends MoveableEntity{
 	}
 
 	public void setSnared(boolean snared, float snareDuration) {
+		if (statusUpdateListener != null) {
+			statusUpdateListener.snareUpdated(snared);
+		}
+		
 		this.snared = snared;
 		if(snared){
 			setMovementEnabled(false);
