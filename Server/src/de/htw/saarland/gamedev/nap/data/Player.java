@@ -81,6 +81,15 @@ public class Player implements IPlayer, IStatusUpdateListener {
 		params.putInt(GameOpcodes.HEALTH_PARAM, newHp);
 		
 		sendPacketListener.sendServerPacket(GameOpcodes.GAME_UPDATE_HEALTH, params);
+		
+		if (newHp <= 0) {
+			plChar.setUp(false);
+			plChar.setDown(false);
+			plChar.setLeft(false);
+			plChar.setRight(false);
+			plChar.setMovementEnabled(false);
+			plChar.setAttackEnabled(false);
+		}
 	}
 
 	@Override

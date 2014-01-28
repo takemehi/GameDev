@@ -28,7 +28,9 @@ public class GameMoveJumpHandler extends BaseClientRequestHandler {
 //		} catch (InterruptedException e) {
 //		}
 		
-		player.getPlChar().setUp(true);
+		if (player.getPlChar().getHealth() > 0) {
+			player.getPlChar().setUp(true);
+		}
 	}
 
 }

@@ -30,6 +30,7 @@ public class ClientPlayer implements IPlayer, IRender, IMoveable, ISkillStart, D
 	
 	private EntityAnimation animations;
 	private float stateTime;
+	private boolean wasDead;
 	
 	private ShapeRenderer shapeRenderer;
 	
@@ -44,6 +45,7 @@ public class ClientPlayer implements IPlayer, IRender, IMoveable, ISkillStart, D
 		this.charStateBefore = CharacterStates.IDLE;
 		this.shapeRenderer = new ShapeRenderer();
 		this.shapeRenderer.setColor(friendlyTemId == character.getTeamId() ? FRIENDLY_COLOR : ENEMY_COLOR);
+		this.wasDead = false;
 		
 		switch (character.getCharacterClass()) {
 			case PlayableCharacter.ID_MAGE:
@@ -97,6 +99,10 @@ public class ClientPlayer implements IPlayer, IRender, IMoveable, ISkillStart, D
 
 	protected CharacterStates getCharacterState() {
 		if (character.getHealth() <= 0) {
+			if (!wasDead) {
+				stateTime = 0;
+				wasDead = true;
+			}
 			return CharacterStates.DEAD;
 		}
 		
@@ -104,6 +110,7 @@ public class ClientPlayer implements IPlayer, IRender, IMoveable, ISkillStart, D
 	}
 	
 	private void setCharacterState(CharacterStates newCharState) {
+		wasDead = false;
 		switch (newCharState) {
 			case SKILL1:
 			case SKILL2:

@@ -19,11 +19,13 @@ public class GameMoveRightHandler extends BaseClientRequestHandler {
 		
 		Player player = game.getPlayerBySFSUser((SFSUser)user);
 		
-		SFSObject params = new SFSObject();
-		params.putInt(GameOpcodes.ENTITY_ID_PARAM, player.getPlChar().getId());
-		send(GameOpcodes.GAME_MOVE_RIGHT_START, params, getParentExtension().getParentRoom().getPlayersList());
-		
-		player.getPlChar().setRight(true);
+		if (player.getPlChar().getHealth() > 0) {
+			SFSObject params = new SFSObject();
+			params.putInt(GameOpcodes.ENTITY_ID_PARAM, player.getPlChar().getId());
+			send(GameOpcodes.GAME_MOVE_RIGHT_START, params, getParentExtension().getParentRoom().getPlayersList());
+			
+			player.getPlChar().setRight(true);
+		}
 	}
 
 }
