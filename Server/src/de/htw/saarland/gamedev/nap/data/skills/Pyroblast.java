@@ -62,7 +62,7 @@ public class Pyroblast extends Skill{
 	}
 
 	@Override
-	protected void doUpdate(World world, PlayableCharacter character, Vector2 mouseCoords) {
+	protected void doUpdate(World world, PlayableCharacter character, Vector2 mouseCoords, float deltaTime) {
 		
 		if(isOnCooldown() && !isCasted()) {
 			character.setMovementEnabled(false);

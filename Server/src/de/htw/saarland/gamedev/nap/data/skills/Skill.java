@@ -71,7 +71,7 @@ public abstract class Skill {
 	}
 	
 	public void update(float _deltaTime){
-		doUpdate(character.getWorld(), character, direction);		
+		doUpdate(character.getWorld(), character, direction, _deltaTime);		
 		if(client){
 			if (packetStartCast) {
 				onCooldown = true;
@@ -195,7 +195,7 @@ public abstract class Skill {
 	
 	public abstract void start(World world, PlayableCharacter character, Vector2 mouseCoords);
 	
-	protected abstract void doUpdate(World world, PlayableCharacter character, Vector2 mouseCoords);
+	protected abstract void doUpdate(World world, PlayableCharacter character, Vector2 mouseCoords, float deltaTime);
 	
 	public void reset(){
 		casted=true;

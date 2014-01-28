@@ -25,10 +25,12 @@ public class Nova extends Skill{
 	public static final String USERDATA_NOVA = "nova";
 	
 	private SensorEntity nova;
+	private float timeLiving;
 	
 	public Nova(PlayableCharacter character, int skillNr){
 		super(character, COOLDOWN, CASTTIME, false, skillNr);
 		cast=false;
+		timeLiving=0;
 	}
 
 	@Override
@@ -49,11 +51,15 @@ public class Nova extends Skill{
 	}
 
 	@Override
-	public void doUpdate(World world, PlayableCharacter character, Vector2 mouseCoords) {
+	public void doUpdate(World world, PlayableCharacter character, Vector2 mouseCoords, float deltaTime) {
 		if(isOnCooldown()){
-			try{
-				nova.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
-			}catch(Exception e){}
+			timeLiving+=deltaTime;
+			if(deltaTime>=0.1f){
+				try{
+					nova.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
+					timeLiving=0;
+				}catch(Exception e){}
+			}
 		}
 	}
 

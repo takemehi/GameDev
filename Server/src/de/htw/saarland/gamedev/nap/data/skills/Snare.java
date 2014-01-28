@@ -22,10 +22,12 @@ public class Snare extends Skill {
 	public static final String USERDATA_SNARE = "snare";
 	
 	private SensorEntity snare;
+	private float timeLiving;
 	
 	public Snare(PlayableCharacter character, int skillNr) {
 		super(character, COOLDOWN, CASTTIME, false, skillNr);
 		cast=false;
+		timeLiving=0;
 	}
 
 	@Override
@@ -59,10 +61,11 @@ public class Snare extends Skill {
 	}
 
 	@Override
-	protected void doUpdate(World world, PlayableCharacter character, Vector2 mouseCoords) {
+	protected void doUpdate(World world, PlayableCharacter character, Vector2 mouseCoords, float deltaTime) {
 		if(isOnCooldown()){
 			try{
 				snare.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
+				timeLiving=0;
 			}catch(Exception e){}
 		}		
 	}
