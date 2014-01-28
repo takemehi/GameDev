@@ -1,5 +1,8 @@
 package de.htw.saarland.gamedev.nap.data.skills;
 
+import java.io.CharConversionException;
+import java.security.cert.Extension;
+
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.World;
@@ -11,8 +14,6 @@ import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
 import de.htw.saarland.gamedev.nap.server.ServerExtension;
 
 public class Charge extends Skill {
-	
-	private static final Vector2 COMPENSATE_GRAVITY = new Vector2(0,20);
 	
 	public static final float COOLDOWN = 3f;
 	public static final float CASTTIME = 0f;
@@ -59,7 +60,6 @@ public class Charge extends Skill {
 			if(traveling){
 				try{
 					if(distanceTraveled>=TRAVEL_DISTANCE){
-						ServerExtension.s_trace("Charge done");
 						character.getBody().setLinearVelocity(0,0);
 						character.setMovementEnabled(true);
 						character.getBody().setGravityScale(1);
@@ -67,7 +67,6 @@ public class Charge extends Skill {
 						distanceTraveled=0;
 						character.getFixture().setUserData(PlayableCharacter.USERDATA_PLAYER);
 					}else{
-						ServerExtension.s_trace(character.getBody().getLinearVelocity());
 						distanceTraveled+=((new Vector2(positionStart.x-character.getBody().getPosition().x
 								,positionStart.y-character.getBody().getPosition().y)).len());
 					}
@@ -80,6 +79,7 @@ public class Charge extends Skill {
 	@Override
 	public void reset(){
 		super.reset();
+		ServerExtension.s_trace("Reset");
 		try{
 			character.getBody().setLinearVelocity(0,0);
 			character.setMovementEnabled(true);
