@@ -1,15 +1,17 @@
 package de.htw.saarland.gamedev.nap.game;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -23,7 +25,6 @@ import com.smartfoxserver.v2.entities.data.SFSObject;
 
 import de.htw.saarland.gamedev.nap.data.CapturePoint;
 import de.htw.saarland.gamedev.nap.data.GameWorld;
-import de.htw.saarland.gamedev.nap.data.NPC;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
 import de.htw.saarland.gamedev.nap.data.Player;
 import de.htw.saarland.gamedev.nap.data.SpawnPoint;
@@ -37,19 +38,10 @@ public class DebugGameServer implements ApplicationListener {
 	private final static String EXCEPTION_ILLEGAL_MAP = "Map files are missing!";
 	private final static String EXCEPTION_ILLEGAL_MAP_EMPTY = "Map name is empty!";
 	private final static String EXCEPTION_ILLEGAL_TEAMSIZE = "Teamsize can't be less than 1!";
-	private final static String EXCEPTION_ILLEGAL_TEAM_FULL = "Team is already full!";
-	private final static String EXCEPTION_ILLEGAL_TEAM_ID = "Team Id is not existing!";
-	private final static String EXCEPTION_NULL_ENTITY = "Entity object is null!";
 	private final static String EXCEPTION_NULL_PACKET = "Packet object is null!";
-	private final static String EXCEPTION_NULL_PLAYER = "Player object is null!";
 	private final static String EXCEPTION_NULL_TEAM1 = "Team1 object is null!";
 	private final static String EXCEPTION_NULL_TEAM2 = "Team2 object is null!";
-	private final static String EXCEPTION_NULL_VECTOR = "Vector object is null!";
-	//folders
-	private final static String FOLDER_DATA = "data/";
 	private final static String FOLDER_MAPS = "data/maps/";
-	//packets processed per tick
-	private final static int PACKETS_PER_TICK = 50;
 	//world renderer constants
 	public final static float TIME_STEP = 1/60f;
 	public final static int ITERATIONS_VELOCITY = 6;
@@ -58,18 +50,12 @@ public class DebugGameServer implements ApplicationListener {
 	public final static Vector2 GRAVITY = new Vector2(0, -20);
 	//others
 	public final static float PIXELS_TO_METERS = 1/96f;
-	private final static int MAX_POINTS = 200;
-	private final static float INTERVAL_POINTS = 5.0f;
 	public final static int[] LAYERS_TO_RENDER = {0,1,2};
 	private static final float INTERVAL_REGEN_SPAWN = 0.5f;	
 	
 	//input parameters
 	private String mapName;
 	private TiledMap map;
-	private int teamSize;
-	//TODO maybe change the type from npc to extended class
-	private ArrayList<NPC> npcs;
-	
 	//internal variables
 	private ConcurrentLinkedQueue<SFSObject> packetQueue;	
 	private World world;
@@ -99,6 +85,9 @@ public class DebugGameServer implements ApplicationListener {
 	private Box2DDebugRenderer renderer;
 	//rendering test
 	OrthogonalTiledMapRenderer mapRenderer;
+	SpriteBatch spriteBatch;
+	BitmapFont font;
+	CharSequence str = "Hello World!";
 	
 	//////////////////////
 	//	constructors	//
@@ -113,7 +102,6 @@ public class DebugGameServer implements ApplicationListener {
 			throw new IllegalArgumentException(EXCEPTION_ILLEGAL_MAP);
 		
 		this.mapName=mapName;
-		this.teamSize=teamSize;
 		this.userBlue=userBlue;
 		this.userRed=userRed;
 		this.charactersBlue=charactersBlue;
@@ -177,6 +165,9 @@ public class DebugGameServer implements ApplicationListener {
 		camera.update();
 		mapRenderer = new OrthogonalTiledMapRenderer(map, PIXELS_TO_METERS);
 		mapRenderer.setView(camera);
+		font = new BitmapFont(new FileHandle("data/font/calibri.fnt"),
+				new FileHandle("data/font/calibri.png"), false);
+		spriteBatch = new SpriteBatch();
 	}		
 	
 	@Override
@@ -289,8 +280,15 @@ public class DebugGameServer implements ApplicationListener {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
+		
+		
 		mapRenderer.render(LAYERS_TO_RENDER);
 		renderer.render(world, camera.combined);
+		spriteBatch.begin();
+		 font.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+		 font.draw(spriteBatch, str, 25, 160);
+		spriteBatch.end();
+		
 		world.step(TIME_STEP, ITERATIONS_VELOCITY, ITERATIONS_POSITION);
 		
 		//delete entities

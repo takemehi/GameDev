@@ -1,7 +1,9 @@
 package de.htw.saarland.gamedev.nap.client.entity;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -34,10 +36,16 @@ public class ClientPlayer implements IPlayer, IRender, IMoveable, ISkillStart, D
 	
 	private ShapeRenderer shapeRenderer;
 	
+	private BitmapFont font;
+	private CharSequence str = "Hello World!";
+	
 	public ClientPlayer(PlayableCharacter character, int team, int friendlyTemId) {
 		if (character == null) {
 			throw new NullPointerException();
 		}
+		
+		font = new BitmapFont(new FileHandle("data/font/calibri.fnt"),
+				new FileHandle("data/font/calibri.png"), false);
 		
 		this.character = character;
 		this.team = team;
@@ -77,6 +85,8 @@ public class ClientPlayer implements IPlayer, IRender, IMoveable, ISkillStart, D
 				pos.y - (height / 2) + animations.getYOffset(GameServer.PIXELS_TO_METERS),
 				width,
 				height);
+		font.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+		font.draw(batch, str, character.getBody().getPosition().x, character.getBody().getPosition().y);
 		batch.end();
 		
 		// TODO render name

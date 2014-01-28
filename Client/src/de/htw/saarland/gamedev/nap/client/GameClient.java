@@ -19,6 +19,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -40,6 +41,7 @@ import de.htw.saarland.gamedev.nap.client.input.KeyboardMouseInputProcessor;
 import de.htw.saarland.gamedev.nap.client.render.IRender;
 import de.htw.saarland.gamedev.nap.client.render.SkillRenderer;
 import de.htw.saarland.gamedev.nap.client.world.RenderableGameWorld;
+import de.htw.saarland.gamedev.nap.data.GameCharacter;
 import de.htw.saarland.gamedev.nap.data.Mage;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
 import de.htw.saarland.gamedev.nap.data.Warrior;
@@ -193,8 +195,7 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 		
 		gameWorld.render(batch);
 		
-		batch.begin();
-		
+		batch.begin();		
 		player.getPlayableCharacter().update(Gdx.graphics.getDeltaTime(), gameWorld.getCapturePoints());
 		player.getPlayableCharacter().getAttack1().cleanUp();
 		player.getPlayableCharacter().getAttack2().cleanUp();
@@ -234,13 +235,9 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 				renderedObjects.remove(del);
 			}
 		}
-		
-		
-		batch.end();
-		
+		batch.end();		
 		
 		debugRenderer.render(world, camera.combined);
-		
 		
 		worldTime += Gdx.graphics.getDeltaTime();
 		//if (worldTime > GameServer.TIME_STEP) {
