@@ -55,7 +55,7 @@ public class CustomContactListener implements ContactListener {
 			Nova.handleContact(fA, fB, players, false);
 			
 			//Capture- and spawn point
-			//CapturePoint.handleContactBegin(fA, fB, players, capturePoints);
+			CapturePoint.handleContactBegin(fA, fB, players, capturePoints);
 			SpawnPoint.handleContactBegin(fA, fB, blueTeam, redTeam);
 		}
 		
@@ -67,7 +67,7 @@ public class CustomContactListener implements ContactListener {
 		Fixture fB = contact.getFixtureB();
 		
 		if(fA!=null && fB!=null){
-			//CapturePoint.handleContactEnd(fA, fB, players, capturePoints);
+			CapturePoint.handleContactEnd(fA, fB, players, capturePoints);
 			SpawnPoint.handleContactEnd(fA, fB, blueTeam, redTeam);
 		}
 	}

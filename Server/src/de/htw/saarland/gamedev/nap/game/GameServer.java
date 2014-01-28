@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.ApplicationListener;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
@@ -46,7 +45,7 @@ public class GameServer implements ApplicationListener, ISendPacket {
 	public final static float PIXELS_TO_METERS = 1/96f;
 	public final static int POINTS_PER_INTERVAL = 2;
 	public final static float INTERVAL_POINTS = 5.0f;
-	public final static int[] LAYERS_TO_RENDER = {0,1,2};
+	public final static int[] LAYERS_TO_RENDER = {0,1};
 	//input parameters
 	private String mapName;
 	private TiledMap map;
@@ -103,8 +102,6 @@ public class GameServer implements ApplicationListener, ISendPacket {
 		this.redMembers = userRed;
 		this.charactersRed = charactersRed;
 		
-		capturePoints=new Array<CapturePoint>();
-		
 		currentId=0;
 		worldTime = 0;
 		gameEnded=false;
@@ -151,6 +148,12 @@ public class GameServer implements ApplicationListener, ISendPacket {
 			red.add(new Player(redMembers.get(i), world, spawnPointRed.getSpawnPoint().getPositionOriginal(), charactersRed.get(i), PlayableCharacter.ID_TEAM_RED, currentId++, this));
 		}
 		redTeam = new Team(spawnPointRed, red);
+		
+		for (CapturePoint cp: capturePoints) {
+			cp.setSendPacket(this);
+			cp.setTeamBlue(blueTeam);
+			cp.setTeamRed(redTeam);
+		}
 		
 		world.setContactListener(new CustomContactListener(blueTeam, redTeam, capturePoints));
 		

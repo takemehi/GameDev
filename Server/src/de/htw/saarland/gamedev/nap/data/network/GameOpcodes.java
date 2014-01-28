@@ -203,29 +203,26 @@ public class GameOpcodes {
 	 */
 	public static final String GAME_CAPTURE_START_REQUEST = "game.player.capture.start";
 	/**
-	 * C->S<br/>
-	 * <br/>
-	 * Opcode that is sent when the player stops to capture a capture point
-	 */
-	public static final String GAME_CAPTURE_STOP_REQUEST = "game.player.capture.stop";
-	/**
 	 * S->C<br/>
 	 * <br/>
 	 * Opcode that indicates that a player started to capture a capture point<br/>
 	 * <br/>
 	 * params:<br/>
-	 * 	int ENTITY_ID_PARAM the id of the player that started to capture a point
+	 * 	int ENTITY_ID_PARAM the id of the capture point that is being captured or stopped being captured<br/>
+	 * 	bool CAPTURE_STATUS_PARAM whether the point is being captured or stopped being captured
 	 */
-	public static final String GAME_CAPTURE_STARTED = "game.player.capture.started";
+	public static final String GAME_CAPTURE_CHANGE = "game.player.capture.change";
 	/**
 	 * S->C<br/>
 	 * <br/>
 	 * Opcode that indicates that a player stopped to capture a capture point<br/>
 	 * <br/>
 	 * params:<br/>
-	 * 	int ENTITY_ID_PARAM the id of the player that stopped to capture a point
+	 * 	int ENTITY_ID_PARAM the id of the point that got captured<br/>
+	 * 	int PLAYER_ID_PARAM the id of the player that captured the point<br/>
+	 * 	int TEAM_ID_PARAM the id of the team that captured the point
 	 */
-	public static final String GAME_CAPTURE_STOPPED = "game.player.capture.stopped";
+	public static final String GAME_CAPTURE_SUCCESS = "game.player.capture.success";
 	
 	///////////////////////////////////////////////////////////////////////////////
 	// Skills																	 //
@@ -452,4 +449,6 @@ public class GameOpcodes {
 	public static final String HEALTH_PARAM = "health";
 	public static final String STUN_STATUS_PARAM = "stun";
 	public static final String SNARE_STATUS_PARAM = "snare";
+	public static final String CAPTURE_STATUS_PARAM = "capturestatus";
+	public static final String PLAYER_ID_PARAM = "playerid";
 }

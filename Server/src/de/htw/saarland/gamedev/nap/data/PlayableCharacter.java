@@ -81,20 +81,28 @@ public abstract class PlayableCharacter extends GameCharacter{
 		}
 		
 		if(getPointEligibleToCapture()!=-1 && doCapture && !capturing){
-			if(point!= null && !point.isBeingCaptured()){
+			if(point!= null && !point.isBeingCaptured() && point.getTeamId() != teamId){
 				capturing=true;
+				timeCapturing = 0;
 				point.setBeingCaptured(true);
+			}
+			else {
+				doCapture = false;
 			}
 		}
 		if(capturing){
 			timeCapturing+=deltaTime;
-			if(timeCapturing>=10){
+			if(timeCapturing>=CapturePoint.TIME_NEEDED_CAPTURE_POINT){
 				point.setBeingCaptured(false);
-				point.setTeamId(getTeamId());
+				doCapture = false;
+				capturing = false;
+				timeCapturing = 0;
+				point.setTeamId(getTeamId(), getId());
 			}
 			if(getBody().getLinearVelocity().x!=0 || getBody().getLinearVelocity().y!=0 || hasLostHealth()
 					|| isAttacking1() || isAttacking2() || isAttacking3()){
 				capturing=false;
+				doCapture = false;
 				point.setBeingCaptured(false);
 			}
 		}

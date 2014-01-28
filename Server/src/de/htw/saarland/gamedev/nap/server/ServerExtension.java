@@ -9,6 +9,7 @@ import com.smartfoxserver.v2.extensions.SFSExtension;
 import de.htw.saarland.gamedev.nap.data.network.GameOpcodes;
 import de.htw.saarland.gamedev.nap.game.GameServer;
 import de.htw.saarland.gamedev.nap.server.game.handler.ClientInitializedHandler;
+import de.htw.saarland.gamedev.nap.server.game.handler.GameCaptureStartHandler;
 import de.htw.saarland.gamedev.nap.server.game.handler.GameGetMapCharacterHandler;
 import de.htw.saarland.gamedev.nap.server.game.handler.GameMoveDownHandler;
 import de.htw.saarland.gamedev.nap.server.game.handler.GameMoveDownStopHandler;
@@ -97,8 +98,7 @@ public class ServerExtension extends SFSExtension implements Runnable {
 		
 		initializedCounter = 0;
 		
-//		addRequestHandler(GameOpcodes.GAME_CAPTURE_START_REQUEST, );
-//		addRequestHandler(GameOpcodes.GAME_CAPTURE_STOP_REQUEST, theClass);
+		addRequestHandler(GameOpcodes.GAME_CAPTURE_START_REQUEST, GameCaptureStartHandler.class);
 		addRequestHandler(GameOpcodes.GAME_GET_MAP_CHARACTER, GameGetMapCharacterHandler.class);
 		addRequestHandler(GameOpcodes.GAME_GET_MOVEABLE_ENTITIES, GetMoveableEntitiesHandler.class);
 		addRequestHandler(GameOpcodes.GAME_INITIALIZED, ClientInitializedHandler.class);

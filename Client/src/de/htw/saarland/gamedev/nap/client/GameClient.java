@@ -30,6 +30,7 @@ import com.smartfoxserver.v2.exceptions.SFSException;
 
 import de.htw.saarland.gamedev.nap.CustomContactListener;
 import de.htw.saarland.gamedev.nap.NetworkConstants;
+import de.htw.saarland.gamedev.nap.client.entity.ClientCapturePoint;
 import de.htw.saarland.gamedev.nap.client.entity.ClientNPC;
 import de.htw.saarland.gamedev.nap.client.entity.ClientPlayer;
 import de.htw.saarland.gamedev.nap.client.entity.EntityNotFound;
@@ -41,6 +42,7 @@ import de.htw.saarland.gamedev.nap.client.input.KeyboardMouseInputProcessor;
 import de.htw.saarland.gamedev.nap.client.render.IRender;
 import de.htw.saarland.gamedev.nap.client.render.SkillRenderer;
 import de.htw.saarland.gamedev.nap.client.world.RenderableGameWorld;
+import de.htw.saarland.gamedev.nap.data.CapturePoint;
 import de.htw.saarland.gamedev.nap.data.GameCharacter;
 import de.htw.saarland.gamedev.nap.data.Mage;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
@@ -82,6 +84,7 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 	private List<ClientPlayer> players;
 	private List<ClientNPC> npcs;
 	private List<IRender> renderedObjects;
+	private List<ClientCapturePoint> capturePoints;
 	
 	private List<BaseEvent> gameloopPackets;
 	
@@ -148,6 +151,7 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 		players = Collections.synchronizedList(new ArrayList<ClientPlayer>());
 		npcs = Collections.synchronizedList(new ArrayList<ClientNPC>());
 		renderedObjects = Collections.synchronizedList(new ArrayList<IRender>());
+		capturePoints = new ArrayList<ClientCapturePoint>();
 		
 		camera = new OrthographicCamera(Gdx.graphics.getWidth() / 20, Gdx.graphics.getHeight() / 20);
 		camera.position.set(Gdx.graphics.getWidth()/40-2, Gdx.graphics.getHeight()/40-2, 0);
@@ -196,6 +200,10 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 		gameWorld.render(batch);
 		
 		batch.begin();		
+		for (ClientCapturePoint cp: capturePoints) {
+			cp.render(batch);
+		}
+		
 		player.getPlayableCharacter().update(Gdx.graphics.getDeltaTime(), gameWorld.getCapturePoints());
 		player.getPlayableCharacter().getAttack1().cleanUp();
 		player.getPlayableCharacter().getAttack2().cleanUp();
@@ -235,6 +243,7 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 				renderedObjects.remove(del);
 			}
 		}
+		
 		batch.end();		
 		
 		debugRenderer.render(world, camera.combined);
@@ -299,6 +308,10 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 				break;
 			case GameOpcodes.GAME_CURRENT_MAP:
 				gameWorld = new RenderableGameWorld(world, FOLDER_MAPS + params.getUtfString(GameOpcodes.CURRENT_MAP_PARAM), 0, batch, camera);
+				for (CapturePoint cp: gameWorld.getCapturePoints()) {
+					ClientCapturePoint ccp = new ClientCapturePoint(cp.getCapturePoint());
+					capturePoints.add(ccp);
+				}
 				checkInitialized();
 				break;
 			case GameOpcodes.GAME_SPAWN_PLAYER:
@@ -416,6 +429,15 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 			case GameOpcodes.GAME_UPDATE_STATUS_SNARE:
 				snareUpdate(params.getInt(GameOpcodes.ENTITY_ID_PARAM), params.getBool(GameOpcodes.SNARE_STATUS_PARAM));
 				break;
+				
+				
+			//Capture point updates
+			case GameOpcodes.GAME_CAPTURE_CHANGE:
+				captureChange(params.getInt(GameOpcodes.ENTITY_ID_PARAM), params.getBool(GameOpcodes.CAPTURE_STATUS_PARAM));
+				break;
+			case GameOpcodes.GAME_CAPTURE_SUCCESS:
+				captureSuccess(params.getInt(GameOpcodes.ENTITY_ID_PARAM), params.getInt(GameOpcodes.TEAM_ID_PARAM), params.getInt(GameOpcodes.PLAYER_ID_PARAM));
+				break;
 			
 			default:
 				System.out.println("Unknown packet received! : " + cmd);
@@ -423,6 +445,24 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 		}
 		
 		return true;
+	}
+	
+	private void captureChange(int entityId, boolean isBeingCaptured) {
+		for (ClientCapturePoint cp: capturePoints) {
+			if (cp.getId() == entityId) {
+				cp.setBeingCaptured(isBeingCaptured);
+				break;
+			}
+		}
+	}
+	
+	private void captureSuccess(int entityId, int teamId, int playerId) {
+		for (ClientCapturePoint cp: capturePoints) {
+			if (cp.getId() == entityId) {
+				cp.setTeamCaptured(teamId, "TODO");
+				break;
+			}
+		}
 	}
 	
 	private void healthUpdate(int entityId, int health) {

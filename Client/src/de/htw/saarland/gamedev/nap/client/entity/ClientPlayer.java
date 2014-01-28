@@ -35,11 +35,12 @@ public class ClientPlayer implements IPlayer, IRender, IMoveable, ISkillStart, D
 	private boolean wasDead;
 	
 	private ShapeRenderer shapeRenderer;
+	private Color hpBoxCol;
 	
 	private BitmapFont font;
 	private CharSequence str = "Hello World!";
 	
-	public ClientPlayer(PlayableCharacter character, int team, int friendlyTemId) {
+	public ClientPlayer(PlayableCharacter character, int team, int friendlyTeamId) {
 		if (character == null) {
 			throw new NullPointerException();
 		}
@@ -52,7 +53,7 @@ public class ClientPlayer implements IPlayer, IRender, IMoveable, ISkillStart, D
 		this.charState = CharacterStates.IDLE;
 		this.charStateBefore = CharacterStates.IDLE;
 		this.shapeRenderer = new ShapeRenderer();
-		this.shapeRenderer.setColor(friendlyTemId == character.getTeamId() ? FRIENDLY_COLOR : ENEMY_COLOR);
+		this.hpBoxCol = friendlyTeamId == character.getTeamId() ? FRIENDLY_COLOR : ENEMY_COLOR;
 		this.wasDead = false;
 		
 		switch (character.getCharacterClass()) {
@@ -93,11 +94,22 @@ public class ClientPlayer implements IPlayer, IRender, IMoveable, ISkillStart, D
 		
 		shapeRenderer.begin(ShapeType.Filled);
 		shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
+		shapeRenderer.setColor(hpBoxCol);
 		shapeRenderer.rect(
 				pos.x - animations.getHealthBarXOffset(GameServer.PIXELS_TO_METERS),
 				pos.y + animations.getHealthBarYOffset(GameServer.PIXELS_TO_METERS),
 				1f * ((float)character.getHealth() / (float)character.getMaxHealth()),
-				10f * GameServer.PIXELS_TO_METERS);
+				10f * GameServer.PIXELS_TO_METERS
+			);
+		shapeRenderer.end();
+		shapeRenderer.begin(ShapeType.Line);
+		shapeRenderer.setColor(0f, 0f, 0f, 1f);
+		shapeRenderer.rect(
+				pos.x - animations.getHealthBarXOffset(GameServer.PIXELS_TO_METERS),
+				pos.y + animations.getHealthBarYOffset(GameServer.PIXELS_TO_METERS),
+				1f,
+				10f * GameServer.PIXELS_TO_METERS
+			);
 		shapeRenderer.end();
 		
 		if (stateTime > animations.getAnimationTime(charState)) {

@@ -14,7 +14,6 @@ public class RoomJoinServerHandler extends BaseServerEventHandler {
 
 	@Override
 	public void handleServerEvent(ISFSEvent ev) throws SFSException {
-		trace("Room Join Event Called!");
 		Launcher launcher = ((ServerExtension)getParentExtension()).getLauncher();
 		
 		try {

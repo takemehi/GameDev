@@ -2,12 +2,17 @@ package de.htw.saarland.gamedev.nap.data;
 
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.utils.Array;
+import com.smartfoxserver.v2.entities.data.SFSObject;
 
 import de.htw.saarland.gamedev.nap.data.entities.SensorEntity;
+import de.htw.saarland.gamedev.nap.data.network.GameOpcodes;
 import de.htw.saarland.gamedev.nap.game.GameServer;
+import de.htw.saarland.gamedev.nap.game.ISendPacket;
 
 public class CapturePoint {
 
+	public final static float TIME_NEEDED_CAPTURE_POINT = 6;
+	
 	private final static String EXCEPTION_NULL_ENTITY = "Entity object is null!";
 
 	private SensorEntity capturePoint;
@@ -17,13 +22,18 @@ public class CapturePoint {
 	private boolean beingCaptured;
 	
 	private float stateTime;
+	private ISendPacket sendPacket;
 	
 	public CapturePoint(SensorEntity capturePoint){
 		if(capturePoint==null) throw new NullPointerException(EXCEPTION_NULL_ENTITY);	
 		this.capturePoint=capturePoint;
 		teamId = -1;
 		stateTime = 0.0f;
-	}	
+	}
+	
+	public void setSendPacket(ISendPacket sendPacket) {
+		this.sendPacket = sendPacket;
+	}
 	
 	//getter / setter
 	public SensorEntity getCapturePoint() {
@@ -32,7 +42,16 @@ public class CapturePoint {
 	public int getTeamId() {
 		return teamId;
 	}
-	public void setTeamId(int teamId){
+	public void setTeamId(int teamId, int entityId){
+		if (sendPacket != null) {
+			SFSObject params = new SFSObject();
+			params.putInt(GameOpcodes.ENTITY_ID_PARAM, capturePoint.getId());
+			params.putInt(GameOpcodes.PLAYER_ID_PARAM, entityId);
+			params.putInt(GameOpcodes.TEAM_ID_PARAM, teamId);
+			
+			sendPacket.sendServerPacket(GameOpcodes.GAME_CAPTURE_SUCCESS, params);
+		}
+		
 		this.teamId = teamId;
 	}
 	public Team getTeamBlue(){
@@ -52,6 +71,15 @@ public class CapturePoint {
 	}
 	
 	public void setBeingCaptured(boolean beingCaptured){
+		
+		if (sendPacket != null) {
+			SFSObject params = new SFSObject();
+			params.putInt(GameOpcodes.ENTITY_ID_PARAM, capturePoint.getId());
+			params.putBool(GameOpcodes.CAPTURE_STATUS_PARAM, beingCaptured);
+			
+			sendPacket.sendServerPacket(GameOpcodes.GAME_CAPTURE_CHANGE, params);
+		}
+		
 		this.beingCaptured=beingCaptured;
 	}
 	
@@ -69,13 +97,13 @@ public class CapturePoint {
 		}
 	}
 	
-	public static void handleContactBegin(Fixture fA, Fixture fB, Array<Player> players, Array<CapturePoint> capturePoints){
+	public static void handleContactBegin(Fixture fA, Fixture fB, Array<IPlayer> players, Array<CapturePoint> capturePoints){
 		//Capture point permission
 		if(fA.getUserData().equals(GameWorld.USERDATA_FIXTURE_CAPTUREPOINT)
 				&& fB.getUserData().equals(PlayableCharacter.USERDATA_PLAYER)){
 			for(CapturePoint c: capturePoints){
 				if(c.getCapturePoint().getFixture().equals(fA)){
-					for(Player p: players){
+					for(IPlayer p: players){
 						if(p.getPlChar().getFixture().equals(fB)){
 							p.getPlChar().setPointEligibleToCapture(c.getCapturePoint().getId());
 							break;
@@ -88,7 +116,7 @@ public class CapturePoint {
 				&& fA.getUserData().equals(PlayableCharacter.USERDATA_PLAYER)){
 			for(CapturePoint c: capturePoints){
 				if(c.getCapturePoint().getFixture().equals(fB)){
-					for(Player p: players){
+					for(IPlayer p: players){
 						if(p.getPlChar().getFixture().equals(fA)){
 							p.getPlChar().setPointEligibleToCapture(c.getCapturePoint().getId());
 							break;
@@ -99,11 +127,11 @@ public class CapturePoint {
 		}
 	}
 	
-	public static void handleContactEnd(Fixture fA, Fixture fB, Array<Player> players, Array<CapturePoint> capturePoints){
+	public static void handleContactEnd(Fixture fA, Fixture fB, Array<IPlayer> players, Array<CapturePoint> capturePoints){
 		//Capture point permission
 		if(fA.getUserData()!=null && fA.getUserData().equals(GameWorld.USERDATA_FIXTURE_CAPTUREPOINT)
 				&& fB.getUserData()!=null && fB.getUserData().equals(PlayableCharacter.USERDATA_PLAYER)){
-			for(Player p: players){
+			for(IPlayer p: players){
 				if(p.getPlChar().getFixture().equals(fB)){
 					p.getPlChar().setPointEligibleToCapture(-1);
 					break;
@@ -112,7 +140,7 @@ public class CapturePoint {
 		}
 		else if(fB.getUserData()!=null && fB.getUserData().equals(GameWorld.USERDATA_FIXTURE_CAPTUREPOINT)
 				&& fA.getUserData()!=null && fA.getUserData().equals(PlayableCharacter.USERDATA_PLAYER)){
-			for(Player p: players){
+			for(IPlayer p: players){
 				if(p.getPlChar().getFixture().equals(fA)){
 					p.getPlChar().setPointEligibleToCapture(-1);
 					break;

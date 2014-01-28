@@ -67,9 +67,6 @@ public class MeClientPlayer extends ClientPlayer {
 		if (inputProcessor.isCaptureDown() && !inputProcessor.wasCaptureDown()) {
 			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_CAPTURE_START_REQUEST, null, gameRoom));
 		}
-		else if (!inputProcessor.isCaptureDown() && inputProcessor.wasCaptureDown()) {
-			sfClient.send(new ExtensionRequest(GameOpcodes.GAME_CAPTURE_STOP_REQUEST, null, gameRoom));
-		}
 		
 		if (inputProcessor.isSkill1Down() && !inputProcessor.wasSkill1Down()) {
 			SFSObject params = new SFSObject();

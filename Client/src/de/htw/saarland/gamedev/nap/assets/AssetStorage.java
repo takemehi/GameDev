@@ -19,6 +19,7 @@ public class AssetStorage {
 	public static final String FOLDER_DATA = "data/";
 	public static final String FOLDER_FONT = FOLDER_DATA + "font/";
 	public static final String FOLDER_GFX = FOLDER_DATA + "gfx/";
+	public static final String FOLDER_MAP = FOLDER_DATA + "maps/";
 	public static final String FOLDER_GFX_SKILLS = FOLDER_GFX + "skills/";
 	public static final String CALIBRI_PATH = FOLDER_FONT + "calibri";
 	public static final String FIREBALL_PATH = FOLDER_GFX_SKILLS + "fireball.png";
@@ -26,6 +27,7 @@ public class AssetStorage {
 	public static final String NOVA_PATH = FOLDER_GFX_SKILLS + "nova.png";
 	public static final String MAGE_ANIMATION_PATH = FOLDER_GFX + "mageSheet.png";
 	public static final String WARRIOR_ANIMATION_PATH = FOLDER_GFX + "warriorSheet.png";
+	public static final String TILESET_PATH = FOLDER_MAP + "tileset.png";
 	
 	public BitmapFont calibri;
 	public Texture fireball;
@@ -33,6 +35,7 @@ public class AssetStorage {
 	public Texture nova;
 	public Texture mageAnimation;
 	public Texture warriorAnimation;
+	public Texture tileset;
 	
 	private AssetStorage() {
 		calibri = new BitmapFont(new FileHandle(CALIBRI_PATH + ".fnt"), new FileHandle(CALIBRI_PATH + ".png"), false);
@@ -41,5 +44,6 @@ public class AssetStorage {
 		nova = new Texture(new FileHandle(NOVA_PATH));
 		mageAnimation = new Texture(new FileHandle(MAGE_ANIMATION_PATH));
 		warriorAnimation = new Texture(new FileHandle(WARRIOR_ANIMATION_PATH));
+		tileset = new Texture(new FileHandle(TILESET_PATH));
 	}
 }
