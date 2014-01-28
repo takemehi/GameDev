@@ -24,16 +24,22 @@ public class AssetStorage {
 	public static final String FIREBALL_PATH = FOLDER_GFX_SKILLS + "fireball.png";
 	public static final String PYROBLAST_PATH = FOLDER_GFX_SKILLS + "pyroblast.png";
 	public static final String NOVA_PATH = FOLDER_GFX_SKILLS + "nova.png";
+	public static final String MAGE_ANIMATION_PATH = FOLDER_GFX + "mageSheet.png";
+	public static final String WARRIOR_ANIMATION_PATH = FOLDER_GFX + "warriorSheet.png";
 	
 	public BitmapFont calibri;
 	public Texture fireball;
 	public Texture pyroblast;
 	public Texture nova;
+	public Texture mageAnimation;
+	public Texture warriorAnimation;
 	
 	private AssetStorage() {
 		calibri = new BitmapFont(new FileHandle(CALIBRI_PATH + ".fnt"), new FileHandle(CALIBRI_PATH + ".png"), false);
 		fireball = new Texture(new FileHandle(FIREBALL_PATH));
 		pyroblast = new Texture(new FileHandle(PYROBLAST_PATH));
 		nova = new Texture(new FileHandle(NOVA_PATH));
+		mageAnimation = new Texture(new FileHandle(MAGE_ANIMATION_PATH));
+		warriorAnimation = new Texture(new FileHandle(WARRIOR_ANIMATION_PATH));
 	}
 }

@@ -1,18 +1,13 @@
 package de.htw.saarland.gamedev.nap.client.render.character;
 
-import java.io.File;
-
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-import de.htw.saarland.gamedev.nap.client.GameClient;
+import de.htw.saarland.gamedev.nap.assets.AssetStorage;
 import de.htw.saarland.gamedev.nap.client.render.EntityAnimation;
 
 public class MageAnimation extends EntityAnimation {
-
-	private static final String ANIMATIONSHEET_FILEPATH = GameClient.FOLDER_GFX + "mageSheet.png";
 	
 	private static final float X_OFFSET = 12;
 	private static final float Y_OFFSET = 10;
@@ -21,6 +16,7 @@ public class MageAnimation extends EntityAnimation {
 	
 	private static final int SPRITE_WIDTH = 96;
 	private static final int SPRITE_HEIGHT = 96;
+	private static final float FRAME_DURATION_WALK = 0.025f;
 	private static final float FRAME_DURATION = 0.1f;
 	private static final float FRAME_DURATION_SKILLS = 0.07f;
 	private static final int WALK_FRAMES = 6;
@@ -38,12 +34,12 @@ public class MageAnimation extends EntityAnimation {
 	private TextureRegion idle;
 	
 	public MageAnimation() {
-		animationSheet = new Texture(new FileHandle(new File(ANIMATIONSHEET_FILEPATH)));
+		animationSheet = AssetStorage.getInstance().mageAnimation;
 		
 		idle = new TextureRegion(animationSheet, 0, 0, SPRITE_WIDTH, SPRITE_HEIGHT);
 		animations = new Animation[4]; // 4 animations, idle is no animation!
 		
-		animations[WALKING] = createAnimation(animationSheet, 1, WALK_FRAMES, SPRITE_WIDTH, SPRITE_HEIGHT, FRAME_DURATION);
+		animations[WALKING] = createAnimation(animationSheet, 1, WALK_FRAMES, SPRITE_WIDTH, SPRITE_HEIGHT, FRAME_DURATION_WALK);
 		animations[SKILL1] = createAnimation(animationSheet, 2, SKILL1_FRAMES, SPRITE_WIDTH, SPRITE_HEIGHT, FRAME_DURATION_SKILLS);
 		animations[SKILL3] = createAnimation(animationSheet, 3, SKILL3_FRAMES, SPRITE_WIDTH, SPRITE_HEIGHT, FRAME_DURATION);
 		animations[DIE] = createAnimation(animationSheet, 4, DIE_FRAMES, SPRITE_WIDTH, SPRITE_HEIGHT, FRAME_DURATION);
