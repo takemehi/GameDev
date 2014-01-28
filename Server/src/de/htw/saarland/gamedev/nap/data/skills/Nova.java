@@ -41,9 +41,12 @@ public class Nova extends Skill{
 		nova = new SensorEntity(world, circle, character.getBody().getPosition(), -1);
 		nova.setBody(world.createBody(nova.getBodyDef()));
 		nova.getBody().setType(BodyType.DynamicBody);
+		nova.getBody().setGravityScale(0);
 		nova.getFixtureDef().filter.groupIndex=character.getFixture().getFilterData().groupIndex;
 		nova.setFixture(nova.getBody().createFixture(nova.getFixtureDef()));
 		nova.getFixture().setUserData(USERDATA_NOVA);
+		
+		timeLiving=0;
 		
 		if (skillEventListener != null) {
 			skillEventListener.skillStarted(this, nova);
@@ -57,7 +60,6 @@ public class Nova extends Skill{
 			if(timeLiving>=0.1f){
 				try{
 					nova.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
-					timeLiving=0;
 				}catch(Exception e){}
 			}
 		}

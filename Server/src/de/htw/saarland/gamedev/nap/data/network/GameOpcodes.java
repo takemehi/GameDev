@@ -400,6 +400,23 @@ public class GameOpcodes {
 	public static final String GAME_END_OBJECTS = "game.done.sendobjects";
 	
 	///////////////////////////////////////////////////////////////////////////////
+	// Status Updates															 //
+	///////////////////////////////////////////////////////////////////////////////
+	
+	/**
+	 * S->C<br/>
+	 * <br/>
+	 * Sends the updated health of any game entity to a client
+	 * <br/>
+	 * params:<br/>
+	 * 	int ENTITY_ID_PARAM entity id of the entity<br/>
+	 * 	int HEALTH_PARAM the new health of the entity<br/>
+	 * 	boolean STUN_PARAM true if the object is stunned<br/>
+	 * 	boolean SNARE_PARAM true if the object is snared
+	 */
+	public static final String GAME_UPDATE_HEALTH_STATUS = "game.update.health";
+	
+	///////////////////////////////////////////////////////////////////////////////
 	// Params																	 //
 	///////////////////////////////////////////////////////////////////////////////
 	
@@ -412,4 +429,7 @@ public class GameOpcodes {
 	public static final String DIRECTION_X_PARAM = "directionx";
 	public static final String DIRECTION_Y_PARAM = "directiony";
 	public static final String PLAYER_NAME_PARAM = "playername";
+	public static final String HEALTH_PARAM = "health";
+	public static final String STUN_PARAM = "stun";
+	public static final String SNARE_PARAM = "snare";
 }

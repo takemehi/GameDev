@@ -43,10 +43,11 @@ public class Axe extends Skill{
 		axe = new SensorEntity(world, shape, position, -1);
 		axe.setBody(world.createBody(axe.getBodyDef()));
 		axe.getBody().setType(BodyType.DynamicBody);
+		axe.getBody().setGravityScale(0);
 		axe.getFixtureDef().filter.groupIndex=character.getFixture().getFilterData().groupIndex;
 		axe.setFixture(axe.getBody().createFixture(axe.getFixtureDef()));
 		axe.getFixture().setUserData(USERDATA_AXE);
-		
+		timeLiving = 0;
 	}
 
 	@Override
@@ -56,7 +57,6 @@ public class Axe extends Skill{
 			if(timeLiving>=0.1f){
 				try{
 					axe.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
-					timeLiving=0;
 				}catch(Exception e){}
 			}
 		}

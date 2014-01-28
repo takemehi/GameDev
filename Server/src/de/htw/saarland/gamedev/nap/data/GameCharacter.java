@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.Array;
 
 import de.htw.saarland.gamedev.nap.data.entities.MoveableEntity;
 import de.htw.saarland.gamedev.nap.data.skills.Skill;
+import de.htw.saarland.gamedev.nap.server.ServerExtension;
 
 public class GameCharacter extends MoveableEntity{
 	
@@ -255,6 +256,8 @@ public class GameCharacter extends MoveableEntity{
 	}
 
 	public void setHealth(int health){
+		ServerExtension.s_trace("new health: " + health);
+		
 		if(health>maxHealth) this.health=maxHealth;
 		else this.health=health;
 	}

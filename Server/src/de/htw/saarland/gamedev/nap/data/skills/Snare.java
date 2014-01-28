@@ -54,10 +54,12 @@ public class Snare extends Skill {
 		snare = new SensorEntity(world, shape, position, -1);
 		snare.setBody(world.createBody(snare.getBodyDef()));
 		snare.getBody().setType(BodyType.DynamicBody);
+		snare.getBody().setGravityScale(0);
 		snare.getFixtureDef().filter.groupIndex=character.getFixture().getFilterData().groupIndex;
 		snare.setFixture(snare.getBody().createFixture(snare.getFixtureDef()));
 		snare.getFixture().setUserData(USERDATA_SNARE);
 		
+		timeLiving=0;
 	}
 
 	@Override
@@ -67,7 +69,6 @@ public class Snare extends Skill {
 			if(timeLiving>=0.1f){
 				try{
 					snare.getBody().setUserData(Entity.USERDATA_BODY_FLAG_DELETE);
-					timeLiving=0;
 				}catch(Exception e){}
 			}
 		}		
