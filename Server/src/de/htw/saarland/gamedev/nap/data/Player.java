@@ -9,7 +9,7 @@ import com.smartfoxserver.v2.entities.data.SFSObject;
 import de.htw.saarland.gamedev.nap.data.network.GameOpcodes;
 import de.htw.saarland.gamedev.nap.game.ISendPacket;
 
-public class Player implements IPlayer{
+public class Player implements IPlayer, IStatusUpdateListener {
 	
 	//exceptions
 	private static final String EXCEPTION_NULL_USER = "User object is missing!";
@@ -46,6 +46,8 @@ public class Player implements IPlayer{
 		plChar.getAttack1().setSendPacketListener(sendPacketListener);
 		plChar.getAttack2().setSendPacketListener(sendPacketListener);
 		plChar.getAttack3().setSendPacketListener(sendPacketListener);
+		
+		plChar.setStatusUpdateListener(this);
 	}
 	
 	
@@ -70,6 +72,33 @@ public class Player implements IPlayer{
 		}
 		
 		plChar.update(deltaTime, capturePoints);
+	}
+
+	@Override
+	public void hpUpdated(int newHp) {
+		SFSObject params = new SFSObject();
+		params.putInt(GameOpcodes.ENTITY_ID_PARAM, plChar.getId());
+		params.putInt(GameOpcodes.HEALTH_PARAM, newHp);
+		
+		sendPacketListener.sendServerPacket(GameOpcodes.GAME_UPDATE_HEALTH, params);
+	}
+
+	@Override
+	public void stunUpdated(boolean stunned) {
+		SFSObject params = new SFSObject();
+		params.putInt(GameOpcodes.ENTITY_ID_PARAM, plChar.getId());
+		params.putBool(GameOpcodes.STUN_STATUS_PARAM, stunned);
+		
+		sendPacketListener.sendServerPacket(GameOpcodes.GAME_UPDATE_STATUS_STUN, params);
+	}
+
+	@Override
+	public void snareUpdated(boolean snared) {
+		SFSObject params = new SFSObject();
+		params.putInt(GameOpcodes.ENTITY_ID_PARAM, plChar.getId());
+		params.putBool(GameOpcodes.SNARE_STATUS_PARAM, snared);
+		
+		sendPacketListener.sendServerPacket(GameOpcodes.GAME_UPDATE_STATUS_SNARE, params);
 	}
 
 }

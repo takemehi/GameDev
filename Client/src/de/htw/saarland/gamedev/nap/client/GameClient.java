@@ -408,6 +408,17 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 				sendDirectionUpdate();
 				break;
 			//Skills end
+				
+			//Status update
+			case GameOpcodes.GAME_UPDATE_HEALTH:
+				healthUpdate(params.getInt(GameOpcodes.ENTITY_ID_PARAM), params.getInt(GameOpcodes.HEALTH_PARAM));
+				break;
+			case GameOpcodes.GAME_UPDATE_STATUS_STUN:
+				stunUpdate(params.getInt(GameOpcodes.ENTITY_ID_PARAM), params.getBool(GameOpcodes.STUN_STATUS_PARAM));
+				break;
+			case GameOpcodes.GAME_UPDATE_STATUS_SNARE:
+				snareUpdate(params.getInt(GameOpcodes.ENTITY_ID_PARAM), params.getBool(GameOpcodes.SNARE_STATUS_PARAM));
+				break;
 			
 			default:
 				System.out.println("Unknown packet received! : " + cmd);
@@ -415,6 +426,18 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 		}
 		
 		return true;
+	}
+	
+	private void healthUpdate(int entityId, int health) {
+		getPlayerById(entityId).getPlayableCharacter().setHealth(health);
+	}
+	
+	private void stunUpdate(int entityId, boolean stunned) {
+		getPlayerById(entityId).getPlayableCharacter().setStunned(stunned, Float.MAX_VALUE);
+	}
+	
+	private void snareUpdate(int entityId, boolean snared) {
+		getPlayerById(entityId).getPlayableCharacter().setSnared(snared, Float.MAX_VALUE);
 	}
 	
 	private Vector2 getDirection() {

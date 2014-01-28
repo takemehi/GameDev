@@ -78,13 +78,14 @@ public class ClientPlayer implements IPlayer, IRender, IMoveable, ISkillStart, D
 		batch.end();
 		
 		// TODO render name
+		
 		shapeRenderer.begin(ShapeType.Filled);
 		shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
 		shapeRenderer.rect(
 				pos.x - animations.getHealthBarXOffset(GameServer.PIXELS_TO_METERS),
 				pos.y + animations.getHealthBarYOffset(GameServer.PIXELS_TO_METERS),
-				1,
-				10 * GameServer.PIXELS_TO_METERS);
+				1f * ((float)character.getHealth() / (float)character.getMaxHealth()),
+				10f * GameServer.PIXELS_TO_METERS);
 		shapeRenderer.end();
 		
 		if (stateTime > animations.getAnimationTime(charState)) {

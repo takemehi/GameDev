@@ -232,9 +232,7 @@ public abstract class Skill {
 		return direction;
 	}
 	
-	public void setDirection(Vector2 direction){
-		ServerExtension.s_trace("Direction update");
-		
+	public void setDirection(Vector2 direction){		
 		this.direction=direction;
 		directionUpdated=true;
 		directionRequestSend = false;
