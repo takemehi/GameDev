@@ -89,8 +89,8 @@ public class ClientPlayer implements IPlayer, IRender, IMoveable, ISkillStart, D
 				width,
 				height);
 		
-		font.setColor(1.0f, 1.0f, 1.0f, 1.0f);
-		font.draw(batch, str, pos.x, pos.y);
+//		font.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+//		font.draw(batch, str, pos.x, pos.y);
 		
 		batch.end();
 		

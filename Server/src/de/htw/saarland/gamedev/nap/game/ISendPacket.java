@@ -45,4 +45,9 @@ public interface ISendPacket {
 	 * @param params the data to send
 	 */
 	public void sendServerPacket(String opcode, ISFSObject params);
+	
+	/**
+	 * Returns the time the game is running in seconds
+	 */
+	public float getGameRunningTime();
 }

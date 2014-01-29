@@ -89,7 +89,21 @@ public class Player implements IPlayer, IStatusUpdateListener {
 			plChar.setRight(false);
 			plChar.setMovementEnabled(false);
 			plChar.setAttackEnabled(false);
+			plChar.setCapturing(false);
+			
+			int respawnTime = Math.max((int)sendPacketListener.getGameRunningTime() / 60, 1);
+			
+			SFSObject paramsRespawn = new SFSObject();
+			paramsRespawn.putInt(GameOpcodes.RESPAWN_TIME_PARAM, respawnTime);
+			sendPacketListener.sendServerPacket(GameOpcodes.GAME_RESPAWN_START, paramsRespawn, user);
+			
+			plChar.startRespawning(respawnTime);
 		}
+	}
+	
+	@Override
+	public void respawn() {
+		sendPacketListener.sendServerPacket(GameOpcodes.GAME_RESPAWN_DONE, null, user);
 	}
 
 	@Override
@@ -108,6 +122,15 @@ public class Player implements IPlayer, IStatusUpdateListener {
 		params.putBool(GameOpcodes.SNARE_STATUS_PARAM, snared);
 		
 		sendPacketListener.sendServerPacket(GameOpcodes.GAME_UPDATE_STATUS_SNARE, params);
+	}
+
+	@Override
+	public void positionChanged(Vector2 pos) {
+		SFSObject moveParams = new SFSObject();
+		moveParams.putInt(GameOpcodes.ENTITY_ID_PARAM, plChar.getId());
+		moveParams.putFloat(GameOpcodes.COORD_X_PARAM, pos.x);
+		moveParams.putFloat(GameOpcodes.COORD_Y_PARAM, pos.y);
+		sendPacketListener.sendServerPacket(GameOpcodes.GAME_OBJECT_COORD_UPDATE, moveParams);
 	}
 
 }

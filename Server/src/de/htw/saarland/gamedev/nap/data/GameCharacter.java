@@ -45,7 +45,8 @@ public class GameCharacter extends MoveableEntity{
 	private boolean attacking1;
 	private boolean attacking2;
 	private boolean attacking3;
-	private IStatusUpdateListener statusUpdateListener;
+	
+	protected IStatusUpdateListener statusUpdateListener;
 	
 	public GameCharacter(World world, Shape shape, float density,
 			float friction, float restitution, Vector2 position, Vector2 baseVelocity, Vector2 maxVelocity, int maxHealth
@@ -258,7 +259,9 @@ public class GameCharacter extends MoveableEntity{
 		this.attackEnabled = attackEnabled;
 	}
 
-	public void setHealth(int health){		
+	public void setHealth(int health){
+		boolean alreadyDead = this.health == 0 && health <= 0; //character is already dead
+		
 		if (health>maxHealth) {
 			this.health=maxHealth;
 		}
@@ -269,7 +272,7 @@ public class GameCharacter extends MoveableEntity{
 			this.health=health;
 		}
 		
-		if (statusUpdateListener != null) {
+		if (statusUpdateListener != null && !alreadyDead) {
 			statusUpdateListener.hpUpdated(this.health);
 		}
 	}

@@ -44,6 +44,7 @@ public class GameServer implements ApplicationListener, ISendPacket {
 	//others
 	public final static float PIXELS_TO_METERS = 1/96f;
 	public final static int POINTS_PER_INTERVAL = 2;
+	public final static int POINTS_TO_WIN = 200;
 	public final static float INTERVAL_POINTS = 5.0f;
 	public final static int[] LAYERS_TO_RENDER = {0,1};
 	//input parameters
@@ -68,6 +69,7 @@ public class GameServer implements ApplicationListener, ISendPacket {
 	
 	private boolean gameEnded;
 	private boolean started;
+	private float gameRunningTime;
 	
 	DeltaTime deltaTime;
 	
@@ -104,6 +106,7 @@ public class GameServer implements ApplicationListener, ISendPacket {
 		
 		currentId=0;
 		worldTime = 0;
+		gameRunningTime = 0;
 		gameEnded=false;
 		started = false;
 		this.deltaTime=deltaTime;
@@ -170,6 +173,8 @@ public class GameServer implements ApplicationListener, ISendPacket {
 	public void render() {
 		if (!started)
 			return;
+		
+		gameRunningTime += deltaTime.getDeltaTime();
 		
 		Array<Player> players = new Array<>(blueTeam.getMembers());
 		players.addAll(redTeam.getMembers());
@@ -301,5 +306,10 @@ public class GameServer implements ApplicationListener, ISendPacket {
 			extension.send(opcode, params, p.getUser());
 		}
 		
+	}
+	
+	@Override
+	public float getGameRunningTime() {
+		return gameRunningTime;
 	}
 }

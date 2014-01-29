@@ -40,6 +40,7 @@ import de.htw.saarland.gamedev.nap.client.input.InputConfigLoader;
 import de.htw.saarland.gamedev.nap.client.input.KeyboardMouseInputProcessor;
 import de.htw.saarland.gamedev.nap.client.render.IRender;
 import de.htw.saarland.gamedev.nap.client.render.SkillRenderer;
+import de.htw.saarland.gamedev.nap.client.render.ui.HUD;
 import de.htw.saarland.gamedev.nap.client.world.RenderableGameWorld;
 import de.htw.saarland.gamedev.nap.data.CapturePoint;
 import de.htw.saarland.gamedev.nap.data.Mage;
@@ -79,6 +80,7 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 	private OrthographicCamera camera;
 	private SpriteBatch batch;
 	private Texture background;
+	private HUD hud;
 	
 	private List<ClientPlayer> players;
 	private List<ClientNPC> npcs;
@@ -165,6 +167,8 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 		sfClient.send(new ExtensionRequest(GameOpcodes.GAME_GET_MAP_CHARACTER, null, gameRoom));
 		sfClient.send(new ExtensionRequest(GameOpcodes.GAME_GET_MOVEABLE_ENTITIES, null, gameRoom));
 		
+		hud = new HUD();
+		
 		debugRenderer = new Box2DDebugRenderer();
 	}
 
@@ -248,6 +252,8 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 		}
 		
 		batch.end();		
+		
+		hud.render(pointsRed, pointsBlue);
 		
 		debugRenderer.render(world, camera.combined);
 		
@@ -433,10 +439,10 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 				snareUpdate(params.getInt(GameOpcodes.ENTITY_ID_PARAM), params.getBool(GameOpcodes.SNARE_STATUS_PARAM));
 				break;
 			case GameOpcodes.GAME_RESPAWN_START:
-				// TODO start respawn timer (visual)
+				hud.setRespawnActive(true, params.getInt(GameOpcodes.RESPAWN_TIME_PARAM));
 				break;
 			case GameOpcodes.GAME_RESPAWN_DONE:
-				// TODO end respawn timer
+				hud.setRespawnActive(false, 0);
 				break;
 				
 				

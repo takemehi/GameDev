@@ -12,7 +12,7 @@ public class WarriorAnimation extends EntityAnimation {
 	private static final float X_OFFSET = 20;
 	private static final float Y_OFFSET = 16;
 	private static final float HEALTH_X_OFFSET = 40;
-	private static final float HEALTH_Y_OFFSET = 50;
+	private static final float HEALTH_Y_OFFSET = 60;
 	
 	private static final int SPRITE_WIDTH = 115;
 	private static final int SPRITE_HEIGHT = 96;

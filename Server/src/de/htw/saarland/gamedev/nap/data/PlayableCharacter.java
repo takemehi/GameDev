@@ -33,6 +33,8 @@ public abstract class PlayableCharacter extends GameCharacter{
 	private int pointEligibleToCapture;
 	private int teamId;
 	private float timeCapturing;
+	private float respawnTime;
+	private float respawnTimer;
 	
 	public PlayableCharacter(World world, Shape shape, float density, float friction,
 			float restitution, Vector2 position, Vector2 baseVelocity,
@@ -53,6 +55,8 @@ public abstract class PlayableCharacter extends GameCharacter{
 		capturing=false;
 		timeCapturing=0;
 		doCapture=false;
+		respawnTime = 0;
+		respawnTimer = 0;
 	}
 	
 
@@ -107,9 +111,30 @@ public abstract class PlayableCharacter extends GameCharacter{
 			}
 		}
 		
+		if (getHealth() <= 0 && respawnTime > 0) {
+			respawnTimer += deltaTime;
+			
+			if (respawnTimer >= respawnTime) {
+				statusUpdateListener.respawn(); //end the respawn timer
+				
+				setHealth(getMaxHealth());
+				setMovementEnabled(true);
+				setAttackEnabled(true);
+				getBody().setTransform(getPositionOriginal(), 0); // respawn at spawn
+				
+				//send position update
+				statusUpdateListener.positionChanged(getPositionOriginal());
+			}
+		}
+		
 		attack1.update(deltaTime);
 		attack2.update(deltaTime);
 		attack3.update(deltaTime);
+	}
+	
+	public void startRespawning(float respawnTime) {
+		this.respawnTime = respawnTime;
+		respawnTimer = 0;
 	}
 	
 	//getter / setter
