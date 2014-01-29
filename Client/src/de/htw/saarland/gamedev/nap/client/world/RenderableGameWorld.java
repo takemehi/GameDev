@@ -25,6 +25,10 @@ public class RenderableGameWorld extends GameWorld implements IRender, Disposabl
 		renderer = new OrthogonalTiledMapRenderer(getTiledMap(), GameServer.PIXELS_TO_METERS, batch);
 		renderer.setView(camera);
 	}
+	
+	public void setView(OrthographicCamera camera) {
+		renderer.setView(camera);
+	}
 
 	@Override
 	public void render(SpriteBatch batch) {

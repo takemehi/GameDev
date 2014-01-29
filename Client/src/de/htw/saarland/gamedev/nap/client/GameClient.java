@@ -159,7 +159,7 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 		renderedObjects = Collections.synchronizedList(new ArrayList<IRender>());
 		capturePoints = new ArrayList<ClientCapturePoint>();
 		
-		camera = new OrthographicCamera(Gdx.graphics.getWidth() / 20, Gdx.graphics.getHeight() / 20);
+		camera = new OrthographicCamera(Gdx.graphics.getWidth() / 20, Gdx.graphics.getHeight() / 20); // shouldnt this be static values?
 		camera.position.set(Gdx.graphics.getWidth()/40-2, Gdx.graphics.getHeight()/40-2, 0);
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
@@ -197,6 +197,11 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 		
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		
+		camera.position.set(player.getPlayableCharacter().getBody().getPosition().x, player.getPlayableCharacter().getBody().getPosition().y, 0);
+		camera.update();
+		batch.setProjectionMatrix(camera.combined);
+		gameWorld.setView(camera);
 		
 		inputProcessor.process();
 		

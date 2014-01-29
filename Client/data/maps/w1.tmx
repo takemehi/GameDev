@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="50" height="30" tilewidth="96" tileheight="96">
+ <tileset firstgid="1" name="tileset" tilewidth="96" tileheight="96">
+  <image source="tileset.png" width="480" height="960"/>
+ </tileset>
+ <layer name="World" width="50" height="30">
+  <data encoding="base64" compression="zlib">
+   eJztmFsPwiAMhRsvmdFn71P//7+0jWskpGywMSyzJzkPIwvw0RMgNACwqtw79Abq1xqWw9HAtz61yXKlU8ahS8ahS8ahS8ahS8ahS//GcUefOrcR7aUVy3EB+X7v3pvP2Wf3kbRWflsKR99/1M9cHNIa+utXC0dobB43heOA3namurbO9x7CHCnvBXNzvNDXAT8j+hmjnBy/1JI4ONO8T3GmOc81cAxlmvJcksPd813nOD9LcPD8b+ij4AdM5ynBQfmW5u97yvlDHFKtczpUh1BdxvoNLuIOsw==
+  </data>
+ </layer>
+ <layer name="Platforms" width="50" height="30">
+  <data encoding="base64" compression="zlib">
+   eJzt1tEKgCAMBVA/Qev//7Ue7KGRdF1OZ94DEojh1lIWApG9ODoAABpjOsduGYiSNi5PtfEUCxEREc3jaw/RqwfZ8niav/q4KJ5v5PoevWopDwnNpSZnZF9ECvfvjirFWPsPtchD7onWHq2HJoYZ1Z651vu2XO89B+S9P9VjBPRu096BtB6Lc76CAy8eA9Q=
+  </data>
+ </layer>
+ <layer name="Capturepoints" width="50" height="30">
+  <data encoding="base64" compression="zlib">
+   eJzt0gEJAAAIA0FD2D+rJYYi3CV4xqoAAACAr/o6AIL8Oc+msGsAVA8APQ==
+  </data>
+ </layer>
+ <layer name="Spawnpoints" width="50" height="30">
+  <data encoding="base64" compression="zlib">
+   eJztzjEBAAAIAyADaP+6hvCYBySgim86HTiYdAAAAAAAIGQBMH4AGg==
+  </data>
+ </layer>
+ <layer name="Creeps" width="50" height="30">
+  <data encoding="base64" compression="zlib">
+   eJztwTEBAAAAwqD1T20IX6AAAAAAAIDXABdwAAE=
+  </data>
+ </layer>
+</map>
