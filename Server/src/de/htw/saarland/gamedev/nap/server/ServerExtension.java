@@ -43,9 +43,9 @@ public class ServerExtension extends SFSExtension implements Runnable {
 	
 	private byte initializedCounter;
 	
+	// TODO remove static reference
 	private static ServerExtension t_ext;
 	
-	// TODO remove
 	public static void s_trace (Object... args) {
 		if (t_ext != null) {
 			t_ext.trace(args);
@@ -54,7 +54,6 @@ public class ServerExtension extends SFSExtension implements Runnable {
 	
 	@Override
 	public void init() {
-		// TODO remove
 		t_ext = this;
 		
 		launcher = new Launcher(this, getParentRoom().getCapacity() / 2);

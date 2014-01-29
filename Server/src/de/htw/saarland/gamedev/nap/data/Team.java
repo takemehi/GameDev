@@ -1,6 +1,10 @@
 package de.htw.saarland.gamedev.nap.data;
 
 import com.badlogic.gdx.utils.Array;
+import com.smartfoxserver.v2.entities.data.SFSObject;
+
+import de.htw.saarland.gamedev.nap.data.network.GameOpcodes;
+import de.htw.saarland.gamedev.nap.game.ISendPacket;
 
 public class Team {
 	
@@ -10,8 +14,11 @@ public class Team {
 	private SpawnPoint spawnPoint;
 	private Array<Player> members;
 	private int points;
+	private int teamId;
 	
-	public Team(SpawnPoint spawnPoint, Array<Player> members) {
+	private ISendPacket sendPacket;
+	
+	public Team(SpawnPoint spawnPoint, Array<Player> members, int teamId, ISendPacket sendPacket) {
 		if (members == null || spawnPoint == null) {
 			throw new NullPointerException();
 		}
@@ -19,6 +26,12 @@ public class Team {
 		this.spawnPoint = spawnPoint;
 		this.members = members;
 		this.points = 0;
+		this.teamId = teamId;
+		this.sendPacket = sendPacket;
+	}
+	
+	public void setSendPacket(ISendPacket sendPacket) {
+		this.sendPacket = sendPacket;
 	}
 
 	public SpawnPoint getSpawnPoint() {
@@ -34,6 +47,18 @@ public class Team {
 	}
 
 	public void addPoints(int points) {
-		this.points += points;
+		setPoints(this.points + points);
+	}
+	
+	public void setPoints(int newAbsPoints) {
+		this.points = newAbsPoints;
+		
+		if (sendPacket != null) {
+			SFSObject params = new SFSObject();
+			params.putInt(GameOpcodes.TEAM_ID_PARAM, teamId);
+			params.putInt(GameOpcodes.POINTS_PARAM, points);
+			
+			sendPacket.sendServerPacket(GameOpcodes.GAME_UPDATE_GAME_POINTS, params);
+		}
 	}
 }

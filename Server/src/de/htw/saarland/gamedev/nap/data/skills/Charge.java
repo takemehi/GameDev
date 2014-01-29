@@ -54,7 +54,7 @@ public class Charge extends Skill {
 
 	@Override
 	protected void doUpdate(World world, PlayableCharacter character, Vector2 mouseCoords, float deltaTime) {
-		this.character=character; // TODO ???
+		this.character=character;
 		
 		if(isOnCooldown() && isCasted()){
 			if(traveling){

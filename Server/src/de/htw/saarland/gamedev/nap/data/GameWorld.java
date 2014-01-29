@@ -194,10 +194,6 @@ public class GameWorld {
 	private void initSpawnPoint(float x, float y, int type){
 		initSpawnPoint(new Vector2(x,y), type);
 	}
-	//TODO implement
-	public void update(){
-		
-	}
 	
 	//getter / setter
 	

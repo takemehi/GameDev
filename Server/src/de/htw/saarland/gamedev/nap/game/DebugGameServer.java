@@ -140,12 +140,12 @@ public class DebugGameServer implements ApplicationListener {
 			//TODO change user
 			playersBlue.add(new Player(null, world, spawnPointBlue.getSpawnPoint().getPositionOriginal(), charactersBlue[i], PlayableCharacter.ID_TEAM_BLUE, currentId++, null));
 		}
-		teamBlue = new Team(spawnPointBlue, playersBlue);
+		teamBlue = new Team(spawnPointBlue, playersBlue, Team.ID_TEAM_BLUE, null);
 		for(int i=0; i<charactersRed.length; i++){
 			//TODO change user
 			playersRed.add(new Player(null, world, SpawnPointRed.getSpawnPoint().getPositionOriginal(), charactersRed[i], PlayableCharacter.ID_TEAM_RED, currentId++, null));
 		}
-		teamRed = new Team(SpawnPointRed, playersRed);
+		teamRed = new Team(SpawnPointRed, playersRed, Team.ID_TEAM_RED, null);
 		
 		
 		//initialize capturePoints
@@ -154,7 +154,7 @@ public class DebugGameServer implements ApplicationListener {
 			cp.setTeamBlue(teamBlue);
 			cp.setTeamRed(teamRed);
 		}
-		world.setContactListener(new CustomContactListener(new Team(spawnPointBlue, playersBlue), new Team(SpawnPointRed, playersRed), capturePoints));
+		world.setContactListener(new CustomContactListener(teamBlue, teamRed, capturePoints));
 		
 		//initialize npcs
 		

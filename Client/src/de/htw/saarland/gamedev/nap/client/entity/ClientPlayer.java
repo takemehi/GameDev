@@ -3,11 +3,13 @@ package de.htw.saarland.gamedev.nap.client.entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 
@@ -86,8 +88,10 @@ public class ClientPlayer implements IPlayer, IRender, IMoveable, ISkillStart, D
 				pos.y - (height / 2) + animations.getYOffset(GameServer.PIXELS_TO_METERS),
 				width,
 				height);
+		
 		font.setColor(1.0f, 1.0f, 1.0f, 1.0f);
-		font.draw(batch, str, character.getBody().getPosition().x, character.getBody().getPosition().y);
+		font.draw(batch, str, pos.x, pos.y);
+		
 		batch.end();
 		
 		// TODO render name

@@ -19,7 +19,6 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -43,9 +42,9 @@ import de.htw.saarland.gamedev.nap.client.render.IRender;
 import de.htw.saarland.gamedev.nap.client.render.SkillRenderer;
 import de.htw.saarland.gamedev.nap.client.world.RenderableGameWorld;
 import de.htw.saarland.gamedev.nap.data.CapturePoint;
-import de.htw.saarland.gamedev.nap.data.GameCharacter;
 import de.htw.saarland.gamedev.nap.data.Mage;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
+import de.htw.saarland.gamedev.nap.data.Team;
 import de.htw.saarland.gamedev.nap.data.Warrior;
 import de.htw.saarland.gamedev.nap.data.entities.Entity;
 import de.htw.saarland.gamedev.nap.data.network.GameOpcodes;
@@ -88,7 +87,10 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 	
 	private List<BaseEvent> gameloopPackets;
 	
-	//TODO remove
+	private int pointsBlue;
+	private int pointsRed;
+	
+	//TODO remove debugrenderer
 	private Box2DDebugRenderer debugRenderer;
 	
 	public GameClient(SmartFox sfClient, Room gameRoom) {
@@ -102,6 +104,8 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 		this.gameStarted = false;
 		this.allObjectsReceived = false;
 		this.worldTime = 0.0f;
+		this.pointsBlue = 0;
+		this.pointsRed = 0;
 		this.gameloopPackets = Collections.synchronizedList(new ArrayList<BaseEvent>());
 		
 		sfClient.addEventListener(SFSEvent.PING_PONG, this);
@@ -161,7 +165,6 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 		sfClient.send(new ExtensionRequest(GameOpcodes.GAME_GET_MAP_CHARACTER, null, gameRoom));
 		sfClient.send(new ExtensionRequest(GameOpcodes.GAME_GET_MOVEABLE_ENTITIES, null, gameRoom));
 		
-		//TODO remove
 		debugRenderer = new Box2DDebugRenderer();
 	}
 
@@ -429,6 +432,12 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 			case GameOpcodes.GAME_UPDATE_STATUS_SNARE:
 				snareUpdate(params.getInt(GameOpcodes.ENTITY_ID_PARAM), params.getBool(GameOpcodes.SNARE_STATUS_PARAM));
 				break;
+			case GameOpcodes.GAME_RESPAWN_START:
+				// TODO start respawn timer (visual)
+				break;
+			case GameOpcodes.GAME_RESPAWN_DONE:
+				// TODO end respawn timer
+				break;
 				
 				
 			//Capture point updates
@@ -438,6 +447,11 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 			case GameOpcodes.GAME_CAPTURE_SUCCESS:
 				captureSuccess(params.getInt(GameOpcodes.ENTITY_ID_PARAM), params.getInt(GameOpcodes.TEAM_ID_PARAM), params.getInt(GameOpcodes.PLAYER_ID_PARAM));
 				break;
+				
+			//Game Control Updates
+			case GameOpcodes.GAME_UPDATE_GAME_POINTS:
+				updateGamePoints(params.getInt(GameOpcodes.TEAM_ID_PARAM), params.getInt(GameOpcodes.POINTS_PARAM));
+				break;
 			
 			default:
 				System.out.println("Unknown packet received! : " + cmd);
@@ -445,6 +459,15 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 		}
 		
 		return true;
+	}
+	
+	private void updateGamePoints(int teamId, int points) {
+		if (teamId == Team.ID_TEAM_BLUE) {
+			pointsBlue = points;
+		}
+		else {
+			pointsRed = points;
+		}
 	}
 	
 	private void captureChange(int entityId, boolean isBeingCaptured) {

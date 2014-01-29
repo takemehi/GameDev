@@ -56,8 +56,8 @@ public class WarriorAnimation extends EntityAnimation {
 				return animations[SKILL1].getKeyFrame(stateTime, true);
 			case WALKING:
 				return animations[WALKING].getKeyFrame(stateTime, true);
-			case CAPTURING:
-				return idle; // TODO capturing animation
+//			case CAPTURING: //no animation for capturing planned
+//				return idle;
 			default:
 				System.out.println("Character state not handled!");
 				return idle;

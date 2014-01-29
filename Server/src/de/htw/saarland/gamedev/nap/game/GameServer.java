@@ -141,13 +141,13 @@ public class GameServer implements ApplicationListener, ISendPacket {
 		for(int i=0; i<charactersBlue.size(); i++){
 			blue.add(new Player(blueMembers.get(i), world, spawnPointBlue.getSpawnPoint().getPositionOriginal(), charactersBlue.get(i), PlayableCharacter.ID_TEAM_BLUE, currentId++, this));
 		}
-		blueTeam = new Team(spawnPointBlue, blue);
+		blueTeam = new Team(spawnPointBlue, blue, Team.ID_TEAM_BLUE, this);
 		
 		Array<Player> red = new Array<Player>();
 		for(int i=0; i<charactersRed.size(); i++){
 			red.add(new Player(redMembers.get(i), world, spawnPointRed.getSpawnPoint().getPositionOriginal(), charactersRed.get(i), PlayableCharacter.ID_TEAM_RED, currentId++, this));
 		}
-		redTeam = new Team(spawnPointRed, red);
+		redTeam = new Team(spawnPointRed, red, Team.ID_TEAM_RED, this);
 		
 		for (CapturePoint cp: capturePoints) {
 			cp.setSendPacket(this);

@@ -84,7 +84,6 @@ public class CapturePoint {
 	}
 	
 	public void update(float deltaTime) {
-		//TODO global timer
 		if (teamId != -1) {
 			stateTime += deltaTime;
 			if (stateTime >= GameServer.INTERVAL_POINTS) {

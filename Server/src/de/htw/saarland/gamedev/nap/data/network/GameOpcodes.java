@@ -433,6 +433,48 @@ public class GameOpcodes {
 	 */
 	public static final String GAME_UPDATE_STATUS_SNARE = "game.update.status.snare";
 	
+	/**
+	 * S->C<br/>
+	 * <br/>
+	 * Start the respawn timer
+	 * params:<br/>
+	 * 	int RESPAWN_TIME_PARAM the time needed in seconds to respawn
+	 */
+	public static final String GAME_RESPAWN_START =" game.respawn.start";
+	
+	/**
+	 * S->C<br/>
+	 * <br/>
+	 * Respawning is done, end the timer
+	 */
+	public static final String GAME_RESPAWN_DONE = "game.respawn.done";
+	
+	///////////////////////////////////////////////////////////////////////////////
+	// Game Control																 //
+	///////////////////////////////////////////////////////////////////////////////
+	
+	/**
+	 * S->C<br/>
+	 * The game points of a team changed<br/>
+	 * params:<br/>
+	 * 	int TEAM_ID_PARAM the id of the team<br/>
+	 * 	int POINTS_PARAM the new points of the team
+	 * 	
+	 */
+	public static final String GAME_UPDATE_GAME_POINTS = "game.update.gamepoints";
+	
+	/**
+	 * S->C<br/>
+	 * Congratulations, you did it!
+	 */
+	public static final String GAME_YOU_WON = "game.you.won";
+	
+	/**
+	 * S->C<br/>
+	 * You lost, try harder next time!
+	 */
+	public static final String GAME_YOU_LOOSE = "game.you.loose";
+	
 	///////////////////////////////////////////////////////////////////////////////
 	// Params																	 //
 	///////////////////////////////////////////////////////////////////////////////
@@ -451,4 +493,6 @@ public class GameOpcodes {
 	public static final String SNARE_STATUS_PARAM = "snare";
 	public static final String CAPTURE_STATUS_PARAM = "capturestatus";
 	public static final String PLAYER_ID_PARAM = "playerid";
+	public static final String RESPAWN_TIME_PARAM = "respawntime";
+	public static final String POINTS_PARAM = "points";
 }

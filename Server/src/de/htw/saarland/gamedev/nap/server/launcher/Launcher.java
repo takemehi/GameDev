@@ -30,7 +30,7 @@ public class Launcher {
 			throw new IllegalArgumentException("Team size has to be greater 0!");
 		}
 		
-		setMapName("blablablubb"); // TODO enter standard here
+		setMapName("map"); //standard map
 		this.maxTeamSize = maxTeamSize;
 		redTeamPlayers = Collections.synchronizedList(new ArrayList<LauncherPlayer>());
 		blueTeamPlayers = Collections.synchronizedList(new ArrayList<LauncherPlayer>());
