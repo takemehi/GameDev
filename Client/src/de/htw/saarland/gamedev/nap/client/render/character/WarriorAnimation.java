@@ -47,11 +47,11 @@ public class WarriorAnimation extends EntityAnimation {
 		switch (state) {
 			case JUMPING:
 			case SKILL2:
-			case SKILL3:
 			case IDLE:
 				return idle;
 			case DEAD:
 				return animations[DIE].getKeyFrame(stateTime, false);
+			case SKILL3:
 			case SKILL1:
 				return animations[SKILL1].getKeyFrame(stateTime, true);
 			case WALKING:
@@ -92,8 +92,11 @@ public class WarriorAnimation extends EntityAnimation {
 	@Override
 	public float getAnimationTime(CharacterStates state) {
 		switch (state) {
+			case SKILL3:
 			case SKILL1:
 				return SKILL1_FRAME_DURATION * SKILL1_FRAMES;
+			case SKILL2:
+				return 0f;
 			default:
 				return Float.MAX_VALUE;
 		}
