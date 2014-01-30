@@ -206,7 +206,9 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 		inputProcessor.process();
 		
 		batch.begin();
-		batch.draw(background, 0 - camera.position.x, 0 - camera.position.y, background.getWidth(), background.getHeight());
+		Vector3 bgPos = new Vector3(0, Gdx.graphics.getHeight(), 0);
+		camera.unproject(bgPos);
+		batch.draw(background, bgPos.x, bgPos.y, camera.viewportWidth, camera.viewportHeight);
 		batch.end();
 		
 		gameWorld.render(batch);
