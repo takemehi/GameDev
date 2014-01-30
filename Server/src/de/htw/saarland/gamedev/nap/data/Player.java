@@ -14,12 +14,13 @@ public class Player implements IPlayer, IStatusUpdateListener {
 	//exceptions
 	private static final String EXCEPTION_NULL_USER = "User object is missing!";
 	
-	private static final float MOVEMENT_UPDATE_TRESHOLD = 1/20f;
+	private static final float MOVEMENT_UPDATE_TRESHOLD = 1/100f;
 	
 	private PlayableCharacter plChar;
 	private SFSUser user;
 	
 	private ISendPacket sendPacketListener;
+	private float timePosUpdate;
 	
 	public Player(SFSUser user, World world, Vector2 position,int characterId, int teamId, int id, ISendPacket sendPacketListener){
 		//if(user==null) throw new NullPointerException(EXCEPTION_NULL_USER);
@@ -63,12 +64,15 @@ public class Player implements IPlayer, IStatusUpdateListener {
 	}
 	
 	public void update(float deltaTime, Array<CapturePoint> capturePoints) {
-		if (plChar.isMoving() || !plChar.isGrounded()) {
+		timePosUpdate += deltaTime;
+		if (timePosUpdate >= MOVEMENT_UPDATE_TRESHOLD) {
 			SFSObject moveParams = new SFSObject();
 			moveParams.putInt(GameOpcodes.ENTITY_ID_PARAM, plChar.getId());
 			moveParams.putFloat(GameOpcodes.COORD_X_PARAM, plChar.getBody().getPosition().x);
 			moveParams.putFloat(GameOpcodes.COORD_Y_PARAM, plChar.getBody().getPosition().y);
 			sendPacketListener.sendServerPacketUDP(GameOpcodes.GAME_OBJECT_COORD_UPDATE, moveParams);
+			
+			timePosUpdate = 0;
 		}
 		
 		plChar.update(deltaTime, capturePoints);

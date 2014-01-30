@@ -53,6 +53,7 @@ public class MoveableEntity extends Entity{
 		return maxVelocity;
 	}
 	
+	// TODO definitely an error in this method returns sometimes false when the char is moving and grounded
 	public boolean isGrounded(){
 		if(isInitialized()){
 			if(getBody().getLinearVelocity().y<=0){

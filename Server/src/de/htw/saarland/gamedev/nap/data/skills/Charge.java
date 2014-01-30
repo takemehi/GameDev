@@ -96,7 +96,6 @@ public class Charge extends Skill {
 	@Override
 	public void reset(){
 		super.reset();
-		ServerExtension.s_trace("Reset");
 		try{
 			character.getBody().setLinearVelocity(0,0);
 			character.setMovementEnabled(true);

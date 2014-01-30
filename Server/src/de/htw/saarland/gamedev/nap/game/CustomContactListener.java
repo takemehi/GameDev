@@ -8,6 +8,7 @@ import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.utils.Array;
 
 import de.htw.saarland.gamedev.nap.data.CapturePoint;
+import de.htw.saarland.gamedev.nap.data.GameCharacter;
 import de.htw.saarland.gamedev.nap.data.IPlayer;
 import de.htw.saarland.gamedev.nap.data.Platform;
 import de.htw.saarland.gamedev.nap.data.Player;
@@ -44,7 +45,7 @@ public class CustomContactListener implements ContactListener {
 	public void beginContact(Contact contact) {
 		Fixture fA = contact.getFixtureA();
 		Fixture fB = contact.getFixtureB();
-
+		
 		if (fA.getUserData() != null && fB.getUserData() != null) {
 			//Character abilities
 			Axe.handleContact(fA, fB, players, false);
@@ -57,6 +58,8 @@ public class CustomContactListener implements ContactListener {
 			//Capture- and spawn point
 			CapturePoint.handleContactBegin(fA, fB, players, capturePoints);
 			SpawnPoint.handleContactBegin(fA, fB, blueTeam, redTeam);
+			
+			GameCharacter.handleFootSensorContact(fA, fB, players, 1);
 		}
 		
 	}
@@ -69,7 +72,9 @@ public class CustomContactListener implements ContactListener {
 		if(fA!=null && fB!=null){
 			CapturePoint.handleContactEnd(fA, fB, players, capturePoints);
 			SpawnPoint.handleContactEnd(fA, fB, blueTeam, redTeam);
+			GameCharacter.handleFootSensorContact(fA, fB, players, -1);
 		}
+		
 	}
 
 	@Override

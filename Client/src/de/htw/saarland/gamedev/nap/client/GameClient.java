@@ -223,9 +223,11 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 		player.getPlayableCharacter().getAttack2().cleanUp();
 		player.getPlayableCharacter().getAttack3().cleanUp();
 		player.render(batch, getDirection());
+		player.getPlayableCharacter().getBody().setLinearVelocity(new Vector2(0, 0));
 		
 		synchronized (players) {
 			for (ClientPlayer player: players) {
+				player.getPlayableCharacter().getBody().setLinearVelocity(new Vector2(0, 0));
 				player.getPlayableCharacter().update(Gdx.graphics.getDeltaTime(), gameWorld.getCapturePoints());
 				player.getPlayableCharacter().getAttack1().cleanUp();
 				player.getPlayableCharacter().getAttack2().cleanUp();

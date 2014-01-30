@@ -1,11 +1,16 @@
 package de.htw.saarland.gamedev.nap.data;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 
 import de.htw.saarland.gamedev.nap.data.entities.MoveableEntity;
+import de.htw.saarland.gamedev.nap.data.shapes.EntityShape;
 import de.htw.saarland.gamedev.nap.data.skills.Skill;
 
 public class GameCharacter extends MoveableEntity{
@@ -15,6 +20,8 @@ public class GameCharacter extends MoveableEntity{
 	private final static String EXCEPTION_ILLEGAL_GROUNDTIME = "Groundtime value can't be smaller than zero!";
 	private final static String EXCEPTION_ILLEGAL_ORIENTATION = "Orientation can only be 0 or 1!";
 	
+	public static final String USERDATA_FOOT_SENSOR_PREFIX = "footSensor.";
+	
 	public static final int ORIENTATION_LEFT = 0;
 	public static final int ORIENTATION_RIGHT = 1;
 
@@ -23,13 +30,13 @@ public class GameCharacter extends MoveableEntity{
 	private boolean jumping;
 	private float timeOnGround;
 	private boolean attackEnabled;
-	private boolean movementEnabled;
+	private volatile boolean movementEnabled;
 	private boolean stunned;
 	private boolean snared;
-	private boolean movingLeft;
-	private boolean movingRight;
-	private boolean movingDown;
-	private boolean movingUp;
+	private volatile boolean movingLeft;
+	private volatile boolean movingRight;
+	private volatile boolean movingDown;
+	private volatile boolean movingUp;
 	private int orientation;
 	private float snareDuration;
 	private float stunDuration;
@@ -42,11 +49,13 @@ public class GameCharacter extends MoveableEntity{
 	protected Skill attack2;
 	protected Skill attack3;
 	
-	private boolean attacking1;
-	private boolean attacking2;
-	private boolean attacking3;
+	private volatile boolean attacking1;
+	private volatile boolean attacking2;
+	private volatile boolean attacking3;
 	
 	protected IStatusUpdateListener statusUpdateListener;
+	
+	protected int footContacts = 0;
 	
 	public GameCharacter(World world, Shape shape, float density,
 			float friction, float restitution, Vector2 position, Vector2 baseVelocity, Vector2 maxVelocity, int maxHealth
@@ -67,6 +76,19 @@ public class GameCharacter extends MoveableEntity{
 		timeSnared=0;
 		timeStunned=0;
 		lostHealth=false;
+	}
+	
+	@Override
+	public void setBody(Body b) {
+		super.setBody(b);
+		
+		PolygonShape shape = new PolygonShape();
+		shape.setAsBox(0.01f, 0.05f, ((EntityShape)getFixtureDef().shape).footSensorPos, 0);
+		FixtureDef fSensor = new FixtureDef();
+		fSensor.shape = shape;
+		fSensor.density = 1;
+		fSensor.isSensor = true;
+		b.createFixture(fSensor).setUserData(USERDATA_FOOT_SENSOR_PREFIX + getId());
 	}
 	
 	public void setStatusUpdateListener(IStatusUpdateListener statusUpdateListener) {
@@ -96,21 +118,20 @@ public class GameCharacter extends MoveableEntity{
 		else lostHealth=false;
 		lastHealth=health;
 		
-		setUp(movingUp);
-		setDown(movingDown);
 		setLeft(movingLeft);
 		setRight(movingRight);
-		setAttacking1(attacking1);
-		setAttacking2(attacking2);
-		setAttacking3(attacking3);
 		
-		if(!movingUp && isGrounded()){
+		if(jumping && footContacts >= 1){
 			setUp(false);
 			jumping=false;
 		}
 		
-		if(!isGrounded()) setTimeonGround(0);
-		else setTimeonGround(getTimeOnGround()+deltaTime);
+		if(footContacts == 0) {
+			timeOnGround = 0;
+		}
+		else {
+			timeOnGround += deltaTime;
+		}
 	}
 	
 	//methods that get used by the network
@@ -158,7 +179,7 @@ public class GameCharacter extends MoveableEntity{
 	public void setUp(boolean up){
 		this.movingUp=up;
 		if(movementEnabled){
-			if(movingUp && !jumping){
+			if(movingUp && footContacts >= 1){
 				getBody().setAwake(true);
 				getBody().setLinearVelocity(getBody().getLinearVelocity().x, getBaseVelocity().y);
 				jumping=true;
@@ -293,7 +314,11 @@ public class GameCharacter extends MoveableEntity{
 		return movementEnabled;
 	}
 	
-	public void setMovementEnabled(boolean movementEnabled){
+	public void setMovementEnabled(boolean movementEnabled) {
+		if (movementEnabled && (stunned || snared)) {
+			return; //cannot set movement to enabled during stun or snare
+		}
+		
 		this.movementEnabled=movementEnabled;
 		if(!movementEnabled) getBody().setLinearVelocity(0, getBody().getLinearVelocity().y);
 	}
@@ -326,7 +351,7 @@ public class GameCharacter extends MoveableEntity{
 			attack2.reset();
 			attack3.reset();
 		}
-		if(!stunned){
+		else {
 			movementEnabled=true;
 			attackEnabled=true;
 		}
@@ -361,6 +386,39 @@ public class GameCharacter extends MoveableEntity{
 	
 	public boolean isMoving() {
 		return movementEnabled && (movingLeft || movingRight || movingUp || movingDown);
+	}
+	
+	public static void handleFootSensorContact(Fixture fA, Fixture fB, Array<IPlayer> players, int add) {
+		if (((String)fA.getUserData()).startsWith(USERDATA_FOOT_SENSOR_PREFIX) || ((String)fB.getUserData()).startsWith(USERDATA_FOOT_SENSOR_PREFIX)) {
+				String dat = null;
+				if (((String)fA.getUserData()).startsWith(USERDATA_FOOT_SENSOR_PREFIX)) {
+					if (!fB.getUserData().equals(GameWorld.USERDATA_FIXTURE_WORLD) &&
+						!fB.getUserData().equals(GameWorld.USERDATA_FIXTURE_PLATFORM_ONE) &&
+						!fB.getUserData().equals(GameWorld.USERDATA_FIXTURE_PLATFORM_TWO)) {
+						return; //no contact with ground
+					}
+					
+					dat = ((String)fA.getUserData()).replace(USERDATA_FOOT_SENSOR_PREFIX, "");
+				}
+				else {
+					if (!fA.getUserData().equals(GameWorld.USERDATA_FIXTURE_WORLD) &&
+							!fA.getUserData().equals(GameWorld.USERDATA_FIXTURE_PLATFORM_ONE) &&
+							!fA.getUserData().equals(GameWorld.USERDATA_FIXTURE_PLATFORM_TWO)) {
+							return; //no contact with ground
+						}
+					
+					dat = ((String)fB.getUserData()).replace(USERDATA_FOOT_SENSOR_PREFIX, "");
+				}
+				
+				int entId = Integer.parseInt(dat);
+				
+				for (IPlayer player: players) {
+					if (player.getPlChar().getId() == entId) {
+						player.getPlChar().footContacts += add;
+						break;
+					}
+				}
+		}
 	}
 
 }
