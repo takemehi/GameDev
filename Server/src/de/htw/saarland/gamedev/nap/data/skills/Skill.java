@@ -8,6 +8,7 @@ import de.htw.saarland.gamedev.nap.data.GameCharacter;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
 import de.htw.saarland.gamedev.nap.data.network.GameOpcodes;
 import de.htw.saarland.gamedev.nap.game.ISendPacket;
+import de.htw.saarland.gamedev.nap.server.DeltaTime;
 import de.htw.saarland.gamedev.nap.server.ServerExtension;
 
 public abstract class Skill {
@@ -19,7 +20,9 @@ public abstract class Skill {
 	private float cooldown;
 	private float castTime;
 	private float deltaTime;
+	private float deltaTimeClient;
 	private boolean onCooldown;
+	private boolean onCooldownClient;
 	private boolean casted;
 	private volatile boolean directionUpdated;
 	private Vector2 direction;
@@ -39,7 +42,9 @@ public abstract class Skill {
 		if(castTime<0) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_CASTTIME);
 		this.cooldown=cooldown;
 		this.castTime=castTime;
+		deltaTimeClient=0;
 		deltaTime=0;
+		onCooldownClient=false;
 		onCooldown=false;
 		casted=true;
 		this.cast=cast;
@@ -75,6 +80,7 @@ public abstract class Skill {
 		if(client){
 			if (packetStartCast) {
 				onCooldown = true;
+				onCooldownClient = true;
 				casted = false;
 				packetStartCast = false;
 			}
@@ -84,8 +90,16 @@ public abstract class Skill {
 				
 				casted=true;
 				onCooldown=true;
+				onCooldownClient=true;
 				
 				packetStartAttack = false;
+			}
+			if(onCooldownClient){
+				deltaTimeClient+=_deltaTime;
+				if(deltaTimeClient>=cooldown){
+					onCooldownClient=false;
+					deltaTimeClient=0;
+				}
 			}
 		}
 		
@@ -183,6 +197,19 @@ public abstract class Skill {
 				start(character.getWorld(), character, direction);
 			}
 		}
+		if(onCooldown){
+			switch(skillNr){
+			case 1:
+				character.setAttacking1(false);
+				break;
+			case 2:
+				character.setAttacking2(false);
+				break;
+			case 3:
+				character.setAttacking3(false);
+				break;
+		}
+		}
 		
 		if(onCooldown && casted && deltaTime>=cooldown){
 			onCooldown=false;
@@ -221,11 +248,18 @@ public abstract class Skill {
 	}
 	
 	public boolean isOnCooldown(){
-		return onCooldown;
+			return onCooldown;
 	}
 	
 	public void setOnCooldown(boolean onCooldown){
 		this.onCooldown=onCooldown;
+	}
+	
+	public float getDeltaTime(){
+		if(!client)
+			return deltaTime;
+		else
+			return deltaTimeClient;
 	}
 	
 	public Vector2 getDirection(){

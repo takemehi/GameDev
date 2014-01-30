@@ -15,7 +15,7 @@ import de.htw.saarland.gamedev.nap.server.ServerExtension;
 
 public class Charge extends Skill {
 	
-	public static final float COOLDOWN = 3f;
+	public static final float COOLDOWN = 6f;
 	public static final float CASTTIME = 0f;
 	public static final float VELOCITY = 10;
 	public static final float TRAVEL_DISTANCE = 20f;

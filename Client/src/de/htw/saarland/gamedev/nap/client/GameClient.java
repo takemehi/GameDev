@@ -262,9 +262,9 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 		
 		batch.end();		
 		
-		hud.render(pointsRed, pointsBlue);
+		hud.render(pointsRed, pointsBlue, player);
 		
-		debugRenderer.render(world, camera.combined);
+		//debugRenderer.render(world, camera.combined);
 		
 		worldTime += Gdx.graphics.getDeltaTime();
 		//if (worldTime > GameServer.TIME_STEP) {
