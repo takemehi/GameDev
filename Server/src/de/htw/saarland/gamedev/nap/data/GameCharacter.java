@@ -121,7 +121,7 @@ public class GameCharacter extends MoveableEntity{
 		setLeft(movingLeft);
 		setRight(movingRight);
 		
-		if(jumping && footContacts >= 1){
+		if(jumping && footContacts >= 1 && getBody().getLinearVelocity().y <= 0){
 			setUp(false);
 			jumping=false;
 		}
@@ -179,7 +179,7 @@ public class GameCharacter extends MoveableEntity{
 	public void setUp(boolean up){
 		this.movingUp=up;
 		if(movementEnabled){
-			if(movingUp && footContacts >= 1){
+			if(movingUp && (footContacts >= 1 || !jumping)){
 				getBody().setAwake(true);
 				getBody().setLinearVelocity(getBody().getLinearVelocity().x, getBaseVelocity().y);
 				jumping=true;
