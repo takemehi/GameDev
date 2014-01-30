@@ -18,9 +18,9 @@ public class Nova extends Skill{
 	public static final float CASTTIME = 0f;
 	public static final float RADIUS = 1f;
 	public static final float TRAVEL_DISTANCE = 2f;
-	public static final float FORCE = 1;
+	public static final float FORCE = 2;
 	public static final int DAMAGE = 5;
-	public static final float DURATION_STUN = 0.4f;
+	public static final float DURATION_STUN = 0.5f;
 	
 	public static final String USERDATA_NOVA = "nova";
 	

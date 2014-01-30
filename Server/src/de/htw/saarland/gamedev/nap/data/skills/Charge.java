@@ -19,7 +19,7 @@ public class Charge extends Skill {
 	public static final float CASTTIME = 0f;
 	public static final float VELOCITY = 10;
 	public static final float TRAVEL_DISTANCE = 20f;
-	public static final int DAMAGE = 35;
+	public static final int DAMAGE = 25;
 	public static final float DURATION_STUN = 1f;
 	
 	public static final String USERDATA_CHARGE = "charge";

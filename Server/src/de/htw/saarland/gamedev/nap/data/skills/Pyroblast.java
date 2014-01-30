@@ -16,7 +16,7 @@ import de.htw.saarland.gamedev.nap.data.entities.SensorEntity;
 public class Pyroblast extends Skill{
 	
 	public static final float COOLDOWN = 6f;
-	public static final float CASTTIME = 1.5f;
+	public static final float CASTTIME = 1f;
 	public static final float RADIUS = 0.2f;
 	public static final float TRAVEL_DISTANCE = 3.5f;
 	public static final float VELOCITY = 5;

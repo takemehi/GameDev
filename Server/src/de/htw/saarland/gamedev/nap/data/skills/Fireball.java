@@ -20,7 +20,7 @@ public class Fireball extends Skill{
 	public static final float COOLDOWN = 0.3f;
 	public static final float CASTTIME = 0f;
 	public static final float RADIUS = 0.1f;
-	public static final float TRAVEL_DISTANCE = 2f;
+	public static final float TRAVEL_DISTANCE = 3f;
 	public static final float VELOCITY = 6;
 	public static final int DAMAGE = 5;
 	
