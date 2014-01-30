@@ -83,7 +83,7 @@ public class GameCharacter extends MoveableEntity{
 		super.setBody(b);
 		
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(0.01f, 0.05f, ((EntityShape)getFixtureDef().shape).footSensorPos, 0);
+		shape.setAsBox(0.18f, 0.05f, ((EntityShape)getFixtureDef().shape).footSensorPos, 0);
 		FixtureDef fSensor = new FixtureDef();
 		fSensor.shape = shape;
 		fSensor.density = 1;
