@@ -28,6 +28,7 @@ public class Charge extends Skill {
 	private Vector2 positionStart;
 	private float distanceTraveled;
 	private boolean traveling;
+	private Vector2 posBefore;
 
 	public Charge(PlayableCharacter character, int skillNr) {
 		super(character, COOLDOWN, CASTTIME, false, skillNr);
@@ -43,6 +44,10 @@ public class Charge extends Skill {
 
 	@Override
 	public void start(World world, PlayableCharacter character, Vector2 direction) {
+		if (client) {
+			return;
+		}
+		
 		Vector2 velocity=direction.mul(VELOCITY);
 		character.setMovementEnabled(false);
 		character.getBody().setLinearVelocity(velocity);
@@ -50,10 +55,15 @@ public class Charge extends Skill {
 		character.getFixture().setUserData(USERDATA_CHARGE);
 		positionStart= new Vector2(character.getBody().getPosition().x, character.getBody().getPosition().y);
 		traveling=true;
+		posBefore = new Vector2(positionStart);
 	}
 
 	@Override
 	protected void doUpdate(World world, PlayableCharacter character, Vector2 mouseCoords, float deltaTime) {
+		if (client) {
+			return;
+		}
+		
 		this.character=character;
 		
 		if(isOnCooldown() && isCasted()){
@@ -67,10 +77,17 @@ public class Charge extends Skill {
 						distanceTraveled=0;
 						character.getFixture().setUserData(PlayableCharacter.USERDATA_PLAYER);
 					}else{
-						distanceTraveled+=((new Vector2(positionStart.x-character.getBody().getPosition().x
-								,positionStart.y-character.getBody().getPosition().y)).len());
+						if (!posBefore.equals(character.getBody().getPosition())) {
+							//only compute distance if position changed
+							distanceTraveled+=((new Vector2(positionStart.x-character.getBody().getPosition().x
+									,positionStart.y-character.getBody().getPosition().y)).len());
+							posBefore.x = character.getBody().getPosition().x;
+							posBefore.y = character.getBody().getPosition().y;
+						}
 					}
-				}catch(Exception e){}
+				}catch(Exception e){
+					e.getLocalizedMessage(); //for debugging (can set bp here)
+				}
 			}
 		}
 			

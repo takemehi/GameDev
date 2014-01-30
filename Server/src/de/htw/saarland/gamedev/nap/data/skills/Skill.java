@@ -24,7 +24,7 @@ public abstract class Skill {
 	private volatile boolean directionUpdated;
 	private Vector2 direction;
 	protected boolean cast;
-	private boolean client;
+	protected boolean client;
 	private PlayableCharacter character;
 	private ISendPacket sendPacketListener;
 	private int skillNr;
