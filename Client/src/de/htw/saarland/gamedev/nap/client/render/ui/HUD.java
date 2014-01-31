@@ -19,7 +19,8 @@ import de.htw.saarland.gamedev.nap.game.GameServer;
 
 public class HUD {
 
-	private static final int HEIGHT_TEAM_POINTS_BAR = 20; 
+	private static final int HEIGHT_TEAM_POINTS_BAR = 20;
+	private static final float SCALE_MINIMAP = 1/48f;
 	
 	private static final Color BLACK_COLOR = new Color(0f, 0f, 0f, 1f);
 	private static final Color BLUE_COLOR = new Color(0f, 0f, 1f, 1f);
@@ -33,14 +34,16 @@ public class HUD {
 	private ShapeRenderer shapeRenderer;
 	private BitmapFont font;
 	private SpriteBatch batch; //has its own batch without projectionMatrix
-	OrthogonalTiledMapRenderer worldRenderer;
-	OrthographicCamera camera;
-	SpriteBatch cameraBatch;
+	private OrthogonalTiledMapRenderer worldRenderer;
+	private OrthographicCamera camera;
+	private SpriteBatch cameraBatch;
+	private RenderableGameWorld gameWorld;
 	
 	private float width;
 	private float height;
 
-	public HUD() {		
+	public HUD() {
+		
 		respawnActive = false;
 		respawnTime = 0;
 		
@@ -51,12 +54,11 @@ public class HUD {
 		width = Gdx.graphics.getWidth();
 		height = Gdx.graphics.getHeight();
 		camera = new OrthographicCamera(width, height);
-		camera.position.set(width/40, height/40, 0);
 		cameraBatch = new SpriteBatch();
 		cameraBatch.setProjectionMatrix(camera.combined);
 	}
 	
-	public void render(int pointsRed, int pointsBlue, MeClientPlayer character, RenderableGameWorld gameWorld) {
+	public void render(int pointsRed, int pointsBlue, MeClientPlayer character) {
 		batch.begin();
 		
 		if (respawnActive) {
@@ -202,15 +204,32 @@ public class HUD {
 		}
 		
 		//Minimap
-		/*
-		worldRenderer=new OrthogonalTiledMapRenderer(gameWorld.getTiledMap(), 1/12f, cameraBatch);
-		worldRenderer.setView(camera);
-		worldRenderer.render(GameServer.LAYERS_TO_RENDER);*/
+		if(worldRenderer!=null){
+			shapeRenderer.begin(ShapeType.Filled);
+			shapeRenderer.setColor(WHITE_COLOR);
+			shapeRenderer.rect(
+					(width-gameWorld.getWidth()*SCALE_MINIMAP)-5,
+					5,
+					gameWorld.getWidth()*SCALE_MINIMAP,
+					gameWorld.getHeight()*SCALE_MINIMAP);
+			shapeRenderer.end();
+			worldRenderer.setView(camera);
+			worldRenderer.render(GameServer.LAYERS_TO_RENDER);
+		}
 	}
 	
 	public void setRespawnActive(boolean respawnActive, float respawnTime) {
 		this.respawnTime = respawnTime;
 		this.respawnActive = respawnActive;	
+	}
+	
+	public void setGameWorld(RenderableGameWorld gameWorld){
+		if(gameWorld==null) throw new NullPointerException();
+		this.gameWorld=gameWorld;
+		worldRenderer=new OrthogonalTiledMapRenderer(this.gameWorld.getTiledMap(), SCALE_MINIMAP, cameraBatch);
+		System.out.println(gameWorld.getWidth());
+		camera.position.set((-width/2+gameWorld.getWidth()*SCALE_MINIMAP)+5, 155, 0);
+		camera.update();
 	}
 
 }

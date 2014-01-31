@@ -50,6 +50,8 @@ public class GameWorld {
 	private Body mapBody;
 	private int currentId;
 	private boolean idReturned;
+	private int width;
+	private int height;
 	
 	public GameWorld(World world, String mapPath, int currentId, TmxMapLoader loader){
 		this.world=world;
@@ -58,6 +60,8 @@ public class GameWorld {
 		
 		platforms = new Array<StaticEntity>();
 		capturePoints = new Array<CapturePoint>();
+		width=-1;
+		height=-1;
 		
 		initMap(mapPath, loader);
 	}
@@ -80,10 +84,11 @@ public class GameWorld {
 	
 	private void initMap(String mapName, TmxMapLoader loader){
 			
-		int mapWidth;
 		tiledMap = loader.load(mapName+".tmx");
-		mapWidth=tiledMap.getProperties().get("width", Integer.class)
+		width=tiledMap.getProperties().get("width", Integer.class)
 				* tiledMap.getProperties().get("tilewidth", Integer.class);
+		height=tiledMap.getProperties().get("height", Integer.class)
+				* tiledMap.getProperties().get("tileheight", Integer.class);
 		//create bodyDef
 		BodyDef bodyDef = new BodyDef();
 		bodyDef.type = BodyDef.BodyType.StaticBody;
@@ -97,7 +102,7 @@ public class GameWorld {
 		//create world fixture
 		BodyEditorLoader bLoader = new BodyEditorLoader(new FileHandle(mapName+".json"));
 		bLoader.attachFixture(mapBody, "map", fDef
-				,mapWidth*PIXELS_TO_METERS);
+				,width*PIXELS_TO_METERS);
 		for(Fixture f: mapBody.getFixtureList())
 			f.setUserData(USERDATA_FIXTURE_WORLD);
 		
@@ -227,4 +232,12 @@ public class GameWorld {
 		return tiledMap;
 	}
 
+	public int getWidth() {
+		return width;
+	}
+	
+	public int getHeight() {
+		return height;
+	}
+	
 }

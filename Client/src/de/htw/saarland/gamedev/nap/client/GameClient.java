@@ -262,7 +262,7 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 		
 		batch.end();		
 		
-		hud.render(pointsRed, pointsBlue, player, gameWorld);
+		hud.render(pointsRed, pointsBlue, player);
 		
 		//debugRenderer.render(world, camera.combined);
 		
@@ -326,6 +326,7 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 				break;
 			case GameOpcodes.GAME_CURRENT_MAP:
 				gameWorld = new RenderableGameWorld(world, FOLDER_MAPS + params.getUtfString(GameOpcodes.CURRENT_MAP_PARAM), 0, batch, camera);
+				hud.setGameWorld(gameWorld);
 				for (CapturePoint cp: gameWorld.getCapturePoints()) {
 					ClientCapturePoint ccp = new ClientCapturePoint(cp.getCapturePoint());
 					capturePoints.add(ccp);
