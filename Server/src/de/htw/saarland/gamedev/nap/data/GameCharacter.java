@@ -421,4 +421,20 @@ public class GameCharacter extends MoveableEntity{
 		}
 	}
 
+	public float getSnareDuration() {
+		return snareDuration;
+	}
+
+	public float getStunDuration() {
+		return stunDuration;
+	}
+
+	public float getTimeStunned() {
+		return timeStunned;
+	}
+
+	public float getTimeSnared() {
+		return timeSnared;
+	}
+	
 }
