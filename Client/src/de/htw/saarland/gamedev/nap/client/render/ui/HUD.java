@@ -27,6 +27,8 @@ public class HUD {
 	private static final Color RED_COLOR = new Color(1f, 0f, 0f, 1f);
 	private static final Color WHITE_COLOR = new Color(1f, 1f, 1f, 1f);
 	private static final Color YELLOW_COLOR = new Color(1f, 1f, 0f, 1f);
+	private static final Color CYAN_COLOR = new Color(0f, 0.8f, 0.8f, 1f);
+	private static final Color GREEN_COLOR = new Color(0f, 1f, 0f, 1f);
 	
 	private volatile boolean respawnActive;
 	private volatile float respawnTime;
@@ -206,15 +208,24 @@ public class HUD {
 		//Minimap
 		if(worldRenderer!=null){
 			shapeRenderer.begin(ShapeType.Filled);
-			shapeRenderer.setColor(WHITE_COLOR);
+			shapeRenderer.setColor(CYAN_COLOR);
 			shapeRenderer.rect(
 					(width-gameWorld.getWidth()*SCALE_MINIMAP)-5,
 					5,
 					gameWorld.getWidth()*SCALE_MINIMAP,
 					gameWorld.getHeight()*SCALE_MINIMAP);
 			shapeRenderer.end();
+			
 			worldRenderer.setView(camera);
 			worldRenderer.render(GameServer.LAYERS_TO_RENDER);
+			
+			float posX = character.getPlayableCharacter().getBody().getPosition().x*2+(width-gameWorld.getWidth()*SCALE_MINIMAP)-5;
+			float posY = character.getPlayableCharacter().getBody().getPosition().y*2+5;
+			shapeRenderer.begin(ShapeType.Filled);
+			shapeRenderer.setColor(GREEN_COLOR);
+			shapeRenderer.circle(posX, posY, 1);
+			shapeRenderer.end();
+			
 		}
 	}
 	
