@@ -1,5 +1,7 @@
 package de.htw.saarland.gamedev.nap.client.render.ui;
 
+import java.util.List;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -10,8 +12,10 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
 import de.htw.saarland.gamedev.nap.assets.AssetStorage;
+import de.htw.saarland.gamedev.nap.client.entity.ClientPlayer;
 import de.htw.saarland.gamedev.nap.client.entity.MeClientPlayer;
 import de.htw.saarland.gamedev.nap.client.world.RenderableGameWorld;
+import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
 import de.htw.saarland.gamedev.nap.game.GameServer;
 
 public class HUD {
@@ -24,7 +28,7 @@ public class HUD {
 	private static final Color RED_COLOR = new Color(1f, 0f, 0f, 1f);
 	private static final Color WHITE_COLOR = new Color(1f, 1f, 1f, 1f);
 	private static final Color YELLOW_COLOR = new Color(1f, 1f, 0f, 1f);
-	private static final Color CYAN_COLOR = new Color(0f, 0.8f, 0.8f, 1f);
+	private static final Color COBALT_COLOR = new Color(0.24f, 0.41f, 0.67f, 1f);
 	private static final Color GREEN_COLOR = new Color(0f, 1f, 0f, 1f);
 	
 	private volatile boolean respawnActive;
@@ -57,7 +61,7 @@ public class HUD {
 		cameraBatch.setProjectionMatrix(camera.combined);
 	}
 	
-	public void render(int pointsRed, int pointsBlue, MeClientPlayer character) {
+	public void render(int pointsRed, int pointsBlue, MeClientPlayer character, List<ClientPlayer> players) {
 		batch.begin();
 		
 		if (respawnActive) {
@@ -205,7 +209,7 @@ public class HUD {
 		//Minimap
 		if(worldRenderer!=null){
 			shapeRenderer.begin(ShapeType.Filled);
-			shapeRenderer.setColor(CYAN_COLOR);
+			shapeRenderer.setColor(COBALT_COLOR);
 			shapeRenderer.rect(
 					(width-gameWorld.getWidth()*SCALE_MINIMAP)-5,
 					5,
@@ -215,12 +219,36 @@ public class HUD {
 			
 			worldRenderer.setView(camera);
 			worldRenderer.render(GameServer.LAYERS_TO_RENDER);
-			
+			//render own player
 			float posX = character.getPlayableCharacter().getBody().getPosition().x*2+(width-gameWorld.getWidth()*SCALE_MINIMAP)-5;
 			float posY = character.getPlayableCharacter().getBody().getPosition().y*2+5;
 			shapeRenderer.begin(ShapeType.Filled);
 			shapeRenderer.setColor(GREEN_COLOR);
 			shapeRenderer.circle(posX, posY, 1);
+			shapeRenderer.end();
+			shapeRenderer.begin(ShapeType.Line);
+			shapeRenderer.setColor(BLACK_COLOR);
+			shapeRenderer.circle(posX, posY, 1);
+			shapeRenderer.end();
+			//render team mates
+			for(ClientPlayer p: players){
+				if(p.getPlayableCharacter().getTeamId()==character.getPlayableCharacter().getTeamId()){
+					posX = p.getPlayableCharacter().getBody().getPosition().x*2+(width-gameWorld.getWidth()*SCALE_MINIMAP)-5;
+					posY = p.getPlayableCharacter().getBody().getPosition().y*2+5;
+					shapeRenderer.begin(ShapeType.Filled);
+					if(p.getPlayableCharacter().getTeamId()==PlayableCharacter.ID_TEAM_BLUE){
+						shapeRenderer.setColor(BLUE_COLOR);
+					}else{
+						shapeRenderer.setColor(RED_COLOR);
+					}
+					shapeRenderer.circle(posX, posY, 1);
+					shapeRenderer.end();
+					shapeRenderer.begin(ShapeType.Line);
+					shapeRenderer.setColor(BLACK_COLOR);
+					shapeRenderer.circle(posX, posY, 1);
+					shapeRenderer.end();
+				}
+			}
 			shapeRenderer.end();
 			
 		}
