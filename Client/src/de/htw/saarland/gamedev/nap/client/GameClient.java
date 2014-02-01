@@ -29,6 +29,7 @@ import com.smartfoxserver.v2.exceptions.SFSException;
 
 import de.htw.saarland.gamedev.nap.CustomContactListener;
 import de.htw.saarland.gamedev.nap.NetworkConstants;
+import de.htw.saarland.gamedev.nap.assets.AssetStorage;
 import de.htw.saarland.gamedev.nap.client.entity.ClientCapturePoint;
 import de.htw.saarland.gamedev.nap.client.entity.ClientNPC;
 import de.htw.saarland.gamedev.nap.client.entity.ClientPlayer;
@@ -151,6 +152,9 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 		
 		background = new Texture(new FileHandle(new File(FOLDER_GFX + "background.png")));
 		background.bind();
+		
+		
+		Gdx.input.setCursorImage(AssetStorage.getInstance().cursorCrosshair, 8, 8);
 		
 		batch = new SpriteBatch();
 		world = new World(GameServer.GRAVITY, true);

@@ -7,14 +7,11 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
 import de.htw.saarland.gamedev.nap.assets.AssetStorage;
 import de.htw.saarland.gamedev.nap.client.entity.MeClientPlayer;
 import de.htw.saarland.gamedev.nap.client.world.RenderableGameWorld;
-import de.htw.saarland.gamedev.nap.data.GameWorld;
-import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
 import de.htw.saarland.gamedev.nap.game.GameServer;
 
 public class HUD {

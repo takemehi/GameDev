@@ -1,6 +1,7 @@
 package de.htw.saarland.gamedev.nap.assets;
 
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
@@ -28,6 +29,7 @@ public class AssetStorage {
 	public static final String MAGE_ANIMATION_PATH = FOLDER_GFX + "mageSheet.png";
 	public static final String WARRIOR_ANIMATION_PATH = FOLDER_GFX + "warriorSheet.png";
 	public static final String TILESET_PATH = FOLDER_MAP + "tileset.png";
+	public static final String CROSSHAIR_PATH = FOLDER_GFX + "crosshair.png";
 	
 	public BitmapFont calibri;
 	public Texture fireball;
@@ -36,6 +38,7 @@ public class AssetStorage {
 	public Texture mageAnimation;
 	public Texture warriorAnimation;
 	public Texture tileset;
+	public Pixmap cursorCrosshair;
 	
 	private AssetStorage() {
 		calibri = new BitmapFont(new FileHandle(CALIBRI_PATH + ".fnt"), new FileHandle(CALIBRI_PATH + ".png"), false);
@@ -45,5 +48,6 @@ public class AssetStorage {
 		mageAnimation = new Texture(new FileHandle(MAGE_ANIMATION_PATH));
 		warriorAnimation = new Texture(new FileHandle(WARRIOR_ANIMATION_PATH));
 		tileset = new Texture(new FileHandle(TILESET_PATH));
+		cursorCrosshair = new Pixmap(new FileHandle(CROSSHAIR_PATH));
 	}
 }
