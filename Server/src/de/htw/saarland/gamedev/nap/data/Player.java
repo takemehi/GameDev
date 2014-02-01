@@ -113,19 +113,21 @@ public class Player implements IPlayer, IStatusUpdateListener {
 	}
 
 	@Override
-	public void stunUpdated(boolean stunned) {
+	public void stunUpdated(boolean stunned, float time) {
 		SFSObject params = new SFSObject();
 		params.putInt(GameOpcodes.ENTITY_ID_PARAM, plChar.getId());
 		params.putBool(GameOpcodes.STUN_STATUS_PARAM, stunned);
+		params.putFloat(GameOpcodes.STATUS_TIME_PARAM, time);
 		
 		sendPacketListener.sendServerPacket(GameOpcodes.GAME_UPDATE_STATUS_STUN, params);
 	}
 
 	@Override
-	public void snareUpdated(boolean snared) {
+	public void snareUpdated(boolean snared, float time) {
 		SFSObject params = new SFSObject();
 		params.putInt(GameOpcodes.ENTITY_ID_PARAM, plChar.getId());
 		params.putBool(GameOpcodes.SNARE_STATUS_PARAM, snared);
+		params.putFloat(GameOpcodes.STATUS_TIME_PARAM, time);
 		
 		sendPacketListener.sendServerPacket(GameOpcodes.GAME_UPDATE_STATUS_SNARE, params);
 	}

@@ -419,6 +419,7 @@ public class GameOpcodes {
 	 * param:<br/>
 	 * 	int ENTITY_ID_PARAM id of the entity<br/>
 	 * 	boolean STUN_STATUS_PARAM true if the entity is stunned, else false
+	 * 	float STATUS_TIME_PARAM how long is the player stunned
 	 */
 	public static final String GAME_UPDATE_STATUS_STUN = "game.update.status.stun";
 	
@@ -430,6 +431,7 @@ public class GameOpcodes {
 	 * param:<br/>
 	 * 	int ENTITY_ID_PARAM id of the entity<br/>
 	 * 	boolean SNARE_STATUS_PARAM true if the entity is snared, else false
+	 * 	float STATUS_TIME_PARAM how long is the player snared
 	 */
 	public static final String GAME_UPDATE_STATUS_SNARE = "game.update.status.snare";
 	
@@ -495,4 +497,5 @@ public class GameOpcodes {
 	public static final String PLAYER_ID_PARAM = "playerid";
 	public static final String RESPAWN_TIME_PARAM = "respawntime";
 	public static final String POINTS_PARAM = "points";
+	public static final String STATUS_TIME_PARAM = "statustime";
 }

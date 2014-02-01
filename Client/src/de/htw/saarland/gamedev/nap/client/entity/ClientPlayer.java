@@ -42,6 +42,10 @@ public class ClientPlayer implements IPlayer, IRender, IMoveable, ISkillStart, D
 	
 	private boolean isStunned;
 	private boolean isSnared;
+	private float timeStunned;
+	private float timeSnared;
+	private float stunDuration;
+	private float snareDuration;
 	
 	public ClientPlayer(PlayableCharacter character, int team, int friendlyTeamId) {
 		if (character == null) {
@@ -73,6 +77,14 @@ public class ClientPlayer implements IPlayer, IRender, IMoveable, ISkillStart, D
 	@Override
 	public void render(SpriteBatch batch) {
 		stateTime += Gdx.graphics.getDeltaTime();
+		
+		if (isStunned) {
+			timeStunned += Gdx.graphics.getDeltaTime();
+		}
+		
+		if (isSnared) {
+			timeSnared += Gdx.graphics.getDeltaTime();
+		}
 		
 		Vector2 pos = character.getBody().getPosition();
 		TextureRegion region = animations.getAnimationFrame(getCharacterState(), stateTime);
@@ -184,16 +196,36 @@ public class ClientPlayer implements IPlayer, IRender, IMoveable, ISkillStart, D
 		return isStunned;
 	}
 
-	public void setStunned(boolean isStunned) {
+	public void setStunned(boolean isStunned, float stunDuration) {
 		this.isStunned = isStunned;
+		this.stunDuration = stunDuration;
+		this.timeStunned = 0;
 	}
 
 	public boolean isSnared() {
 		return isSnared;
 	}
 
-	public void setSnared(boolean isSnared) {
+	public void setSnared(boolean isSnared, float snareDuration) {
 		this.isSnared = isSnared;
+		this.snareDuration = snareDuration;
+		this.timeSnared = 0;
+	}
+
+	public float getTimeStunned() {
+		return timeStunned;
+	}
+
+	public float getTimeSnared() {
+		return timeSnared;
+	}
+
+	public float getStunDuration() {
+		return stunDuration;
+	}
+
+	public float getSnareDuration() {
+		return snareDuration;
 	}
 
 	@Override

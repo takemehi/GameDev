@@ -453,10 +453,10 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 				healthUpdate(params.getInt(GameOpcodes.ENTITY_ID_PARAM), params.getInt(GameOpcodes.HEALTH_PARAM));
 				break;
 			case GameOpcodes.GAME_UPDATE_STATUS_STUN:
-				stunUpdate(params.getInt(GameOpcodes.ENTITY_ID_PARAM), params.getBool(GameOpcodes.STUN_STATUS_PARAM));
+				stunUpdate(params.getInt(GameOpcodes.ENTITY_ID_PARAM), params.getBool(GameOpcodes.STUN_STATUS_PARAM), params.getFloat(GameOpcodes.STATUS_TIME_PARAM));
 				break;
 			case GameOpcodes.GAME_UPDATE_STATUS_SNARE:
-				snareUpdate(params.getInt(GameOpcodes.ENTITY_ID_PARAM), params.getBool(GameOpcodes.SNARE_STATUS_PARAM));
+				snareUpdate(params.getInt(GameOpcodes.ENTITY_ID_PARAM), params.getBool(GameOpcodes.SNARE_STATUS_PARAM), params.getFloat(GameOpcodes.STATUS_TIME_PARAM));
 				break;
 			case GameOpcodes.GAME_RESPAWN_START:
 				hud.setRespawnActive(true, params.getInt(GameOpcodes.RESPAWN_TIME_PARAM));
@@ -518,12 +518,12 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 		getPlayerById(entityId).getPlayableCharacter().setHealth(health);
 	}
 	
-	private void stunUpdate(int entityId, boolean stunned) {
-		getPlayerById(entityId).setStunned(stunned);
+	private void stunUpdate(int entityId, boolean stunned, float duration) {
+		getPlayerById(entityId).setStunned(stunned, duration);
 	}
 	
-	private void snareUpdate(int entityId, boolean snared) {
-		getPlayerById(entityId).setSnared(snared);
+	private void snareUpdate(int entityId, boolean snared, float duration) {
+		getPlayerById(entityId).setSnared(snared, duration);
 	}
 	
 	private Vector2 getDirection() {

@@ -338,7 +338,7 @@ public class GameCharacter extends MoveableEntity{
 
 	public void setStunned(boolean stunned, float stunDuration) {
 		if (statusUpdateListener != null) {
-			statusUpdateListener.stunUpdated(stunned);
+			statusUpdateListener.stunUpdated(stunned, stunDuration);
 		}
 		
 		this.stunned = stunned;
@@ -363,7 +363,7 @@ public class GameCharacter extends MoveableEntity{
 
 	public void setSnared(boolean snared, float snareDuration) {
 		if (statusUpdateListener != null) {
-			statusUpdateListener.snareUpdated(snared);
+			statusUpdateListener.snareUpdated(snared, snareDuration);
 		}
 		
 		this.snared = snared;
