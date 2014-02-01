@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="WINDOWS-1252" standalone="no"?>
 <jardesc>
     <jar path="C:/SmartFoxServer_2X/SFS2X/extensions/nap/NapExtension.jar"/>
     <options buildIfNeeded="true" compress="false" descriptionLocation="/GameDev Server/export_to_sfs.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
@@ -11,6 +11,11 @@
         </sealing>
     </manifest>
     <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
-        <javaElement handleIdentifier="=GameDev Server"/>
+        <file path="/GameDev Server/.project"/>
+        <javaElement handleIdentifier="=GameDev Server/src"/>
+        <file path="/GameDev Server/.classpath"/>
+        <folder path="/GameDev Server/lib"/>
+        <folder path="/GameDev Server/data"/>
+        <file path="/GameDev Server/export_to_sfs.jardesc"/>
     </selectedElements>
 </jardesc>
