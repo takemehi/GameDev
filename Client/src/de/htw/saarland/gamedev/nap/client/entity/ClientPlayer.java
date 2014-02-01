@@ -3,13 +3,11 @@ package de.htw.saarland.gamedev.nap.client.entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 
@@ -42,6 +40,9 @@ public class ClientPlayer implements IPlayer, IRender, IMoveable, ISkillStart, D
 	private BitmapFont font;
 	private CharSequence str = "Hello World!";
 	
+	private boolean isStunned;
+	private boolean isSnared;
+	
 	public ClientPlayer(PlayableCharacter character, int team, int friendlyTeamId) {
 		if (character == null) {
 			throw new NullPointerException();
@@ -57,6 +58,8 @@ public class ClientPlayer implements IPlayer, IRender, IMoveable, ISkillStart, D
 		this.shapeRenderer = new ShapeRenderer();
 		this.hpBoxCol = friendlyTeamId == character.getTeamId() ? FRIENDLY_COLOR : ENEMY_COLOR;
 		this.wasDead = false;
+		this.isStunned = false;
+		this.isSnared = false;
 		
 		switch (character.getCharacterClass()) {
 			case PlayableCharacter.ID_MAGE:
@@ -177,6 +180,22 @@ public class ClientPlayer implements IPlayer, IRender, IMoveable, ISkillStart, D
 		return character.getId();
 	}
 	
+	public boolean isStunned() {
+		return isStunned;
+	}
+
+	public void setStunned(boolean isStunned) {
+		this.isStunned = isStunned;
+	}
+
+	public boolean isSnared() {
+		return isSnared;
+	}
+
+	public void setSnared(boolean isSnared) {
+		this.isSnared = isSnared;
+	}
+
 	@Override
 	public void setPosition(Vector2 pos) {
 		character.getBody().setTransform(pos, character.getBody().getAngle());

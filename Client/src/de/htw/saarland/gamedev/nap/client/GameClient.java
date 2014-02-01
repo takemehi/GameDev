@@ -515,11 +515,11 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 	}
 	
 	private void stunUpdate(int entityId, boolean stunned) {
-		getPlayerById(entityId).getPlayableCharacter().setStunned(stunned, Float.MAX_VALUE);
+		getPlayerById(entityId).setStunned(stunned);
 	}
 	
 	private void snareUpdate(int entityId, boolean snared) {
-		getPlayerById(entityId).getPlayableCharacter().setSnared(snared, Float.MAX_VALUE);
+		getPlayerById(entityId).setSnared(snared);
 	}
 	
 	private Vector2 getDirection() {
