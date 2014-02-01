@@ -1,5 +1,8 @@
 package de.htw.saarland.gamedev.nap.data.skills;
 
+import java.io.File;
+import java.io.IOException;
+
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -11,18 +14,46 @@ import de.htw.saarland.gamedev.nap.data.IPlayer;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
 import de.htw.saarland.gamedev.nap.data.entities.Entity;
 import de.htw.saarland.gamedev.nap.data.entities.SensorEntity;
+import de.htw.saarland.gamedev.nap.data.generic.KeyValueFile;
+import de.htw.saarland.gamedev.nap.game.GameServer;
 
 public class Snare extends Skill {
 
-	public static final float COOLDOWN = 5f;
-	public static final float CASTTIME = 0f;
-	public static final int DAMAGE = 10;
-	public static final float DURATION_SNARE = 1f;
+	private static final String KEY_SNARE_DURATION = "snare_duration";
+	private static final String META_FILE_PATH_SERVER = GameServer.FOLDER_DATA_SERVER + "meta/characters/warrior/snare.txt";
+	private static final String META_FILE_PATH_CLIENT = "data/meta/characters/warrior/snare.txt";
+	
+	public static final float COOLDOWN;
+	public static final float CASTTIME;
+	public static final int DAMAGE;
+	public static final float DURATION_SNARE;
 	
 	public static final String USERDATA_SNARE = "snare";
 	
 	private SensorEntity snare;
 	private float timeLiving;
+	
+	static {
+		try {
+			KeyValueFile values = null;
+			if ((new File(META_FILE_PATH_SERVER)).exists()) {
+				values = new KeyValueFile(META_FILE_PATH_SERVER);
+			}
+			else {
+				values = new KeyValueFile(META_FILE_PATH_CLIENT);
+			}
+			
+			values.load();
+			
+			COOLDOWN = values.getValueFloat(KEY_COOLDOWN);
+			CASTTIME = values.getValueFloat(KEY_CASTTIME);
+			DAMAGE = values.getValueInt(KEY_DAMAGE);
+			DURATION_SNARE = values.getValueFloat(KEY_SNARE_DURATION);
+			
+		} catch (IOException e) {
+			throw new RuntimeException(e); //let the program die on error
+		}
+	}
 	
 	public Snare(PlayableCharacter character, int skillNr) {
 		super(character, COOLDOWN, CASTTIME, false, skillNr);

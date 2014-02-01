@@ -1,0 +1,5 @@
+#Character meta file, contains meta data about a character
+#This one is about the warrrior
+health=200
+velocity_x=2
+velocity_y=7

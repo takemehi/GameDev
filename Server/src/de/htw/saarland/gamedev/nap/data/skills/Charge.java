@@ -1,7 +1,7 @@
 package de.htw.saarland.gamedev.nap.data.skills;
 
-import java.io.CharConversionException;
-import java.security.cert.Extension;
+import java.io.File;
+import java.io.IOException;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -11,16 +11,23 @@ import com.badlogic.gdx.utils.Array;
 import de.htw.saarland.gamedev.nap.data.GameWorld;
 import de.htw.saarland.gamedev.nap.data.IPlayer;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
-import de.htw.saarland.gamedev.nap.server.ServerExtension;
+import de.htw.saarland.gamedev.nap.data.generic.KeyValueFile;
+import de.htw.saarland.gamedev.nap.game.GameServer;
 
 public class Charge extends Skill {
 	
-	public static final float COOLDOWN = 6f;
-	public static final float CASTTIME = 0f;
-	public static final float VELOCITY = 10;
-	public static final float TRAVEL_DISTANCE = 20f;
-	public static final int DAMAGE = 25;
-	public static final float DURATION_STUN = 1f;
+	private static final String KEY_TRAVEL_DISTANCE = "travel_distance";
+	private static final String KEY_VELOCITY = "velocity";
+	private static final String KEY_STUN_DURATION = "stun_duration";	
+	private static final String META_FILE_PATH_SERVER = GameServer.FOLDER_DATA_SERVER + "meta/characters/warrior/charge.txt";
+	private static final String META_FILE_PATH_CLIENT = "data/meta/characters/warrior/charge.txt";
+	
+	public static final float COOLDOWN;
+	public static final float CASTTIME;
+	public static final float VELOCITY;
+	public static final float TRAVEL_DISTANCE;
+	public static final int DAMAGE;
+	public static final float DURATION_STUN;
 	
 	public static final String USERDATA_CHARGE = "charge";
 	
@@ -29,6 +36,30 @@ public class Charge extends Skill {
 	private float distanceTraveled;
 	private boolean traveling;
 	private Vector2 posBefore;
+	
+	static {
+		try {
+			KeyValueFile values = null;
+			if ((new File(META_FILE_PATH_SERVER)).exists()) {
+				values = new KeyValueFile(META_FILE_PATH_SERVER);
+			}
+			else {
+				values = new KeyValueFile(META_FILE_PATH_CLIENT);
+			}
+			
+			values.load();
+			
+			COOLDOWN = values.getValueFloat(KEY_COOLDOWN);
+			CASTTIME = values.getValueFloat(KEY_CASTTIME);
+			VELOCITY = values.getValueFloat(KEY_VELOCITY);
+			TRAVEL_DISTANCE = values.getValueFloat(KEY_TRAVEL_DISTANCE);
+			DURATION_STUN = values.getValueFloat(KEY_STUN_DURATION);
+			DAMAGE = values.getValueInt(KEY_DAMAGE);
+			
+		} catch (IOException e) {
+			throw new RuntimeException(e); //let the program die on error
+		}
+	}
 
 	public Charge(PlayableCharacter character, int skillNr) {
 		super(character, COOLDOWN, CASTTIME, false, skillNr);

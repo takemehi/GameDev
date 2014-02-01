@@ -9,6 +9,10 @@ import com.badlogic.gdx.utils.Array;
 
 public abstract class PlayableCharacter extends GameCharacter{
 	
+	public static final String KEY_HEALTH = "health";
+	public static final String KEY_VELOCITY_X = "velocity_x";
+	public static final String KEY_VELOCITY_Y = "velocity_y";
+	
 	//Exceptions
 	private static final String EXCEPTION_ILLEGAL_ID_CHARACTERCLASS = "This character class doesn't exist!";
 	private static final String EXCEPTION_ILLEGAL_ID_TEAM = "This teamId doesn't exist!";
@@ -36,9 +40,11 @@ public abstract class PlayableCharacter extends GameCharacter{
 	private float respawnTime;
 	private float respawnTimer;
 	
+	private float timeToCapturePoint;
+	
 	public PlayableCharacter(World world, Shape shape, float density, float friction,
 			float restitution, Vector2 position, Vector2 baseVelocity,
-			Vector2 maxVelocity, int maxHealth, int characterClass, int teamId, int id) {
+			Vector2 maxVelocity, int maxHealth, int characterClass, int teamId, int id, float timeToCapturePoint) {
 		super(world, shape, density, friction, restitution, position, baseVelocity,
 				maxVelocity, maxHealth, id);
 		
@@ -46,6 +52,7 @@ public abstract class PlayableCharacter extends GameCharacter{
 		if(characterClass!=ID_MAGE && characterClass!=ID_WARRIOR) throw new IllegalArgumentException(EXCEPTION_ILLEGAL_ID_CHARACTERCLASS);
 		
 		this.characterClass=characterClass;
+		this.timeToCapturePoint = timeToCapturePoint;
 		this.teamId=teamId;
 		if(teamId==ID_TEAM_BLUE)
 			this.getFixtureDef().filter.groupIndex=PlayableCharacter.GROUP_TEAM_BLUE;
@@ -96,7 +103,7 @@ public abstract class PlayableCharacter extends GameCharacter{
 		}
 		if(capturing){
 			timeCapturing+=deltaTime;
-			if(timeCapturing>=CapturePoint.TIME_NEEDED_CAPTURE_POINT){
+			if(timeCapturing>=timeToCapturePoint){
 				point.setBeingCaptured(false);
 				doCapture = false;
 				capturing = false;

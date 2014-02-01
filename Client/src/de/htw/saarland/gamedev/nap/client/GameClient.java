@@ -63,6 +63,7 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 
 	public final static String FOLDER_CONFIG = "data/config/";
 	public static final String FOLDER_MAPS = "data/maps/";
+	public static final String FOLDER_META_MAPS = "data/meta/maps/";
 	public static final String FOLDER_GFX = "data/gfx/";
 	
 	private SmartFox sfClient;
@@ -325,10 +326,11 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 				gameStarted = true; //lets go!
 				break;
 			case GameOpcodes.GAME_CURRENT_MAP:
-				gameWorld = new RenderableGameWorld(world, FOLDER_MAPS + params.getUtfString(GameOpcodes.CURRENT_MAP_PARAM), 0, batch, camera);
+				String mapName = params.getUtfString(GameOpcodes.CURRENT_MAP_PARAM);
+				gameWorld = new RenderableGameWorld(world, FOLDER_MAPS + mapName, FOLDER_META_MAPS + mapName + ".txt", 0, batch, camera);
 				hud.setGameWorld(gameWorld);
 				for (CapturePoint cp: gameWorld.getCapturePoints()) {
-					ClientCapturePoint ccp = new ClientCapturePoint(cp.getCapturePoint());
+					ClientCapturePoint ccp = new ClientCapturePoint(cp);
 					capturePoints.add(ccp);
 				}
 				checkInitialized();
@@ -338,6 +340,10 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 					return false;
 				}
 			case GameOpcodes.GAME_OWN_CHARACTER:
+				if (gameWorld == null) {
+					return false;
+				}
+				
 				PlayableCharacter character = null;
 				
 				int charid = params.getInt(GameOpcodes.CHARACTER_ID_PARAM);
@@ -348,10 +354,10 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 				
 				switch (charid) {
 					case PlayableCharacter.ID_WARRIOR:
-						character = new Warrior(world, new Vector2(coordx, coordy), teamid, entid);
+						character = new Warrior(world, new Vector2(coordx, coordy), teamid, entid, gameWorld.worldInfo.timeToCapture);
 						break;
 					case PlayableCharacter.ID_MAGE:
-						character = new Mage(world, new Vector2(coordx, coordy), teamid, entid);
+						character = new Mage(world, new Vector2(coordx, coordy), teamid, entid, gameWorld.worldInfo.timeToCapture);
 						character.getAttack1().setSkillStartListener(this);
 						character.getAttack2().setSkillStartListener(this);
 						character.getAttack3().setSkillStartListener(this);

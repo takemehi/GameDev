@@ -1,0 +1,11 @@
+#Skill meta data file, contains meta data about a skill
+#The generic keys should be marked and explained right before their declaration
+cooldown=6
+casttime=0
+damage=25
+#how fast is the charge?
+velocity=10
+#how long to travel?
+travel_distance=20
+#how long is the stun?
+stun_duration=1

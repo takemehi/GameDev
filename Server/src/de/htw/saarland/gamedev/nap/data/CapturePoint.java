@@ -4,14 +4,13 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.utils.Array;
 import com.smartfoxserver.v2.entities.data.SFSObject;
 
+import de.htw.saarland.gamedev.nap.data.GameWorld.WorldInfo;
 import de.htw.saarland.gamedev.nap.data.entities.SensorEntity;
 import de.htw.saarland.gamedev.nap.data.network.GameOpcodes;
 import de.htw.saarland.gamedev.nap.game.GameServer;
 import de.htw.saarland.gamedev.nap.game.ISendPacket;
 
 public class CapturePoint {
-
-	public final static float TIME_NEEDED_CAPTURE_POINT = 6;
 	
 	private final static String EXCEPTION_NULL_ENTITY = "Entity object is null!";
 
@@ -20,13 +19,15 @@ public class CapturePoint {
 	private Team teamBlue;
 	private Team teamRed;
 	private boolean beingCaptured;
+	private final WorldInfo worldInfo;
 	
 	private float stateTime;
 	private ISendPacket sendPacket;
 	
-	public CapturePoint(SensorEntity capturePoint){
+	public CapturePoint(SensorEntity capturePoint, WorldInfo worldInfo){
 		if(capturePoint==null) throw new NullPointerException(EXCEPTION_NULL_ENTITY);	
 		this.capturePoint=capturePoint;
+		this.worldInfo = worldInfo;
 		teamId = -1;
 		stateTime = 0.0f;
 	}
@@ -39,6 +40,11 @@ public class CapturePoint {
 	public SensorEntity getCapturePoint() {
 		return capturePoint;
 	}
+	
+	public float getTimeToCapture() {
+		return worldInfo.timeToCapture;
+	}
+	
 	public int getTeamId() {
 		return teamId;
 	}
@@ -86,11 +92,11 @@ public class CapturePoint {
 	public void update(float deltaTime) {
 		if (teamId != -1) {
 			stateTime += deltaTime;
-			if (stateTime >= GameServer.INTERVAL_POINTS) {
+			if (stateTime >= worldInfo.intervalPoints) {
 				if(teamId==Team.ID_TEAM_BLUE)
-					teamBlue.addPoints(GameServer.POINTS_PER_INTERVAL);
+					teamBlue.addPoints(worldInfo.pointsPerInterval);
 				else
-					teamRed.addPoints(GameServer.POINTS_PER_INTERVAL);
+					teamRed.addPoints(worldInfo.pointsPerInterval);
 				stateTime = 0.0f;
 			}
 		}

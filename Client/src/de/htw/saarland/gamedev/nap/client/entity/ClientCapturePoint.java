@@ -21,7 +21,7 @@ public class ClientCapturePoint implements IRender {
 	private static final int CAPTURE_POINT_TILE_WIDTH = 96;
 	private static final int CAPTURE_POINT_TILE_HEIGHT = 96;
 	
-	private SensorEntity capturePoint;
+	private CapturePoint capturePoint;
 	private Vector2 pos;	
 	private int teamId;
 	private String playerCapturedName;
@@ -32,7 +32,7 @@ public class ClientCapturePoint implements IRender {
 	private TextureRegion capturePointTex;
 	private ShapeRenderer shapeRenderer;
 	
-	public ClientCapturePoint(SensorEntity capturePoint) {
+	public ClientCapturePoint(CapturePoint capturePoint) {
 		if (capturePoint == null) {
 			throw new NullPointerException();
 		}
@@ -42,7 +42,7 @@ public class ClientCapturePoint implements IRender {
 		this.captureTime = 0;
 		this.isBeingCaptured = false;
 		this.shapeRenderer = new ShapeRenderer();
-		this.pos = capturePoint.getBody().getPosition();
+		this.pos = capturePoint.getCapturePoint().getBody().getPosition();
 		this.pos.x -= 0.5f;
 		this.pos.y -= 0.5f;
 		
@@ -86,7 +86,7 @@ public class ClientCapturePoint implements IRender {
 			shapeRenderer.rect(
 					pos.x,
 					pos.y + 1.2f,
-					Math.min(captureTime / CapturePoint.TIME_NEEDED_CAPTURE_POINT, 1),
+					Math.min(captureTime / capturePoint.getTimeToCapture(), 1),
 					10 * GameServer.PIXELS_TO_METERS
 				);
 			shapeRenderer.end();
@@ -120,6 +120,6 @@ public class ClientCapturePoint implements IRender {
 	}
 	
 	public int getId() {
-		return capturePoint.getId();
+		return capturePoint.getCapturePoint().getId();
 	}
 }

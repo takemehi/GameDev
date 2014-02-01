@@ -21,24 +21,26 @@ public class Player implements IPlayer, IStatusUpdateListener {
 	
 	private ISendPacket sendPacketListener;
 	private float timePosUpdate;
+	private float respawnMultiplicator;
 	
-	public Player(SFSUser user, World world, Vector2 position,int characterId, int teamId, int id, ISendPacket sendPacketListener){
+	public Player(SFSUser user, World world, Vector2 position,int characterId, int teamId, int id, ISendPacket sendPacketListener, float timeToCapturePoint, float respawnMultiplicator){
 		//if(user==null) throw new NullPointerException(EXCEPTION_NULL_USER);
 		
 		this.user=user;
 		this.sendPacketListener = sendPacketListener;
-		initPlayableCharacter(world, position, characterId, teamId, id);
+		this.respawnMultiplicator = respawnMultiplicator;
+		initPlayableCharacter(world, position, characterId, teamId, id, timeToCapturePoint);
 	}
 	
-	private void initPlayableCharacter(World world, Vector2 position, int characterId, int teamId, int id){
+	private void initPlayableCharacter(World world, Vector2 position, int characterId, int teamId, int id, float timeToCapturePoint){
 		switch(characterId){
 		case PlayableCharacter.ID_MAGE:
-			this.plChar=new Mage(world, position, teamId, id);
+			this.plChar=new Mage(world, position, teamId, id, timeToCapturePoint);
 			plChar.setBody(world.createBody(plChar.getBodyDef()));
 			plChar.setFixture(plChar.getBody().createFixture(plChar.getFixtureDef()));
 			break;
 		case PlayableCharacter.ID_WARRIOR:
-			this.plChar=new Warrior(world, position, teamId, id);
+			this.plChar=new Warrior(world, position, teamId, id, timeToCapturePoint);
 			plChar.setBody(world.createBody(plChar.getBodyDef()));
 			plChar.setFixture(plChar.getBody().createFixture(plChar.getFixtureDef()));
 			break;
@@ -95,7 +97,7 @@ public class Player implements IPlayer, IStatusUpdateListener {
 			plChar.setAttackEnabled(false);
 			plChar.setCapturing(false);
 			
-			int respawnTime = Math.max((int)sendPacketListener.getGameRunningTime() / 60, 1);
+			int respawnTime = (int)(Math.max((int)sendPacketListener.getGameRunningTime() / 60, 1) * respawnMultiplicator);
 			
 			SFSObject paramsRespawn = new SFSObject();
 			paramsRespawn.putInt(GameOpcodes.RESPAWN_TIME_PARAM, respawnTime);

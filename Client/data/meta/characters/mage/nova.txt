@@ -1,0 +1,11 @@
+#Skill meta data file, contains meta data about a skill
+#The generic keys should be marked and explained right before their declaration
+cooldown=5
+casttime=0
+damage=5
+#the radius of the nova
+radius=1
+#the force of the nova (how hard to push you away)
+force=2
+#the duration of the stun
+stun_duration=0.5

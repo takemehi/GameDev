@@ -15,8 +15,8 @@ public class RenderableGameWorld extends GameWorld implements IRender, Disposabl
 
 	OrthogonalTiledMapRenderer renderer;
 	
-	public RenderableGameWorld(World world, String mapName, int currentId, SpriteBatch batch, OrthographicCamera camera) {
-		super(world, mapName, currentId, new TmxMapLoader());
+	public RenderableGameWorld(World world, String mapName, String metaPath, int currentId, SpriteBatch batch, OrthographicCamera camera) {
+		super(world, mapName, metaPath, currentId, new TmxMapLoader());
 		
 		if (batch == null || camera == null) {
 			throw new NullPointerException();

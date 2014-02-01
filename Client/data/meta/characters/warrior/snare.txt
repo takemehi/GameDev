@@ -1,0 +1,7 @@
+#Skill meta data file, contains meta data about a skill
+#The generic keys should be marked and explained right before their declaration
+cooldown=5
+casttime=0
+damage=10
+#how long to snare?
+snare_duration=1

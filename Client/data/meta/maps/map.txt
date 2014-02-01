@@ -1,0 +1,9 @@
+#Meta data file for the map map :D
+#This file can also be used as a template
+time_to_capturepoint=6.0
+points_per_interval=2
+points_to_win=200
+interval_points=5.0
+respawn_multiplicator=1.0
+gravity_x=0
+gravity_y=-20.0

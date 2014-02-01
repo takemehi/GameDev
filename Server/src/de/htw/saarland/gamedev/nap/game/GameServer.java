@@ -33,7 +33,7 @@ public class GameServer implements ApplicationListener, ISendPacket {
 	private final static String EXCEPTION_NULL_TEAM1 = "Team1 object is null!";
 	private final static String EXCEPTION_NULL_TEAM2 = "Team2 object is null!";
 	//folders
-	private final static String FOLDER_DATA = "extensions/nap/data/";
+	public final static String FOLDER_DATA_SERVER = "extensions/nap/data/";
 	private final static String FOLDER_MAPS = "extensions/nap/data/maps/";
 	//world renderer constants
 	public final static float TIME_STEP = 1/60f;
@@ -43,9 +43,9 @@ public class GameServer implements ApplicationListener, ISendPacket {
 	public final static Vector2 GRAVITY = new Vector2(0, -20);
 	//others
 	public final static float PIXELS_TO_METERS = 1/96f;
-	public final static int POINTS_PER_INTERVAL = 2;
-	public final static int POINTS_TO_WIN = 200;
-	public final static float INTERVAL_POINTS = 5.0f;
+//	public final static int POINTS_PER_INTERVAL = 2;
+//	public final static int POINTS_TO_WIN = 200;
+//	public final static float INTERVAL_POINTS = 5.0f;
 	public final static int[] LAYERS_TO_RENDER = {0,1};
 	//input parameters
 	private String mapName;
@@ -128,7 +128,7 @@ public class GameServer implements ApplicationListener, ISendPacket {
 		}
 		world = new World(GRAVITY, true);
 		//initialize gameWorld
-		gameWorld = new GameWorld(world, FOLDER_MAPS + mapName, currentId, new ServerTmxMapLoader());
+		gameWorld = new GameWorld(world, FOLDER_MAPS + mapName, FOLDER_DATA_SERVER + "meta/maps/" + mapName + ".txt", currentId, new ServerTmxMapLoader());
 		
 		//initialize map
 		this.map = gameWorld.getTiledMap();
@@ -142,13 +142,13 @@ public class GameServer implements ApplicationListener, ISendPacket {
 		
 		Array<Player> blue = new Array<Player>();
 		for(int i=0; i<charactersBlue.size(); i++){
-			blue.add(new Player(blueMembers.get(i), world, spawnPointBlue.getSpawnPoint().getPositionOriginal(), charactersBlue.get(i), PlayableCharacter.ID_TEAM_BLUE, currentId++, this));
+			blue.add(new Player(blueMembers.get(i), world, spawnPointBlue.getSpawnPoint().getPositionOriginal(), charactersBlue.get(i), PlayableCharacter.ID_TEAM_BLUE, currentId++, this, gameWorld.worldInfo.timeToCapture, gameWorld.worldInfo.respawnMultiplicator));
 		}
 		blueTeam = new Team(spawnPointBlue, blue, Team.ID_TEAM_BLUE, this);
 		
 		Array<Player> red = new Array<Player>();
 		for(int i=0; i<charactersRed.size(); i++){
-			red.add(new Player(redMembers.get(i), world, spawnPointRed.getSpawnPoint().getPositionOriginal(), charactersRed.get(i), PlayableCharacter.ID_TEAM_RED, currentId++, this));
+			red.add(new Player(redMembers.get(i), world, spawnPointRed.getSpawnPoint().getPositionOriginal(), charactersRed.get(i), PlayableCharacter.ID_TEAM_RED, currentId++, this, gameWorld.worldInfo.timeToCapture, gameWorld.worldInfo.respawnMultiplicator));
 		}
 		redTeam = new Team(spawnPointRed, red, Team.ID_TEAM_RED, this);
 		

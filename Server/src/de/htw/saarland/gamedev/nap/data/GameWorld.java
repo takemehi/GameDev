@@ -1,5 +1,7 @@
 package de.htw.saarland.gamedev.nap.data;
 
+import java.io.IOException;
+
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -17,8 +19,17 @@ import com.badlogic.gdx.utils.Array;
 import de.htw.saarland.gamedev.nap.box2d.editor.BodyEditorLoader;
 import de.htw.saarland.gamedev.nap.data.entities.SensorEntity;
 import de.htw.saarland.gamedev.nap.data.entities.StaticEntity;
+import de.htw.saarland.gamedev.nap.data.generic.KeyValueFile;
 
 public class GameWorld {
+	
+	private static final String KEY_TIME_TO_CAPTUREPOINT = "time_to_capturepoint";
+	private static final String KEY_POINTS_PER_INTERVAL = "points_per_interval";
+	private static final String KEY_POINTS_TO_WIN = "points_to_win";
+	private static final String KEY_INTERVAL_POINTS = "interval_points";
+	private static final String KEY_RESPAWN_MULTIPLICATOR = "respawn_multiplicator";
+	private static final String KEY_GRAVITY_X = "gravity_x";
+	private static final String KEY_GRAVITY_Y = "gravity_y";
 	
 	private final static float PIXELS_TO_METERS = 1/96f;
 	//tile ids
@@ -53,7 +64,27 @@ public class GameWorld {
 	private int width;
 	private int height;
 	
-	public GameWorld(World world, String mapPath, int currentId, TmxMapLoader loader){
+	public class WorldInfo {
+		public final float timeToCapture;
+		public final int pointsPerInterval;
+		public final int pointsToWin;
+		public final float intervalPoints;
+		public final float respawnMultiplicator;
+		public final Vector2 gravity;
+		
+		public WorldInfo(float timeToCapture, int pointsPerInterval, int pointsToWin, float intervalPoints, float respawnMultiplicator, Vector2 gravity) {
+			this.timeToCapture = timeToCapture;
+			this.pointsPerInterval = pointsPerInterval;
+			this.pointsToWin = pointsToWin;
+			this.intervalPoints = intervalPoints;
+			this.respawnMultiplicator = respawnMultiplicator;
+			this.gravity = gravity;
+		}
+	}
+	
+	public final WorldInfo worldInfo;
+	
+	public GameWorld(World world, String mapPath, String metaPath, int currentId, TmxMapLoader loader){
 		this.world=world;
 		this.currentId=currentId;
 		this.idReturned=false;
@@ -62,6 +93,34 @@ public class GameWorld {
 		capturePoints = new Array<CapturePoint>();
 		width=-1;
 		height=-1;
+		
+		try {
+			KeyValueFile values = new KeyValueFile(metaPath);
+			
+			values.load();
+			
+			float timeToCapture = values.getValueFloat(KEY_TIME_TO_CAPTUREPOINT);
+			int pointsPerInterval = values.getValueInt(KEY_POINTS_PER_INTERVAL);
+			int pointsToWin = values.getValueInt(KEY_POINTS_TO_WIN);
+			float intervalPoints = values.getValueFloat(KEY_INTERVAL_POINTS);
+			float respawnMultiplicator = values.getValueFloat(KEY_RESPAWN_MULTIPLICATOR);
+			float gravityX = values.getValueFloat(KEY_GRAVITY_X);
+			float gravityY = values.getValueFloat(KEY_GRAVITY_Y);
+			
+			worldInfo = new WorldInfo(
+					timeToCapture,
+					pointsPerInterval,
+					pointsToWin,
+					intervalPoints,
+					respawnMultiplicator,
+					new Vector2(gravityX, gravityY)
+				);
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e); //crash program cause of unrepairable error
+		}
+		
+		world.setGravity(worldInfo.gravity);
 		
 		initMap(mapPath, loader);
 	}
@@ -74,7 +133,7 @@ public class GameWorld {
 		capturePoint.setBody(world.createBody(capturePoint.getBodyDef()));
 		capturePoint.setFixture(capturePoint.getBody().createFixture(capturePoint.getFixtureDef()));
 		capturePoint.getFixture().setUserData(USERDATA_FIXTURE_CAPTUREPOINT);
-		CapturePoint cp = new CapturePoint(capturePoint);
+		CapturePoint cp = new CapturePoint(capturePoint, worldInfo);
 		capturePoints.add(cp);
 	}
 	

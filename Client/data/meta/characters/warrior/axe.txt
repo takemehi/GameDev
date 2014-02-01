@@ -1,0 +1,5 @@
+#Skill meta data file, contains meta data about a skill
+#The generic keys should be marked and explained right before their declaration
+cooldown=0.7
+casttime=0
+damage=10

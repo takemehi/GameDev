@@ -1,0 +1,5 @@
+#Character meta file, contains meta data about a character
+#This one is about the mage
+health=100
+velocity_x=3
+velocity_y=8

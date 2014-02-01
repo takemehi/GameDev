@@ -1,5 +1,8 @@
 package de.htw.saarland.gamedev.nap.data.skills;
 
+import java.io.File;
+import java.io.IOException;
+
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -12,20 +15,52 @@ import de.htw.saarland.gamedev.nap.data.IPlayer;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
 import de.htw.saarland.gamedev.nap.data.entities.Entity;
 import de.htw.saarland.gamedev.nap.data.entities.SensorEntity;
+import de.htw.saarland.gamedev.nap.data.generic.KeyValueFile;
+import de.htw.saarland.gamedev.nap.game.GameServer;
 
 public class Pyroblast extends Skill{
 	
-	public static final float COOLDOWN = 6f;
-	public static final float CASTTIME = 1f;
-	public static final float RADIUS = 0.2f;
-	public static final float TRAVEL_DISTANCE = 3.5f;
-	public static final float VELOCITY = 5;
-	public static final int DAMAGE = 30;
+	private static final String KEY_RADIUS = "radius";
+	private static final String KEY_TRAVEL_DISTANCE = "travel_distance";
+	private static final String KEY_VELOCITY = "velocity";	
+	private static final String META_FILE_PATH_SERVER = GameServer.FOLDER_DATA_SERVER + "meta/characters/mage/pyroblast.txt";
+	private static final String META_FILE_PATH_CLIENT = "data/meta/characters/mage/pyroblast.txt";
+	
+	public static final float COOLDOWN;
+	public static final float CASTTIME;
+	public static final float RADIUS;
+	public static final float TRAVEL_DISTANCE;
+	public static final float VELOCITY;
+	public static final int DAMAGE;
 	
 	public static final String USERDATA_PYROBLAST = "pyroblast";
 	
 	private SensorEntity ball;
 	private Vector2 velocityBall;
+	
+	static {
+		try {
+			KeyValueFile values = null;
+			if ((new File(META_FILE_PATH_SERVER)).exists()) {
+				values = new KeyValueFile(META_FILE_PATH_SERVER);
+			}
+			else {
+				values = new KeyValueFile(META_FILE_PATH_CLIENT);
+			}
+			
+			values.load();
+			
+			COOLDOWN = values.getValueFloat(KEY_COOLDOWN);
+			CASTTIME = values.getValueFloat(KEY_CASTTIME);
+			RADIUS = values.getValueFloat(KEY_RADIUS);
+			TRAVEL_DISTANCE = values.getValueFloat(KEY_TRAVEL_DISTANCE);
+			VELOCITY = values.getValueFloat(KEY_VELOCITY);
+			DAMAGE = values.getValueInt(KEY_DAMAGE);
+			
+		} catch (IOException e) {
+			throw new RuntimeException(e); //let the program die on error
+		}
+	}
 	
 	
 	public Pyroblast(PlayableCharacter character, int skillNr) {

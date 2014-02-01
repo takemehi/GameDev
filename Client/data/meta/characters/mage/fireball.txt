@@ -1,0 +1,11 @@
+#Skill meta data file, contains meta data about a skill
+#The generic keys should be marked and explained right before their declaration
+cooldown=0.3
+casttime=0
+damage=5
+#the radius of a fireball
+radius=0.1
+#the travel distance of a fireball
+travel_distance=3
+#how fast does the fireball travel?
+velocity=6

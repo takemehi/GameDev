@@ -77,14 +77,14 @@ public class HUD {
 		shapeRenderer.rect(
 				5,
 				height - HEIGHT_TEAM_POINTS_BAR - 5,
-				((width / 2) - 10) * ((float)pointsBlue / (float)GameServer.POINTS_TO_WIN),
+				((width / 2) - 10) * ((float)pointsBlue / (float)gameWorld.worldInfo.pointsToWin),
 				HEIGHT_TEAM_POINTS_BAR);
 		
 		shapeRenderer.setColor(RED_COLOR);
 		shapeRenderer.rect(
 				(width / 2) + 5,
 				height - HEIGHT_TEAM_POINTS_BAR - 5,
-				((width / 2) - 10) * ((float)pointsRed / (float)GameServer.POINTS_TO_WIN),
+				((width / 2) - 10) * ((float)pointsRed / (float)gameWorld.worldInfo.pointsToWin),
 				HEIGHT_TEAM_POINTS_BAR);
 		shapeRenderer.end();
 		

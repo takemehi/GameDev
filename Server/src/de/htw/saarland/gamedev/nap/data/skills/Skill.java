@@ -13,6 +13,10 @@ import de.htw.saarland.gamedev.nap.server.ServerExtension;
 
 public abstract class Skill {
 
+	public static final String KEY_COOLDOWN = "cooldown";
+	public static final String KEY_CASTTIME = "casttime";
+	public static final String KEY_DAMAGE = "damage";
+	
 	//Exceptions
 	private static final String EXCEPTION_ILLEGAL_COOLDOWN = "The cooldown value can't be smaller than 0";
 	private static final String EXCEPTION_ILLEGAL_CASTTIME = "The castTime value can't be smaller than 0";
