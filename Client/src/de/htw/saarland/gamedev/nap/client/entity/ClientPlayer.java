@@ -37,15 +37,14 @@ public class ClientPlayer implements IPlayer, IRender, IMoveable, ISkillStart, D
 	private ShapeRenderer shapeRenderer;
 	private Color hpBoxCol;
 	
-	private BitmapFont font;
-	private CharSequence str = "Hello World!";
-	
 	private boolean isStunned;
 	private boolean isSnared;
 	private float timeStunned;
 	private float timeSnared;
 	private float stunDuration;
 	private float snareDuration;
+	
+	private BitmapFont font;
 	
 	public ClientPlayer(PlayableCharacter character, int team, int friendlyTeamId) {
 		if (character == null) {
@@ -130,6 +129,41 @@ public class ClientPlayer implements IPlayer, IRender, IMoveable, ISkillStart, D
 				10f * GameServer.PIXELS_TO_METERS
 			);
 		shapeRenderer.end();
+		
+		//cast bar
+		if(character.getAttack1().isCast() && character.getAttack1().isOnCooldown() && !character.getAttack1().isCasted()
+				|| character.getAttack2().isCast() && character.getAttack2().isOnCooldown() && !character.getAttack2().isCasted()
+				|| character.getAttack3().isCast() && character.getAttack3().isOnCooldown() && !character.getAttack3().isCasted()){
+			
+			float barWidth = 0;
+			if(character.getAttack1().isCast() && character.getAttack1().isOnCooldown() && !character.getAttack1().isCasted()){
+				barWidth = 1f * ((float)character.getAttack1().getDeltaTime() / (float)character.getAttack1().getCastTime());
+			}else if(character.getAttack2().isCast() && character.getAttack2().isOnCooldown() && !character.getAttack2().isCasted()){
+				barWidth = 1f * ((float)character.getAttack2().getDeltaTime() / (float)character.getAttack2().getCastTime());
+			}else if(character.getAttack3().isCast() && character.getAttack3().isOnCooldown() && !character.getAttack3().isCasted()){
+				barWidth = 1f * ((float)character.getAttack3().getDeltaTime() / (float)character.getAttack3().getCastTime());
+			}
+			
+			shapeRenderer.begin(ShapeType.Filled);
+			shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
+			shapeRenderer.setColor(new Color(1,1,1,1));
+			shapeRenderer.rect(
+					pos.x - animations.getHealthBarXOffset(GameServer.PIXELS_TO_METERS),
+					pos.y + animations.getHealthBarYOffset(GameServer.PIXELS_TO_METERS)+11f * GameServer.PIXELS_TO_METERS,
+					barWidth,
+					10f * GameServer.PIXELS_TO_METERS
+				);
+			shapeRenderer.end();
+			shapeRenderer.begin(ShapeType.Line);
+			shapeRenderer.setColor(0f, 0f, 0f, 1f);
+			shapeRenderer.rect(
+					pos.x - animations.getHealthBarXOffset(GameServer.PIXELS_TO_METERS),
+					pos.y + animations.getHealthBarYOffset(GameServer.PIXELS_TO_METERS)+11f * GameServer.PIXELS_TO_METERS,
+					1f,
+					10f * GameServer.PIXELS_TO_METERS
+				);
+			shapeRenderer.end();
+		}
 		
 		if (stateTime > animations.getAnimationTime(charState)) {
 			charState = charStateBefore;

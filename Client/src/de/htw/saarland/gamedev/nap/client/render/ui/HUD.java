@@ -12,10 +12,12 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
 import de.htw.saarland.gamedev.nap.assets.AssetStorage;
+import de.htw.saarland.gamedev.nap.client.entity.ClientCapturePoint;
 import de.htw.saarland.gamedev.nap.client.entity.ClientPlayer;
 import de.htw.saarland.gamedev.nap.client.entity.MeClientPlayer;
 import de.htw.saarland.gamedev.nap.client.world.RenderableGameWorld;
 import de.htw.saarland.gamedev.nap.data.PlayableCharacter;
+import de.htw.saarland.gamedev.nap.data.Team;
 import de.htw.saarland.gamedev.nap.game.GameServer;
 
 public class HUD {
@@ -25,11 +27,11 @@ public class HUD {
 	
 	private static final Color BLACK_COLOR = new Color(0f, 0f, 0f, 1f);
 	private static final Color BLUE_COLOR = new Color(0f, 0f, 1f, 1f);
+	private static final Color COBALT_COLOR = new Color(0.24f, 0.41f, 0.67f, 1f);
+	private static final Color GREEN_COLOR = new Color(0f, 1f, 0f, 1f);
 	private static final Color RED_COLOR = new Color(1f, 0f, 0f, 1f);
 	private static final Color WHITE_COLOR = new Color(1f, 1f, 1f, 1f);
 	private static final Color YELLOW_COLOR = new Color(1f, 1f, 0f, 1f);
-	private static final Color COBALT_COLOR = new Color(0.24f, 0.41f, 0.67f, 1f);
-	private static final Color GREEN_COLOR = new Color(0f, 1f, 0f, 1f);
 	
 	private volatile boolean respawnActive;
 	private volatile float respawnTime;
@@ -61,7 +63,7 @@ public class HUD {
 		cameraBatch.setProjectionMatrix(camera.combined);
 	}
 	
-	public void render(int pointsRed, int pointsBlue, MeClientPlayer character, List<ClientPlayer> players) {
+	public void render(int pointsRed, int pointsBlue, MeClientPlayer character, List<ClientPlayer> players, List<ClientCapturePoint> capturePoints) {
 		batch.begin();
 		
 		if (respawnActive) {
@@ -183,8 +185,8 @@ public class HUD {
 		}
 		
 		//status infos
-		if(character.getPlayableCharacter().isSnared()){
-			float percent = (character.getPlayableCharacter().getTimeSnared() / character.getPlayableCharacter().getSnareDuration());
+		if(character.isSnared()){
+			float percent = (character.getTimeSnared() / character.getSnareDuration());
 			shapeRenderer.begin(ShapeType.Filled);
 			shapeRenderer.setColor(YELLOW_COLOR);
 			shapeRenderer.rect(
@@ -194,8 +196,8 @@ public class HUD {
 					HEIGHT_TEAM_POINTS_BAR / 5);
 			shapeRenderer.end();
 		}
-		if(character.getPlayableCharacter().isStunned()){
-			float percent = (character.getPlayableCharacter().getTimeStunned() / character.getPlayableCharacter().getStunDuration());
+		if(character.isStunned()){
+			float percent = (character.getTimeStunned() / character.getStunDuration());
 			shapeRenderer.begin(ShapeType.Filled);
 			shapeRenderer.setColor(RED_COLOR);
 			shapeRenderer.rect(
@@ -219,9 +221,34 @@ public class HUD {
 			
 			worldRenderer.setView(camera);
 			worldRenderer.render(GameServer.LAYERS_TO_RENDER);
+			//render capture points
+			float posX;
+			float posY;
+			for(ClientCapturePoint cp: capturePoints){
+				posX = cp.getPos().x*2+(width-gameWorld.getWidth()*SCALE_MINIMAP)-5;
+				posY = cp.getPos().y*2+5;
+				shapeRenderer.begin(ShapeType.Filled);
+				switch(cp.getTeamId()){
+				case Team.ID_TEAM_BLUE:
+					shapeRenderer.setColor(BLUE_COLOR);
+					break;
+				case Team.ID_TEAM_RED:
+					shapeRenderer.setColor(RED_COLOR);
+					break;
+				default:
+					shapeRenderer.setColor(WHITE_COLOR);
+				}
+				shapeRenderer.rect(posX, posY, 1.5f, 1.5f);
+				shapeRenderer.end();
+				
+				shapeRenderer.begin(ShapeType.Line);
+				shapeRenderer.setColor(BLACK_COLOR);
+				shapeRenderer.rect(posX, posY, 1.5f, 1.5f);
+				shapeRenderer.end();
+			}
 			//render own player
-			float posX = character.getPlayableCharacter().getBody().getPosition().x*2+(width-gameWorld.getWidth()*SCALE_MINIMAP)-5;
-			float posY = character.getPlayableCharacter().getBody().getPosition().y*2+5;
+			posX = character.getPlayableCharacter().getBody().getPosition().x*2+(width-gameWorld.getWidth()*SCALE_MINIMAP)-5;
+			posY = character.getPlayableCharacter().getBody().getPosition().y*2+5;
 			shapeRenderer.begin(ShapeType.Filled);
 			shapeRenderer.setColor(GREEN_COLOR);
 			shapeRenderer.circle(posX, posY, 1);

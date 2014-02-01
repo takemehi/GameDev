@@ -267,7 +267,7 @@ public class GameClient implements ApplicationListener, IEventListener, ISkillEv
 		
 		batch.end();		
 		
-		hud.render(pointsRed, pointsBlue, player, players);
+		hud.render(pointsRed, pointsBlue, player, players, capturePoints);
 		
 		//debugRenderer.render(world, camera.combined);
 		

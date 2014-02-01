@@ -122,4 +122,18 @@ public class ClientCapturePoint implements IRender {
 	public int getId() {
 		return capturePoint.getCapturePoint().getId();
 	}
+
+	public int getTeamId() {
+		return teamId;
+	}
+
+	public TextureRegion getCapturePointTex() {
+		return capturePointTex;
+	}
+
+	public Vector2 getPos() {
+		return pos;
+	}
+	
+	
 }
