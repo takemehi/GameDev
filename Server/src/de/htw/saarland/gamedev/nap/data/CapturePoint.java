@@ -93,7 +93,7 @@ public class CapturePoint {
 		if (teamId != -1) {
 			stateTime += deltaTime;
 			if (stateTime >= worldInfo.intervalPoints) {
-				if(!(teamBlue.getPoints()>=worldInfo.pointsToWin) || !(teamRed.getPoints()>=worldInfo.pointsToWin)){
+				if((teamBlue.getPoints()<worldInfo.pointsToWin) && (teamRed.getPoints()<worldInfo.pointsToWin)){
 					if(teamId==Team.ID_TEAM_BLUE)
 						teamBlue.addPoints(worldInfo.pointsPerInterval);
 					else
