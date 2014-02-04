@@ -185,32 +185,34 @@ public class ClientPlayer implements IPlayer, IRender, IMoveable, ISkillStart, D
 	}
 	
 	private void setCharacterState(CharacterStates newCharState) {
-		wasDead = false;
-		switch (newCharState) {
-			case SKILL1:
-			case SKILL2:
-			case SKILL3:
-				if (charState != CharacterStates.SKILL1 && charState != CharacterStates.SKILL2 && charState != CharacterStates.SKILL3) {
-					//new state == SKILL & current state != SKILL
-					charStateBefore = charState;
-					charState = newCharState;
-					stateTime = 0;
-				}
-				break;
-			case IDLE:
-			case WALKING:
-				if (charState == CharacterStates.SKILL1 || charState == CharacterStates.SKILL2 || charState == CharacterStates.SKILL3) {
-					//new state == IDLE | WALKING & current state == SKILL
-					charStateBefore = newCharState;
-				}
-				else {
-					//new state == IDLE | WALKING & current state != SKILL
-					charStateBefore = newCharState;
-					charState = newCharState;
-					stateTime = 0;
-				}
-				break;
-				
+		if (character.getHealth() > 0) {
+			wasDead = false;
+			switch (newCharState) {
+				case SKILL1:
+				case SKILL2:
+				case SKILL3:
+					if (charState != CharacterStates.SKILL1 && charState != CharacterStates.SKILL2 && charState != CharacterStates.SKILL3) {
+						//new state == SKILL & current state != SKILL
+						charStateBefore = charState;
+						charState = newCharState;
+						stateTime = 0;
+					}
+					break;
+				case IDLE:
+				case WALKING:
+					if (charState == CharacterStates.SKILL1 || charState == CharacterStates.SKILL2 || charState == CharacterStates.SKILL3) {
+						//new state == IDLE | WALKING & current state == SKILL
+						charStateBefore = newCharState;
+					}
+					else {
+						//new state == IDLE | WALKING & current state != SKILL
+						charStateBefore = newCharState;
+						charState = newCharState;
+						stateTime = 0;
+					}
+					break;
+					
+			}
 		}
 	}
 	

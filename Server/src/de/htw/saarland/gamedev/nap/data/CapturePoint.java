@@ -7,7 +7,6 @@ import com.smartfoxserver.v2.entities.data.SFSObject;
 import de.htw.saarland.gamedev.nap.data.GameWorld.WorldInfo;
 import de.htw.saarland.gamedev.nap.data.entities.SensorEntity;
 import de.htw.saarland.gamedev.nap.data.network.GameOpcodes;
-import de.htw.saarland.gamedev.nap.game.GameServer;
 import de.htw.saarland.gamedev.nap.game.ISendPacket;
 
 public class CapturePoint {
